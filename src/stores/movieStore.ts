@@ -4,61 +4,7 @@ import endpoints from '../utils/tmdbEndpoints';
 
 // Types
 import type { Writable } from 'svelte/store';
-
-/**
- * Represents the structure of the API response from TMDB
- *
- * @interface APIResponse
- * @description Defines the shape of the response data object returned by TMDB API endpoints.
- * It includes pagination information and an array of movie results.
- *
- * @property {number} [page] - The current page number of results
- * @property {Movie[]} results - An array of movie objects returned by the API
- * @property {number} [total_pages] - The total number of pages available for the query
- * @property {number} [total_results] - The total number of results available for the query
- */
-interface APIResponse {
-  page?: number;
-  results: Movie[];
-  total_pages?: number;
-  total_results?: number;
-}
-
-/**
- * Represents a movie object from the TMDB API
- *
- * @typedef {Object} Movie
- * @property {boolean} adult - Indicates if the movie is for adults
- * @property {string|null} backdrop_path - Path to the backdrop image
- * @property {number[]} genre_ids - Array of genre IDs associated with the movie
- * @property {number} id - Unique identifier for the movie
- * @property {string} original_language - Original language of the movie
- * @property {string} original_title - Original title of the movie
- * @property {string} overview - Brief description of the movie
- * @property {number} popularity - Popularity score of the movie
- * @property {string|null} poster_path - Path to the movie poster image
- * @property {string} release_date - Release date of the movie
- * @property {string} title - Title of the movie
- * @property {boolean} video - Indicates if it's a video
- * @property {number} vote_average - Average vote rating
- * @property {number} vote_count - Number of votes
- */
-interface Movie {
-  adult: boolean;
-  backdrop_path: string | null;
-  genre_ids: number[];
-  id: number;
-  original_language: string;
-  original_title: string;
-  overview: string;
-  popularity: number;
-  poster_path: string | null;
-  release_date: string;
-  title: string;
-  video: boolean;
-  vote_average: number;
-  vote_count: number;
-}
+import type { APIResponse, Movie } from '../types';
 
 // Create stores for movie data
 export const actionMovies: Writable<Movie[]> = writable([]);
@@ -93,6 +39,7 @@ export const error: Writable<string | null> = writable(null);
 async function fetchMoviesByCategory(category: string, store: Writable<Movie[]>): Promise<Movie[]> {
   try {
     const { data } = await api.get<APIResponse>(endpoints[category]);
+    console.log({ data });
 
     store.set(data.results);
 
