@@ -28,5 +28,16 @@
    * Use global.d.ts instead of compilerOptions.types
    * to avoid limiting type declarations.
    */
-  "include": ["src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte"]
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.js",
+    "src/**/*.svelte",
+    "src/main.ts",
+    "src/utils/tmdbEndpoints.ts",
+    "src/utils/tmdbEndpoints.ts",
+    "src/stores/movieStore.ts",
+    "src/stores/movieStore.ts",
+    "src/services/api.ts",
+    "src/services/api.ts"
+  ]
 }

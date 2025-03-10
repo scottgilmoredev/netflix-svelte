@@ -1,14 +1,13 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
+  import svelteLogo from './assets/svelte.svg';
+  import viteLogo from '/vite.svg';
   import { initializeMovies, error } from './stores/movieStore';
-  import { 
+  import {
     actionMovies,
     bannerMovie,
     comedyMovies,
-    documentaries,
     horrorMovies,
     netflixOriginals,
     romanceMovies,
@@ -20,21 +19,19 @@
   onMount(async () => {
     try {
       await initializeMovies();
-      
+
       const allStores = {
         actionMovies: get(actionMovies),
         bannerMovie: get(bannerMovie),
         comedyMovies: get(comedyMovies),
-        documentaries: get(documentaries),
         horrorMovies: get(horrorMovies),
         netflixOriginals: get(netflixOriginals),
         romanceMovies: get(romanceMovies),
         topRated: get(topRated),
         trending: get(trending),
       };
-      
+
       console.log('All store data:', allStores);
-      
     } catch (err) {
       console.log('Current error store value:', get(error));
     }
@@ -53,12 +50,12 @@
   <h1>Vite + Svelte</h1>
 
   <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
+    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer"
+      >SvelteKit</a
+    >, the official Svelte app framework powered by Vite!
   </p>
 
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  <p class="read-the-docs">Click on the Vite and Svelte logos to learn more</p>
 </main>
 
 <style>
