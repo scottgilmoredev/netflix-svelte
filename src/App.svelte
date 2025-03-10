@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { get } from 'svelte/store';
   import svelteLogo from './assets/svelte.svg'
