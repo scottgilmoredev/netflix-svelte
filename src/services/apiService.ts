@@ -1,3 +1,15 @@
+/**
+ * API Service Module
+ *
+ * @module
+ * @description Provides a configured Axios instance for making HTTP requests to The Movie Database API.
+ * Handles base configuration, interceptors, and error handling for all API requests.
+ *
+ * @requires axios
+ * @requires ../constants/tmdb
+ * @requires ../types
+ */
+
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
