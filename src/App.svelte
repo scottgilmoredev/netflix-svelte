@@ -15,13 +15,18 @@
    */
 
   import { onMount } from 'svelte';
+
+  // Components
   import Banner from './components/Banner.svelte';
   import Nav from './components/Nav.svelte';
+  import Row from './components/Row.svelte';
+
+  // Stores
   import { initializeMovies, error } from './stores/movieStore';
   import {
     actionMovies,
-    bannerMovie,
     comedyMovies,
+    documentaries,
     horrorMovies,
     netflixOriginals,
     romanceMovies,
@@ -59,15 +64,19 @@
       </div>
     {:else}
       <!-- Movie category rows -->
+      <Row title="Only on Netflix" movies={$netflixOriginals} />
+      <Row title="Top 10 Movies in the U.S. Today" isTopMovies movies={$topRated} />
+      <Row title="Documentaries" movies={$documentaries} />
+      <Row title="Trending Now" movies={$trending} />
+      <Row title="Horror" movies={$horrorMovies} />
+      <Row title="Comedy" movies={$comedyMovies} />
+      <Row title="Action" movies={$actionMovies} />
+      <Row title="Romance" movies={$romanceMovies} />
     {/if}
   </main>
 </div>
 
 <style>
-  .app {
-    background-color: #111;
-  }
-
   .error-message {
     color: white;
     background-color: rgba(255, 0, 0, 0.3);
