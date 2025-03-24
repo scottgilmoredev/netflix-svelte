@@ -1,13 +1,32 @@
 <script lang="ts">
+  /**
+   * Main Application Component
+   *
+   * @component
+   * @description The root component of the Netflix clone application. Manages the overall
+   * layout and coordinates the initialization of movie data. Renders the navigation bar,
+   * banner, and movie rows, handling any potential errors during data fetching.
+   *
+   * @requires svelte
+   * @requires ./components/Banner.svelte
+   * @requires ./components/Nav.svelte
+   * @requires ./components/Row.svelte
+   * @requires ./stores/movieStore
+   */
+
   import { onMount } from 'svelte';
-  import { get } from 'svelte/store';
-  import svelteLogo from './assets/svelte.svg';
-  import viteLogo from '/vite.svg';
+
+  // Components
+  import Banner from './components/Banner.svelte';
+  import Nav from './components/Nav.svelte';
+  import Row from './components/Row.svelte';
+
+  // Stores
   import { initializeMovies, error } from './stores/movieStore';
   import {
     actionMovies,
-    bannerMovie,
     comedyMovies,
+    documentaries,
     horrorMovies,
     netflixOriginals,
     romanceMovies,
@@ -15,63 +34,65 @@
     trending,
   } from './stores/movieStore';
 
-  // Initialize data on component mount
-  onMount(async () => {
-    try {
-      await initializeMovies();
-
-      const allStores = {
-        actionMovies: get(actionMovies),
-        bannerMovie: get(bannerMovie),
-        comedyMovies: get(comedyMovies),
-        horrorMovies: get(horrorMovies),
-        netflixOriginals: get(netflixOriginals),
-        romanceMovies: get(romanceMovies),
-        topRated: get(topRated),
-        trending: get(trending),
-      };
-
-      console.log('All store data:', allStores);
-    } catch (err) {
-      console.log('Current error store value:', get(error));
-    }
+  /**
+   * Lifecycle hook that runs when the component is mounted to the DOM
+   *
+   * @function
+   * @description Initializes all movie data by calling the initializeMovies function
+   * from the movieStore. This fetches data for all movie categories and sets up
+   * the banner movie.
+   */
+  onMount(() => {
+    initializeMovies();
   });
 </script>
 
-<main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
+<div class="app">
+  <!-- Fixed navigation bar -->
+  <Nav />
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer"
-      >SvelteKit</a
-    >, the official Svelte app framework powered by Vite!
-  </p>
+  <!-- Featured content banner -->
+  <Banner />
 
-  <p class="read-the-docs">Click on the Vite and Svelte logos to learn more</p>
-</main>
+  <!-- Main content area with movie rows -->
+  <main>
+    {#if $error}
+      <!-- Error message display if data fetching fails -->
+      <div class="error-message">
+        <p>Error: {$error}</p>
+        <button on:click={initializeMovies}>Try Again</button>
+      </div>
+    {:else}
+      <!-- Movie category rows -->
+      <Row title="Only on Netflix" movies={$netflixOriginals} />
+      <Row title="Top 10 Movies in the U.S. Today" isTopMovies movies={$topRated} />
+      <Row title="Documentaries" movies={$documentaries} />
+      <Row title="Trending Now" movies={$trending} />
+      <Row title="Horror" movies={$horrorMovies} />
+      <Row title="Comedy" movies={$comedyMovies} />
+      <Row title="Action" movies={$actionMovies} />
+      <Row title="Romance" movies={$romanceMovies} />
+    {/if}
+  </main>
+</div>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  .error-message {
+    color: white;
+    background-color: rgba(255, 0, 0, 0.3);
+    padding: 20px;
+    margin: 20px;
+    border-radius: 4px;
+    text-align: center;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
+
+  .error-message button {
+    background-color: #e50914;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 4px;
+    cursor: pointer;
   }
 </style>

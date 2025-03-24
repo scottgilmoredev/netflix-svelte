@@ -1,28 +1,29 @@
+/**
+ * API Service Module
+ *
+ * @module
+ * @description Provides a configured Axios instance for making HTTP requests to The Movie Database API.
+ * Handles base configuration, interceptors, and error handling for all API requests.
+ *
+ * @requires axios
+ * @requires ../constants/tmdb
+ * @requires ../types
+ */
+
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
-/**
- * Configuration for The Movie Database API
- *
- * @typedef {Object} TMDBConfig
- * @property {string} baseURL - Base URL for all requests to TMDB API
- * @property {Object} headers - Default headers sent with each request
- * @property {string} headers.Content-Type - Content type of the request
- * @property {number} timeout - Request timeout in milliseconds
- */
-interface TMDBConfig {
-  baseURL: string;
-  headers: {
-    'Content-Type': string;
-  };
-  timeout: number;
-}
+// Constants
+import { API_BASE_URL } from '../constants/tmdb';
+
+// Types
+import type { TMDBConfig } from '../types';
 
 /**
  * @type {TMDBConfig}
  */
 const config: TMDBConfig = {
-  baseURL: 'https://api.themoviedb.org/3',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

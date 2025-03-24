@@ -1,4 +1,19 @@
 /**
+ * TMDB API Constants Module
+ *
+ * @module
+ * @description Contains constants related to The Movie Database (TMDB) API.
+ * Provides base URLs, API endpoints, and configuration for interacting with
+ * the TMDB API throughout the application.
+ */
+
+/**
+ * Base URL for TMDB api requests
+ * @constant {string}
+ */
+export const API_BASE_URL = 'https://api.themoviedb.org/3';
+
+/**
  * The Movie Database API key retrieved from environment variables
  *
  * @description API key used for authenticating requests to The Movie Database API.
@@ -18,13 +33,19 @@
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 /**
+ * Base URL for TMDB image assets
+ * @constant {string}
+ */
+export const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original';
+
+/**
  * Collection of TMDB API endpoint paths with API key included
  *
  * @description A centralized object containing all the endpoint paths used to fetch
  * different categories of movies from The Movie Database API. Each path includes
  * the API key and any necessary query parameters.
  *
- * @constant {Object} endpoints
+ * @constant {Object} ENDPOINTS
  * @property {string} fetchTrending - Path to fetch trending movies and TV shows
  * @property {string} fetchNetflixOriginals - Path to fetch Netflix original content
  * @property {string} fetchTopRated - Path to fetch top rated movies
@@ -35,19 +56,17 @@ const API_KEY = import.meta.env.VITE_API_KEY;
  * @property {string} fetchDocumentaries - Path to fetch documentary genre movies
  *
  * @example Using with axios
- * const trendingMovies = await api.get(endpoints.fetchTrending);
+ * const trendingMovies = await api.get(ENDPOINTS.fetchTrending);
  */
-const endpoints: {
+export const ENDPOINTS: {
   [key: string]: string;
 } = {
-  fetchTrending: `/trending/all/week?api_key=${API_KEY}&language=en-US`,
-  fetchNetflixOriginals: `/discover/tv?api_key=${API_KEY}&with_network=123`,
-  fetchTopRated: `/movie/top_rated?api_key=${API_KEY}&language=en-US`,
   fetchActionMovies: `/discover/movie?api_key=${API_KEY}&with_genres=28`,
   fetchComedyMovies: `/discover/movie?api_key=${API_KEY}&with_genres=35`,
-  fetchHorrorMovies: `/discover/movie?api_key=${API_KEY}&with_genres=27`,
-  fetchRomanceMovies: `/discover/movie?api_key=${API_KEY}&with_genres=10749`,
   fetchDocumentaries: `/discover/movie?api_key=${API_KEY}&with_genres=99`,
+  fetchHorrorMovies: `/discover/movie?api_key=${API_KEY}&with_genres=27`,
+  fetchNetflixOriginals: `/discover/tv?api_key=${API_KEY}&with_network=123`,
+  fetchRomanceMovies: `/discover/movie?api_key=${API_KEY}&with_genres=10749`,
+  fetchTopRated: `/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1&per_page=10`,
+  fetchTrending: `/trending/all/week?api_key=${API_KEY}&language=en-US`,
 };
-
-export default endpoints;

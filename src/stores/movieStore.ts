@@ -1,68 +1,29 @@
+/**
+ * Movie Store Module
+ *
+ * @module
+ * @description Centralizes movie data management for the application.
+ * Provides stores for different movie categories and functions to initialize and update them.
+ * Handles error states and data fetching from the movie service.
+ *
+ * @requires svelte/store
+ * @requires ../services/moviesService
+ * @requires ../types
+ */
+
 import { writable } from 'svelte/store';
-import api from '../services/api';
-import endpoints from '../utils/tmdbEndpoints';
+
+// Services
+import * as movieService from '../services/moviesService';
 
 // Types
 import type { Writable } from 'svelte/store';
-
-/**
- * Represents the structure of the API response from TMDB
- *
- * @interface APIResponse
- * @description Defines the shape of the response data object returned by TMDB API endpoints.
- * It includes pagination information and an array of movie results.
- *
- * @property {number} [page] - The current page number of results
- * @property {Movie[]} results - An array of movie objects returned by the API
- * @property {number} [total_pages] - The total number of pages available for the query
- * @property {number} [total_results] - The total number of results available for the query
- */
-interface APIResponse {
-  page?: number;
-  results: Movie[];
-  total_pages?: number;
-  total_results?: number;
-}
-
-/**
- * Represents a movie object from the TMDB API
- *
- * @typedef {Object} Movie
- * @property {boolean} adult - Indicates if the movie is for adults
- * @property {string|null} backdrop_path - Path to the backdrop image
- * @property {number[]} genre_ids - Array of genre IDs associated with the movie
- * @property {number} id - Unique identifier for the movie
- * @property {string} original_language - Original language of the movie
- * @property {string} original_title - Original title of the movie
- * @property {string} overview - Brief description of the movie
- * @property {number} popularity - Popularity score of the movie
- * @property {string|null} poster_path - Path to the movie poster image
- * @property {string} release_date - Release date of the movie
- * @property {string} title - Title of the movie
- * @property {boolean} video - Indicates if it's a video
- * @property {number} vote_average - Average vote rating
- * @property {number} vote_count - Number of votes
- */
-interface Movie {
-  adult: boolean;
-  backdrop_path: string | null;
-  genre_ids: number[];
-  id: number;
-  original_language: string;
-  original_title: string;
-  overview: string;
-  popularity: number;
-  poster_path: string | null;
-  release_date: string;
-  title: string;
-  video: boolean;
-  vote_average: number;
-  vote_count: number;
-}
+import type { Movie } from '../types';
 
 // Create stores for movie data
 export const actionMovies: Writable<Movie[]> = writable([]);
 export const bannerMovie: Writable<Movie | null> = writable(null);
+export const documentaries: Writable<Movie[]> = writable([]);
 export const comedyMovies: Writable<Movie[]> = writable([]);
 export const horrorMovies: Writable<Movie[]> = writable([]);
 export const netflixOriginals: Writable<Movie[]> = writable([]);
@@ -73,35 +34,35 @@ export const trending: Writable<Movie[]> = writable([]);
 export const error: Writable<string | null> = writable(null);
 
 /**
- * Fetches movies by category and updates the corresponding store
+ * Updates a store with data from a fetch function
  *
  * @async
- * @function fetchMoviesByCategory
- * @description Retrieves movie data from TMDB API for a specific category and updates the provided store
+ * @function updateStore
+ * @description Generic helper function to fetch data and update a store
  *
- * @param {string} category - The category key from the endpoints object (e.g., 'fetchNetflixOriginals')
- * @param {import('svelte/store').Writable} store - The Svelte writable store to update with the results
+ * @template T The type of data being fetched
+ * @param {() => Promise<T>} fetchFunction - Function that returns a promise with data
+ * @param {Writable<T>} store - Svelte store to update with the fetched data
+ * @returns {Promise<T>} The fetched data
+ * @throws {Error} Propagates any errors after updating the error store
  *
- * @returns {Promise<Array>} A promise that resolves to an array of movie objects
- * @throws {Error} Logs error to console and updates global error store, but returns empty array instead of throwing
- *
- * @example Fetch Netflix originals and update the store
- * const movies = await fetchMoviesByCategory('fetchNetflixOriginals', netflixOriginals);
- * // The netflixOriginals store is now updated with the results
- * // movies contains the same data for immediate use
+ * @example
+ * // Update the trending movies store
+ * const data = await updateStore(
+ *   () => movieService.fetchMoviesByCategory('fetchTrending'),
+ *   trending
+ * );
  */
-async function fetchMoviesByCategory(category: string, store: Writable<Movie[]>): Promise<Movie[]> {
+async function updateStore<T>(fetchFunction: () => Promise<T>, store: Writable<T>): Promise<T> {
   try {
-    const { data } = await api.get<APIResponse>(endpoints[category]);
+    const data = await fetchFunction();
+    store.set(data);
 
-    store.set(data.results);
-
-    return data.results;
+    return data;
   } catch (err) {
-    console.error(`Error fetching ${category}:`, err);
     error.set(err instanceof Error ? err.message : String(err));
 
-    return [];
+    throw err;
   }
 }
 
@@ -145,22 +106,26 @@ export async function initializeMovies(): Promise<void> {
 
   try {
     // Fetch Netflix originals first for the banner
-    const originalsData = await fetchMoviesByCategory('fetchNetflixOriginals', netflixOriginals);
+    const originalsData = await updateStore(
+      () => movieService.fetchMoviesByCategory('fetchNetflixOriginals'),
+      netflixOriginals
+    );
 
     // Set random movie for banner
     if (originalsData.length > 0) {
-      const randomIndex = Math.floor(Math.random() * originalsData.length);
-      bannerMovie.set(originalsData[randomIndex]);
+      const randomMovie = movieService.getRandomMovie(originalsData);
+      bannerMovie.set(randomMovie);
     }
 
     // Fetch other categories in parallel
     await Promise.all([
-      fetchMoviesByCategory('fetchActionMovies', actionMovies),
-      fetchMoviesByCategory('fetchComedyMovies', comedyMovies),
-      fetchMoviesByCategory('fetchHorrorMovies', horrorMovies),
-      fetchMoviesByCategory('fetchRomanceMovies', romanceMovies),
-      fetchMoviesByCategory('fetchTopRated', topRated),
-      fetchMoviesByCategory('fetchTrending', trending),
+      updateStore(() => movieService.fetchMoviesByCategory('fetchActionMovies'), actionMovies),
+      updateStore(() => movieService.fetchMoviesByCategory('fetchComedyMovies'), comedyMovies),
+      updateStore(() => movieService.fetchMoviesByCategory('fetchDocumentaries'), documentaries),
+      updateStore(() => movieService.fetchMoviesByCategory('fetchHorrorMovies'), horrorMovies),
+      updateStore(() => movieService.fetchMoviesByCategory('fetchRomanceMovies'), romanceMovies),
+      updateStore(() => movieService.fetchMoviesByCategory('fetchTrending'), trending),
+      updateStore(() => movieService.fetchTopRatedMovies(), topRated),
     ]);
   } catch (err) {
     console.error('Error initializing movies:', err);
