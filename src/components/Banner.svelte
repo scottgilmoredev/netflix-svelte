@@ -21,7 +21,7 @@
 
   // Utils
   import { IMAGE_BASE_URL } from '../constants/tmdb';
-  import { truncate } from '../utils/helpers';
+  import { truncate } from '../utils/helperUtils';
 
   /**
    * The current banner movie from the store
@@ -46,7 +46,7 @@
    *
    * @type {string}
    */
-  $: bannerTitle = $bannerMovieStore?.title || $bannerMovieStore?.original_title || '';
+  $: bannerTitle = $bannerMovieStore?.name || $bannerMovieStore?.original_name || '';
 
   /**
    * Truncates and prepares the overview text for display
