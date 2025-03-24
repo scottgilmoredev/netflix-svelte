@@ -11,4 +11,8 @@ export default defineConfig({
       },
     }),
   ],
+  base: '/netflix-svelte/',
+  build: {
+    outDir: 'dist'
+  }
 });
