@@ -1,4 +1,4 @@
-import type { Movie } from './movie';
+import type { Movie } from './media';
 
 /**
  * Represents the structure of the API response from TMDB

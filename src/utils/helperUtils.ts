@@ -1,4 +1,13 @@
 /**
+ * Helper Utilities Module
+ *
+ * @module
+ * @description Provides general utility functions used throughout the application.
+ * Contains string manipulation, formatting, and other helper functions that
+ * don't fit into more specific utility categories.
+ */
+
+/**
  * Truncates a string to a specified length and adds ellipsis
  *
  * @param {string} text - The string to truncate
