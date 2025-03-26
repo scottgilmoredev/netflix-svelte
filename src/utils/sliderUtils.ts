@@ -162,9 +162,9 @@ export function createTransformString(position: number): string {
  * }
  */
 export function isInitialNextMovement(state: SliderState): boolean {
-  const { direction, isInitialNext, isRowMoving } = state;
+  const { direction, isInitialNext, isSliderMoving } = state;
 
-  return isRowMoving && direction === 'next' && isInitialNext;
+  return isSliderMoving && direction === 'next' && isInitialNext;
 }
 
 /**
@@ -219,10 +219,11 @@ export function calculateStyleString(
   paddingOffset: number = 8,
   contentRatio: number = 92
 ): string {
-  const { isRowMoving, direction, itemsToDisplayInRow, movePercentage, hasRowMoved } = state;
+  const { isSliderMoving, direction, itemsToDisplayInRow, movePercentage, hasMovedFromStart } =
+    state;
 
   // If row hasn't moved, return initial position
-  if (!element || !hasRowMoved) {
+  if (!element || !hasMovedFromStart) {
     return createTransformString(0);
   }
 
@@ -236,7 +237,7 @@ export function calculateStyleString(
   const paddingAdjustment = calculatePaddingAdjustment(paddingOffset, itemsToDisplayInRow);
 
   // Calculate final position
-  if (isRowMoving) {
+  if (isSliderMoving) {
     const positionOffset = calculatePositionOffset(direction, movePercentage, contentRatio);
     const finalPosition = calculateFinalPosition(
       basePosition,

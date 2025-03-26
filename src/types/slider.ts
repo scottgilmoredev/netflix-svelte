@@ -22,14 +22,16 @@ export interface SliderActions {
  *
  * @typedef {Object} SliderDerived
  * @property {number} itemWidth - Width of each item as a percentage
- * @property {MediaContent[]} rowContent - Array of content items to display
+ * @property {Array<undefined>} paginationIndicators - Array representing pagination indicators
  * @property {boolean} showControls - Whether to show navigation controls
+ * @property {MediaContent[]} sliderContent - Array of content items to display
  * @property {number} totalItems - Total number of items in the slider
  */
 export interface SliderDerived {
   itemWidth: number;
-  rowContent: MediaContent[];
+  paginationIndicators: Array<undefined>;
   showControls: boolean;
+  sliderContent: MediaContent[];
   totalItems: number;
 }
 
@@ -37,21 +39,22 @@ export interface SliderDerived {
  * Represents the core state of a slider component
  *
  * @typedef {Object} SliderState
+ * @property {number} currentPaginationIndex - Current slider pagination indicator index
  * @property {'prev'|'next'} direction - Direction of current or last movement
- * @property {boolean} hasRowMoved - Whether the row has been moved at least once
+ * @property {boolean} hasMovedFromStart - Whether the row has been moved at least once
  * @property {boolean} isInitialNext - Whether this is the first 'next' movement
- * @property {boolean} isRowMoving - Whether the slider is currently animating
+ * @property {boolean} isSliderMoving - Whether the slider is currently animating
  * @property {number} itemsToDisplayInRow - Number of items to display in a single row
  * @property {number} lowestVisibleIndex - Index of the first visible item
  * @property {number} movePercentage - Percentage of movement during animation
  * @property {Movie[]} movies - Array of movies to display in the slider
  */
 export interface SliderState {
-  contentIndex?: number;
+  currentPaginationIndex: number;
   direction: 'prev' | 'next';
-  hasRowMoved: boolean;
+  hasMovedFromStart: boolean;
   isInitialNext: boolean;
-  isRowMoving: boolean;
+  isSliderMoving: boolean;
   itemsToDisplayInRow: number;
   lowestVisibleIndex: number;
   movePercentage: number;
