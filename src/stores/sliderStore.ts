@@ -38,7 +38,7 @@ import type {
  * const { state, derived, actions } = createSliderStore(movieList, 5);
  *
  * // Use the store in a component
- * $: ({ totalItems, showControls, itemWidth, rowContent } = $derived);
+ * $: ({ totalItems, showControls, itemWidth, sliderContent } = $derived);
  *
  * // Trigger actions
  * function handleNextClick() {
@@ -51,14 +51,15 @@ export function createSliderStore(
 ): SliderStore {
   // Create the core state store
   const state: Writable<SliderState> = writable({
-    movies: initialMovies,
+    currentPaginationIndex: 0,
+    direction: 'next',
+    hasMovedFromStart: false,
+    isInitialNext: true,
+    isSliderMoving: false,
     itemsToDisplayInRow: initialItemsToDisplay,
     lowestVisibleIndex: 0,
     movePercentage: 0,
-    hasRowMoved: false,
-    direction: 'next',
-    isRowMoving: false,
-    isInitialNext: true,
+    movies: initialMovies,
   });
 
   // Store for cached content - this is the key to fixing the issue
@@ -66,31 +67,130 @@ export function createSliderStore(
 
   // Create derived values from the state
   const derivedValues: Readable<SliderDerived> = derived(state, ($state) => {
-    const { isRowMoving, itemsToDisplayInRow, movies } = $state;
+    const { isSliderMoving, itemsToDisplayInRow, movies } = $state;
     const totalItems = movies.length;
     const showControls = totalItems > itemsToDisplayInRow;
     const itemWidth = 100 / itemsToDisplayInRow;
 
-    let rowContent: MediaContent[];
+    // Calculate pagination indicators
+    const paginationIndicators = calculatePaginationIndicators(totalItems, itemsToDisplayInRow);
+
+    let sliderContent: MediaContent[];
 
     // If we're in the middle of an animation, use the cached content
     // Otherwise, calculate new content and update the cache
-    if (isRowMoving) {
+    if (isSliderMoving) {
       // Use cached content during animation
-      rowContent = get(cachedContent);
+      sliderContent = get(cachedContent);
     } else {
       // Calculate new content and update cache
-      rowContent = calculateRowContent($state, itemWidth);
-      cachedContent.set(rowContent);
+      sliderContent = determineVisibleContent($state, itemWidth);
+      cachedContent.set(sliderContent);
     }
 
     return {
-      totalItems,
-      showControls,
+      paginationIndicators,
       itemWidth,
-      rowContent,
+      showControls,
+      sliderContent,
+      totalItems,
     };
   });
+
+  // -------------------------------------------------------------------------
+  // NAVIGATION FUNCTIONS
+  // -------------------------------------------------------------------------
+
+  /**
+   * Calculate and update the active slider pagination indicator index
+   *
+   * @function calculateActivePaginationIndex
+   * @description Determines the next or previous pagination index with circular navigation
+   * (wraps to first page from last, and to last page from first)
+   *
+   * @param {SliderState['direction']} direction - Direction to move in pagination
+   * @returns {void} Updates state internally
+   *
+   * @example
+   * // Move to the next page in pagination
+   * calculateActivePaginationIndex('next');
+   *
+   * // Move to the previous page in pagination
+   * calculateActivePaginationIndex('prev');
+   */
+  function calculateActivePaginationIndex(direction: SliderState['direction']): void {
+    const { totalItems } = get(derivedValues);
+    let { currentPaginationIndex, itemsToDisplayInRow } = get(state);
+
+    // Calculate the last page index once
+    const lastPageIndex = Math.ceil(totalItems / itemsToDisplayInRow) - 1;
+
+    if (direction === 'next') {
+      // If we're on the last page, wrap to the first
+      currentPaginationIndex === lastPageIndex
+        ? (currentPaginationIndex = 0)
+        : // Otherwise, move to the next page
+          currentPaginationIndex++;
+    }
+
+    if (direction === 'prev') {
+      // If we're on the first page, wrap to the last
+      currentPaginationIndex === 0
+        ? (currentPaginationIndex = lastPageIndex)
+        : // Otherwise, move to the previous page
+          currentPaginationIndex--;
+    }
+
+    state.update((s: SliderState) => ({ ...s, currentPaginationIndex }));
+  }
+
+  /**
+   * Calculate the move percentage based on the new index and direction
+   *
+   * @function calculateMovePercentage
+   * @description Determines the percentage to move the slider during animation
+   *
+   * @param {SliderState} state - Current slider state
+   * @param {SliderState['direction']} direction - Direction of movement
+   * @param {number} newIndex - Target index position
+   * @returns {number} Percentage value for animation (0-100)
+   *
+   * @example
+   * // Calculate percentage for next movement
+   * const percentage = calculateMovePercentage(currentState, 'next', 5);
+   */
+  function calculateMovePercentage(
+    state: SliderState,
+    direction: SliderState['direction'],
+    newIndex: number
+  ): number {
+    const { lowestVisibleIndex, itemsToDisplayInRow } = state;
+
+    switch (direction) {
+      case 'next':
+        // Special case: If wrapping around to the beginning, return 100%
+        if (newIndex === 0) {
+          return 100;
+        }
+
+        // Regular case: Calculate percentage based on distance moved
+        return ((newIndex - lowestVisibleIndex) / itemsToDisplayInRow) * 100;
+
+      case 'prev':
+        // Calculate the distance between current and new index
+        const distance = lowestVisibleIndex - newIndex;
+
+        // Only calculate percentage if not at beginning and distance is less than a full row
+        if (lowestVisibleIndex !== 0 && distance < itemsToDisplayInRow) {
+          return ((itemsToDisplayInRow - distance) / itemsToDisplayInRow) * 100;
+        }
+
+        return 0;
+
+      default:
+        return 0;
+    }
+  }
 
   /**
    * Calculates the new index position based on navigation direction
@@ -99,14 +199,14 @@ export function createSliderStore(
    * @description Determines the next lowest visible index when navigating
    *
    * @param {SliderState} state - Current slider state
-   * @param {('next'|'prev')} direction - Direction of movement
+   * @param {SliderState['direction']} direction - Direction of movement
    * @returns {number} The new index position
    *
    * @example
    * // Calculate new index when moving forward
    * const newIndex = calculateNewIndex(currentState, 'next');
    */
-  function calculateNewIndex(state: SliderState, direction: 'next' | 'prev'): number {
+  function calculateNewIndex(state: SliderState, direction: SliderState['direction']): number {
     const { lowestVisibleIndex, itemsToDisplayInRow, movies } = state;
     const totalItems = movies.length;
     const firstIndex = 0;
@@ -119,6 +219,7 @@ export function createSliderStore(
         if (lowestVisibleIndex === lastValidIndex) {
           return firstIndex;
         }
+
         // Move forward by step size, but don't exceed last valid index
         return Math.min(lowestVisibleIndex + stepSize, lastValidIndex);
 
@@ -127,6 +228,7 @@ export function createSliderStore(
         if (lowestVisibleIndex === firstIndex) {
           return lastValidIndex;
         }
+
         // Move backward by step size, but don't go below first valid index
         return Math.max(lowestVisibleIndex - stepSize, firstIndex);
 
@@ -136,77 +238,38 @@ export function createSliderStore(
   }
 
   /**
-   * Calculate the move percentage based on the new index and direction
+   * Calculates pagination indicators based on content and viewport
    *
-   * @function calculateMovePercentage
-   * @description Determines the percentage to move the slider during animation
+   * @function calculatePaginationIndicators
+   * @description Creates an array representing the pagination indicators.
+   * The length of the array corresponds to the number of pages in the slider,
+   * calculated by dividing the total number of items by the number of items
+   * that can be displayed in a single view.
    *
-   * @param {SliderState} state - Current slider state
-   * @param {('next'|'prev')} direction - Direction of movement
-   * @param {number} newIndex - Target index position
-   * @returns {number} Percentage value for animation (0-100)
-   *
-   * @example
-   * // Calculate percentage for next movement
-   * const percentage = calculateMovePercentage(currentState, 'next', 5);
-   */
-  function calculateMovePercentage(
-    state: SliderState,
-    direction: 'next' | 'prev',
-    newIndex: number
-  ): number {
-    const { lowestVisibleIndex, itemsToDisplayInRow } = state;
-
-    switch (direction) {
-      case 'next':
-        // Special case: If wrapping around to the beginning, return 100%
-        if (newIndex === 0) {
-          return 100;
-        }
-        // Regular case: Calculate percentage based on distance moved
-        return ((newIndex - lowestVisibleIndex) / itemsToDisplayInRow) * 100;
-
-      case 'prev':
-        // Calculate the distance between current and new index
-        const distance = lowestVisibleIndex - newIndex;
-
-        // Only calculate percentage if not at beginning and distance is less than a full row
-        if (lowestVisibleIndex !== 0 && distance < itemsToDisplayInRow) {
-          return ((itemsToDisplayInRow - distance) / itemsToDisplayInRow) * 100;
-        }
-        return 0;
-
-      default:
-        return 0;
-    }
-  }
-
-  /**
-   * Creates the initial row content for the first render
-   *
-   * @function createInitialRowContent
-   * @description Prepares a simplified content array for the first render
-   *
-   * @param {SliderState} state - Current slider state
-   * @param {number} itemWidth - Width of each item as percentage
-   * @returns {MediaContent[]} Array of content items
+   * @returns {Array} An array with length equal to the number of pages
    *
    * @example
-   * // Create initial content for the slider
-   * const content = createInitialRowContent(currentState, 20);
+   * {#each calculatePaginationIndicators() as _, index}
+   *   <li
+   *     class="slider__pagination-item"
+   *     class:slider__pagination-item--active={currentPage === index}
+   *   ></li>
+   * {/each}
    */
-  function createInitialRowContent(state: SliderState, itemWidth: number): MediaContent[] {
-    const { movies, itemsToDisplayInRow } = state;
+  function calculatePaginationIndicators(
+    totalItems: SliderDerived['totalItems'],
+    itemsToDisplayInRow: SliderState['itemsToDisplayInRow']
+  ): Array<undefined> {
+    const pageCount = Math.ceil(totalItems / itemsToDisplayInRow);
 
-    // Take enough items to handle next click plus a peek item
-    const initialItems = [...movies].slice(0, itemsToDisplayInRow * 2 + 1);
-
-    // Map to required format
-    return initialItems.map((movie) => ({
-      data: movie,
-      width: itemWidth,
-    }));
+    // Creates a "dense" array with actual elements instead of a sparse array,
+    // ensuring compatibility with all array methods beyond just iteration
+    return [...Array(pageCount)];
   }
+
+  // -------------------------------------------------------------------------
+  // CONTENT CALCULATION FUNCTIONS
+  // -------------------------------------------------------------------------
 
   /**
    * Calculates all indices needed for the slider
@@ -222,7 +285,7 @@ export function createSliderStore(
    * const indices = calculateCarouselIndices(currentState);
    */
   function calculateSliderIndices(state: SliderState): number[] {
-    const { lowestVisibleIndex, itemsToDisplayInRow, movies, hasRowMoved } = state;
+    const { lowestVisibleIndex, itemsToDisplayInRow, movies, hasMovedFromStart } = state;
     const totalItems = movies.length;
 
     // Items visible when user clicks "prev"
@@ -234,7 +297,7 @@ export function createSliderStore(
 
     // Calculate indices based on lowest visible index
     [...Array(itemsToDisplayInRow)].forEach((_, index) => {
-      if (hasRowMoved) {
+      if (hasMovedFromStart) {
         // Items visible when clicking "prev"
         left.push((lowestVisibleIndex + index - itemsToDisplayInRow + totalItems) % totalItems);
       }
@@ -256,14 +319,14 @@ export function createSliderStore(
    * @description Adds indices for items that peek from the edges for smooth transitions, preventing a flash of new content
    *
    * @param {number[]} indices - Calculated indices
-   * @param {number} totalItems - Total number of items
+   * @param {SliderDerived['totalItems']} totalItems - Total number of items
    * @returns {number[]} Extended array with peek indices
    *
    * @example
    * // Add peek indices to an existing array of indices
    * const extendedIndices = addPeekIndices([0, 1, 2, 3, 4], 17);
    */
-  function addPeekIndices(indices: number[], totalItems: number): number[] {
+  function addPeekIndices(indices: number[], totalItems: SliderDerived['totalItems']): number[] {
     const result = [...indices];
 
     // Add trailing peek item
@@ -279,74 +342,112 @@ export function createSliderStore(
   }
 
   /**
-   * Creates row content from calculated indices
+   * Creates the initial row content for the first render
    *
-   * @function createRowContentFromIndices
-   * @description Maps indices to content items
+   * @function createInitialSliderContent
+   * @description Prepares a simplified content array for the first render
    *
    * @param {SliderState} state - Current slider state
-   * @param {number[]} indices - Array of indices to render
-   * @param {number} itemWidth - Width of each item
+   * @param {SliderDerived['itemWidth']} itemWidth - Width of each item as percentage
    * @returns {MediaContent[]} Array of content items
    *
    * @example
-   * // Create content items from an array of indices
-   * const content = createRowContentFromIndices(currentState, [0, 1, 2, 3, 4], 20);
+   * // Create initial content for the slider
+   * const content = createInitialSliderContent(currentState, 20);
    */
-  function createRowContentFromIndices(
+  function createInitialSliderContent(
+    state: SliderState,
+    itemWidth: SliderDerived['itemWidth']
+  ): MediaContent[] {
+    const { movies, itemsToDisplayInRow } = state;
+
+    // Take enough items to handle next click plus a peek item
+    const initialItems = [...movies].slice(0, itemsToDisplayInRow * 2 + 1);
+
+    // Map to required format
+    return initialItems.map((movie) => ({
+      data: movie,
+      width: itemWidth,
+    }));
+  }
+
+  /**
+   * Maps movie indices to renderable content items
+   *
+   * @function mapIndicesToContentItems
+   * @description Transforms array indices into renderable media content items with proper width
+   *
+   * @param {SliderState} state - Current slider state
+   * @param {number[]} indices - Array of indices to render
+   * @param {SliderDerived['itemWidth']} itemWidth - Width of each item
+   * @returns {MediaContent[]} Array of content items ready for rendering
+   *
+   * @example
+   * // Transform indices into renderable content items
+   * const renderableItems = mapIndicesToContentItems(currentState, [0, 1, 2, 3, 4], 20);
+   */
+  function mapIndicesToContentItems(
     state: SliderState,
     indices: number[],
-    itemWidth: number
+    itemWidth: SliderDerived['itemWidth']
   ): MediaContent[] {
     const { movies } = state;
-    const rowContents: MediaContent[] = [];
+    const sliderContents: MediaContent[] = [];
 
     indices.forEach((index) => {
       const movie = movies[index];
-      rowContents.push({
+
+      sliderContents.push({
         data: movie,
         width: itemWidth,
       });
     });
 
-    return rowContents;
+    return sliderContents;
   }
 
   /**
-   * Main function to calculate row content
+   * Determines which items should be visible in the slider
    *
-   * @function calculateRowContent
-   * @description Orchestrates content creation based on state
+   * @function determineVisibleContent
+   * @description Orchestrates the entire content calculation process based on slider state
    *
    * @param {SliderState} state - Current slider state
-   * @param {number} itemWidth - Width of each item
-   * @returns {MediaContent[]} Array of content items
+   * @param {SliderDerived['itemWidth']} itemWidth - Width of each item
+   * @returns {MediaContent[]} Array of content items ready for rendering
    *
    * @example
-   * // Generate the current content for the slider
-   * const rowContent = renderRowContent(currentState, 20);
+   * // Generate the current visible content for the slider
+   * sliderContent = determineVisibleContent($state, itemWidth);
    */
-  function calculateRowContent(state: SliderState, itemWidth: number): MediaContent[] {
-    const { movies, hasRowMoved } = state;
+  function determineVisibleContent(
+    state: SliderState,
+    itemWidth: SliderDerived['itemWidth']
+  ): MediaContent[] {
+    const { movies, hasMovedFromStart } = state;
     const totalItems = movies.length;
 
     // If no movies, return empty array
     if (totalItems < 1) return [];
 
     // For initial render, use simplified content
-    if (!hasRowMoved) {
-      return createInitialRowContent(state, itemWidth);
+    if (!hasMovedFromStart) {
+      return createInitialSliderContent(state, itemWidth);
     }
 
-    // Calculate all needed indices
+    // Get indices for visible items and their neighbors
     let allIndices = calculateSliderIndices(state);
 
-    // Add peek indices if row has moved
+    // Add peek items for smoother transitions
     allIndices = addPeekIndices(allIndices, totalItems);
 
-    // Create content from indices
-    return createRowContentFromIndices(state, allIndices, itemWidth);
+    // Convert indices to renderable content
+    return mapIndicesToContentItems(state, allIndices, itemWidth);
   }
+
+  // -------------------------------------------------------------------------
+  // PUBLIC ACTIONS
+  // -------------------------------------------------------------------------
 
   // Define actions that can be performed on the slider
   const actions: SliderActions = {
@@ -368,16 +469,16 @@ export function createSliderStore(
       // Make sure we have cached content before starting animation
       if (get(cachedContent).length === 0) {
         const itemWidth = 100 / currentState.itemsToDisplayInRow;
-        cachedContent.set(calculateRowContent(currentState, itemWidth));
+        cachedContent.set(determineVisibleContent(currentState, itemWidth));
       }
 
       // Update state for animation
       state.update((s) => ({
         ...s,
-        isRowMoving: true,
         direction: 'next',
+        hasMovedFromStart: true,
+        isSliderMoving: true,
         movePercentage: newMovePercentage,
-        hasRowMoved: true,
       }));
 
       // Schedule state update after animation completes
@@ -385,9 +486,12 @@ export function createSliderStore(
         state.update((s) => ({
           ...s,
           lowestVisibleIndex: newIndex,
-          isRowMoving: false,
           isInitialNext: false,
+          isSliderMoving: false,
         }));
+
+        // Update pagination indicator
+        calculateActivePaginationIndex('next');
       }, 750);
     },
 
@@ -409,14 +513,14 @@ export function createSliderStore(
       // Make sure we have cached content before starting animation
       if (get(cachedContent).length === 0) {
         const itemWidth = 100 / currentState.itemsToDisplayInRow;
-        cachedContent.set(calculateRowContent(currentState, itemWidth));
+        cachedContent.set(determineVisibleContent(currentState, itemWidth));
       }
 
       // Update state for animation
       state.update((s) => ({
         ...s,
-        isRowMoving: true,
         direction: 'prev',
+        isSliderMoving: true,
         movePercentage: newMovePercentage,
         shouldUpdateContent: true,
       }));
@@ -425,9 +529,12 @@ export function createSliderStore(
       setTimeout(() => {
         state.update((s) => ({
           ...s,
+          isSliderMoving: false,
           lowestVisibleIndex: newIndex,
-          isRowMoving: false,
         }));
+
+        // Update pagination indicator
+        calculateActivePaginationIndex('prev');
       }, 750);
     },
 
@@ -437,13 +544,27 @@ export function createSliderStore(
      * @function updateItemsToDisplay
      * @description Updates itemsToDisplayInRow based on screen size
      *
-     * @param {number} count - New number of items to display
+     * @param {SliderState['itemsToDisplayInRow']} count - New number of items to display
      */
-    updateItemsToDisplay: (count: number) => {
+    updateItemsToDisplay: (count: SliderState['itemsToDisplayInRow']) => {
+      const { movies, currentPaginationIndex } = get(state);
+      const totalItems = movies.length;
+
       state.update((s) => ({
         ...s,
         itemsToDisplayInRow: count,
       }));
+
+      // Calculate the new maximum pagination index
+      const newMaxIndex = Math.max(0, Math.ceil(totalItems / count) - 1);
+
+      // If current index is now out of bounds, adjust it
+      if (currentPaginationIndex > newMaxIndex) {
+        state.update((s) => ({
+          ...s,
+          currentPaginationIndex: newMaxIndex,
+        }));
+      }
     },
   };
 
