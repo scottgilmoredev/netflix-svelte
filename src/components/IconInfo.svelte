@@ -6,8 +6,6 @@
    * @description A circular information icon used in buttons and UI elements
    *
    * @prop {string} [className=""] - Additional CSS classes to apply to the wrapper
-   * @prop {string} [height="24"] - Height of the icon in pixels
-   * @prop {string} [width="24"] - Width of the icon in pixels
    */
 
   /**
@@ -15,18 +13,12 @@
    *
    * @typedef {Object} IconInfoProps
    * @property {string} [className=""] - Additional CSS classes to apply to the wrapper
-   * @property {string} [height="24"] - Height of the icon in pixels
-   * @property {string} [width="24"] - Width of the icon in pixels
    */
   interface IconInfoProps {
     className?: string;
-    height?: string;
-    width?: string;
   }
 
   export let className: IconInfoProps['className'] = '';
-  export let height: IconInfoProps['height'] = '24';
-  export let width: IconInfoProps['width'] = '24';
 </script>
 
 <div class={`info-icon ${className}`} role="presentation">
@@ -35,8 +27,8 @@
     fill="none"
     role="img"
     viewBox="0 0 24 24"
-    {width}
-    {height}
+    width="24"
+    height="24"
     data-icon="CircleIStandard"
     aria-hidden="true"
   >
@@ -54,6 +46,15 @@
   .info-icon {
     align-items: center;
     display: flex;
+    height: 1.5rem;
     justify-content: center;
+    max-height: 20px;
+    max-width: 20px;
+    width: 1.5rem;
+  }
+
+  .info-icon svg {
+    height: 100%;
+    width: 100%;
   }
 </style>

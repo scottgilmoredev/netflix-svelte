@@ -108,7 +108,7 @@
           <!-- More info button -->
           <button class="billboard__button billboard__button--secondary">
             <!-- Info icon -->
-            <IconInfo height="1.5vw" width="1.5vw" />
+            <IconInfo />
 
             <!-- Spacer -->
             <span class="billboard__button-spacer" />
