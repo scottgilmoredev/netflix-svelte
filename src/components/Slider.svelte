@@ -83,11 +83,7 @@
   export let derived: SliderProps['derived'];
 
   // Add default values to prevent NaN during initialization
-  $: ({
-    currentPaginationIndex = 0,
-    hasMovedFromStart = false,
-    isSliderMoving = false,
-  } = state || {});
+  $: ({ currentPaginationIndex = 0, isSliderMoving = false, showPrev = false } = state || {});
   $: ({
     itemWidth = 0,
     showControls = false,
@@ -170,7 +166,7 @@
 </script>
 
 <!-- Previous button - only show if we have enough items and the slider has moved -->
-{#if showControls && hasMovedFromStart}
+{#if showControls && showPrev}
   <SliderControl direction="prev" onClick={handlePrev} />
 {/if}
 

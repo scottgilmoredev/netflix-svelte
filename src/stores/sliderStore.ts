@@ -60,6 +60,7 @@ export function createSliderStore(
     lowestVisibleIndex: 0,
     movePercentage: 0,
     movies: initialMovies,
+    showPrev: false,
   });
 
   // Store for cached content - this is the key to fixing the issue
@@ -68,9 +69,9 @@ export function createSliderStore(
   // Create derived values from the state
   const derivedValues: Readable<SliderDerived> = derived(state, ($state) => {
     const { isSliderMoving, itemsToDisplayInRow, movies } = $state;
+    const itemWidth = 100 / itemsToDisplayInRow;
     const totalItems = movies.length;
     const showControls = totalItems > itemsToDisplayInRow;
-    const itemWidth = 100 / itemsToDisplayInRow;
 
     // Calculate pagination indicators
     const paginationIndicators = calculatePaginationIndicators(totalItems, itemsToDisplayInRow);
@@ -89,8 +90,8 @@ export function createSliderStore(
     }
 
     return {
-      paginationIndicators,
       itemWidth,
+      paginationIndicators,
       showControls,
       sliderContent,
       totalItems,
@@ -489,6 +490,10 @@ export function createSliderStore(
           isInitialNext: false,
           isSliderMoving: false,
         }));
+
+        if (!currentState.showPrev) {
+          state.update((s) => ({ ...s, showPrev: true }));
+        }
 
         // Update pagination indicator
         calculateActivePaginationIndex('next');

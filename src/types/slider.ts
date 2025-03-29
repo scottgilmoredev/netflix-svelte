@@ -48,6 +48,7 @@ export interface SliderDerived {
  * @property {number} lowestVisibleIndex - Index of the first visible item
  * @property {number} movePercentage - Percentage of movement during animation
  * @property {Movie[]} movies - Array of movies to display in the slider
+ * @property {boolean} showPrev - Whether to show previous navigation control
  */
 export interface SliderState {
   currentPaginationIndex: number;
@@ -59,6 +60,7 @@ export interface SliderState {
   lowestVisibleIndex: number;
   movePercentage: number;
   movies: Movie[];
+  showPrev: boolean;
 }
 
 /**
