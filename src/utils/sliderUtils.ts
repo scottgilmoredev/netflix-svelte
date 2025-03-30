@@ -219,8 +219,14 @@ export function calculateStyleString(
   paddingOffset: number = 8,
   contentRatio: number = 92
 ): string {
-  const { isSliderMoving, direction, itemsToDisplayInRow, movePercentage, hasMovedFromStart } =
-    state;
+  const {
+    direction,
+    hasMovedFromStart,
+    isSliderMoving,
+    itemsToDisplayInRow,
+    movePercentage,
+    movies,
+  } = state;
 
   // If row hasn't moved, return initial position
   if (!element || !hasMovedFromStart) {
@@ -231,6 +237,26 @@ export function calculateStyleString(
 
   // Handle initial next movement
   if (isInitialNextMovement(state)) {
+    const totalItems = movies.length;
+    // Check if we have fewer items than would fill two rows
+    if (totalItems < itemsToDisplayInRow * 2) {
+      // For the initial next click with fewer remaining items,
+      // we need to calculate the exact position that will show just the remaining items
+      const singleItemWidth = 100 / itemsToDisplayInRow;
+
+      // This is how many items we need to slide by
+      const remainingItems = totalItems - itemsToDisplayInRow;
+
+      // Calculate the exact position - this is the percentage of the container width
+      // that we need to translate by
+      const exactPosition = remainingItems * singleItemWidth;
+
+      // Apply any necessary adjustments for padding
+      const adjustedPosition = exactPosition * contentRatio;
+
+      return createTransformString(adjustedPosition);
+    }
+
     return createTransformString(basePosition - itemWidth);
   }
 
