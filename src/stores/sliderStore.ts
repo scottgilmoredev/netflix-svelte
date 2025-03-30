@@ -165,7 +165,8 @@ export function createSliderStore(
     direction: SliderState['direction'],
     newIndex: number
   ): number {
-    const { lowestVisibleIndex, itemsToDisplayInRow } = state;
+    const { isInitialNext, itemsToDisplayInRow, lowestVisibleIndex } = state;
+    const { totalItems } = get(derivedValues);
 
     switch (direction) {
       case 'next':
@@ -361,9 +362,20 @@ export function createSliderStore(
     itemWidth: SliderDerived['itemWidth']
   ): MediaContent[] {
     const { movies, itemsToDisplayInRow } = state;
+    const { totalItems } = get(derivedValues);
 
-    // Take enough items to handle next click plus a peek item
-    const initialItems = [...movies].slice(0, itemsToDisplayInRow * 2 + 1);
+    // Calculate how many items we need for initial content
+    const neededItems = itemsToDisplayInRow * 2 + 1;
+
+    let initialItems: Movie[];
+
+    if (totalItems >= neededItems) {
+      // Normal case: We have enough items
+      initialItems = [...movies].slice(0, neededItems);
+    } else {
+      // Special case: Not enough items, need to add peek item
+      initialItems = [...movies, movies[0]];
+    }
 
     // Map to required format
     return initialItems.map((movie) => ({
