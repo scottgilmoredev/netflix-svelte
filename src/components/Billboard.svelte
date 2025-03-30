@@ -199,6 +199,7 @@
   /* Container for title, description and buttons with semi-transparent background */
   .billboard__metadata {
     background-color: hsla(0, 0%, 8%, 0.33);
+    border-radius: 4px;
     bottom: 10%;
     left: 2%;
     max-width: 100%;
