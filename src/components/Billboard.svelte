@@ -200,11 +200,11 @@
   .billboard__metadata {
     background-color: hsla(0, 0%, 8%, 0.33);
     bottom: 10%;
-    left: 1%;
+    left: 2%;
     max-width: 100%;
-    padding: 16px;
+    padding: 1rem 2%;
     position: absolute;
-    right: 1%;
+    right: 2%;
     z-index: 10;
   }
 
@@ -219,7 +219,7 @@
   /* Movie or show description styling */
   .billboard__description {
     color: white;
-    font-size: 12px; /* Small text on mobile */
+    font-size: 12px;
     font-weight: 400;
     line-height: 24px;
     margin: 0px;
