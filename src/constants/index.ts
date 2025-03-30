@@ -16,5 +16,6 @@
  */
 
 export * from './media';
+export * from './nav';
 export * from './responsive';
 export * from './tmdb';

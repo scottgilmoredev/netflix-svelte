@@ -12,83 +12,94 @@
    * @prop {Function} onClick - Callback function to execute when the button is clicked
    */
 
-  export let direction: 'prev' | 'next' = 'next';
-  export let onClick: () => void;
+  // Components
+  import IconChevron from './IconChevron.svelte';
+
+  /**
+   * Props for the SliderControl component
+   *
+   * @typedef {Object} SliderControlProps
+   * @property {'prev'|'next'} [direction='next'] - The direction of the control button, either 'prev' or 'next'
+   * @property {() => void} onClick - Callback function to execute when the button is clicked
+   */
+  interface SliderControlProps {
+    direction?: 'prev' | 'next';
+    onClick: () => void;
+  }
+
+  export let direction: SliderControlProps['direction'] = 'next';
+  export let onClick: SliderControlProps['onClick'];
 </script>
 
 <button
-  class="slider-control"
-  class:slider-control--right={direction === 'next'}
+  aria-label={direction === 'prev' ? 'See previous titles' : 'See more titles'}
+  class="slider__control slider__control--{direction}"
   on:click={onClick}
-  aria-label={direction === 'prev' ? 'Previous' : 'Next'}
 >
-  {#if direction === 'prev'}
-    <!-- Left arrow icon -->
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <polyline points="15 18 9 12 15 6"></polyline>
-    </svg>
-  {/if}
-
-  <!-- Right arrow icon -->
-  {#if direction === 'next'}
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <polyline points="9 18 15 12 9 6"></polyline>
-    </svg>
-  {/if}
+  <span class="slider__control-icon slider__control-icon--{direction}">
+    <IconChevron direction={direction === 'prev' ? 'left' : 'right'} />
+  </span>
 </button>
 
 <style>
-  .slider-control {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 4%;
-    background: rgba(20, 20, 20, 0.5);
+  /* Base control styles */
+  .slider__control {
+    background: hsla(0, 0%, 8%, 0.5);
     border: none;
+    bottom: 0;
+    color: #fff;
     cursor: pointer;
-    z-index: 10;
     display: flex;
-    align-items: center;
     justify-content: center;
-    color: white;
     opacity: 0;
-    transition: opacity 0.2s;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    transition:
+      opacity 0.2s ease,
+      background-color 0.2s ease;
+    width: 4%;
+    z-index: 20;
   }
 
-  .slider-control:hover {
-    opacity: 1;
-  }
-
-  .slider-control--right {
+  /* Next button modifier */
+  .slider__control--next {
     right: 0;
   }
 
-  .slider-control:not(.slider-control--right) {
+  /* Previous button modifier */
+  .slider__control--prev {
     left: 0;
   }
 
-  svg {
-    width: 30px;
-    height: 30px;
+  /* Icon element */
+  .slider__control-icon {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    transition: transform 0.1s ease-out 0s;
+    font-size: 2.5vw;
+  }
+
+  /* Right icon modifier */
+  .slider__control-icon--next {
+    transform-origin: 45% 50%;
+  }
+
+  /* Left icon modifier */
+  .slider__control-icon--prev {
+    transform-origin: 55% 50%;
+  }
+
+  /* Hover effects */
+  .slider__control:hover .slider__control-icon {
+    transform: scale(1.25);
+  }
+
+  /* For parent component to control visibility on row hover */
+  :global(.row:hover) .slider__control {
+    opacity: 1;
   }
 </style>

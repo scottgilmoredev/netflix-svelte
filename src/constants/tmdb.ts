@@ -65,7 +65,7 @@ export const ENDPOINTS: {
   fetchComedyMovies: `/discover/movie?api_key=${API_KEY}&with_genres=35`,
   fetchDocumentaries: `/discover/movie?api_key=${API_KEY}&with_genres=99`,
   fetchHorrorMovies: `/discover/movie?api_key=${API_KEY}&with_genres=27`,
-  fetchNetflixOriginals: `/discover/tv?api_key=${API_KEY}&with_network=123`,
+  fetchNetflixOriginals: `/discover/tv?api_key=${API_KEY}&with_networks=213`,
   fetchRomanceMovies: `/discover/movie?api_key=${API_KEY}&with_genres=10749`,
   fetchTopRated: `/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1&per_page=10`,
   fetchTrending: `/trending/all/week?api_key=${API_KEY}&language=en-US`,

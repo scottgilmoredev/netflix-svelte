@@ -5,10 +5,10 @@
    * @component
    * @description The root component of the Netflix clone application. Manages the overall
    * layout and coordinates the initialization of movie data. Renders the navigation bar,
-   * banner, and movie rows, handling any potential errors during data fetching.
+   * billboard, and movie rows, handling any potential errors during data fetching.
    *
    * @requires svelte
-   * @requires ./components/Banner.svelte
+   * @requires ./components/billboard.svelte
    * @requires ./components/Nav.svelte
    * @requires ./components/Row.svelte
    * @requires ./stores/movieStore
@@ -17,7 +17,7 @@
   import { onMount } from 'svelte';
 
   // Components
-  import Banner from './components/Banner.svelte';
+  import Billboard from './components/Billboard.svelte';
   import Nav from './components/Nav.svelte';
   import Row from './components/Row.svelte';
 
@@ -40,7 +40,7 @@
    * @function
    * @description Initializes all movie data by calling the initializeMovies function
    * from the movieStore. This fetches data for all movie categories and sets up
-   * the banner movie.
+   * the billboard movie.
    */
   onMount(() => {
     initializeMovies();
@@ -51,8 +51,8 @@
   <!-- Fixed navigation bar -->
   <Nav />
 
-  <!-- Featured content banner -->
-  <Banner />
+  <!-- Featured content billboard -->
+  <Billboard />
 
   <!-- Main content area with movie rows -->
   <main>

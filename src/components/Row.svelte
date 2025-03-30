@@ -97,7 +97,9 @@
 <svelte:window />
 
 <div class="row">
-  <h2 class="row__title">{title}</h2>
+  <h2 class="row__header">
+    <div class="row__title">{title}</div>
+  </h2>
 
   <div class="row__container">
     {#if totalItems === 0}
@@ -129,14 +131,25 @@
 <style>
   /* Main row container */
   .row {
-    margin-bottom: 20px;
     color: white;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 3vw 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .row__header {
+    font-size: 12px;
+    color: #e5e5e5;
+    display: inline-block;
+    font-weight: 500;
+    margin: 0 4% 0.5em;
+    min-width: 6em;
   }
 
   .row__title {
-    margin-left: 4%;
+    display: table-cell;
+    line-height: 1.25vw;
+    vertical-align: bottom;
   }
 
   /* Container for the slider and controls */
@@ -150,5 +163,11 @@
     text-align: center;
     padding: 2rem;
     color: #999;
+  }
+
+  @media screen and (min-width: 800px) {
+    .row__header {
+      font-size: 1.4vw;
+    }
   }
 </style>

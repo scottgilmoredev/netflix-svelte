@@ -22,7 +22,7 @@ import type { Movie } from '../types';
 
 // Create stores for movie data
 export const actionMovies: Writable<Movie[]> = writable([]);
-export const bannerMovie: Writable<Movie | null> = writable(null);
+export const billboardMovie: Writable<Movie | null> = writable(null);
 export const documentaries: Writable<Movie[]> = writable([]);
 export const comedyMovies: Writable<Movie[]> = writable([]);
 export const horrorMovies: Writable<Movie[]> = writable([]);
@@ -72,7 +72,7 @@ async function updateStore<T>(fetchFunction: () => Promise<T>, store: Writable<T
  * @async
  * @function initializeMovies
  * @description Fetches all movie categories from the TMDB API, updates the corresponding stores,
- * and selects a random Netflix original for the banner. Manages error states.
+ * and selects a random Netflix original for the billboard. Manages error states.
  *
  * @returns {Promise<void>} A promise that resolves when all data has been fetched and stores updated
  *
@@ -90,7 +90,7 @@ async function updateStore<T>(fetchFunction: () => Promise<T>, store: Writable<T
  * }
  *
  * @fires {actionMovies.set} Updates the action movies store
- * @fires {bannerMovie.set} Sets a random Netflix original as the banner movie
+ * @fires {billboardMovie.set} Sets a random Netflix original as the billboard movie
  * @fires {comedyMovies.set} Updates the comedy movies store
  * @fires {documentaries.set} Updates the documentaries store
  * @fires {horrorMovies.set} Updates the horror movies store
@@ -105,16 +105,16 @@ export async function initializeMovies(): Promise<void> {
   error.set(null);
 
   try {
-    // Fetch Netflix originals first for the banner
+    // Fetch Netflix originals first for the billboard
     const originalsData = await updateStore(
       () => movieService.fetchMoviesByCategory('fetchNetflixOriginals'),
       netflixOriginals
     );
 
-    // Set random movie for banner
+    // Set random movie for billboard
     if (originalsData.length > 0) {
       const randomMovie = movieService.getRandomMovie(originalsData);
-      bannerMovie.set(randomMovie);
+      billboardMovie.set(randomMovie);
     }
 
     // Fetch other categories in parallel
