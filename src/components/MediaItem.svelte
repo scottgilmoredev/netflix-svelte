@@ -21,14 +21,14 @@
   import { IMAGE_BASE_URL, PLACEHOLDER_URL } from '../constants';
 
   // Types
-  import type { Movie } from '../types';
+  import type { StandardMediaItemProps } from '../types';
 
   // Utils
   import { handleImageError } from '../utils/errorUtils';
 
-  export let className: string = '';
-  export let data: Movie | null = null;
-  export let width: number = 20;
+  export let className: StandardMediaItemProps['className'] = '';
+  export let data: StandardMediaItemProps['data'] = null;
+  export let width: StandardMediaItemProps['width'] = 20;
 
   $: imagePath = data?.backdrop_path;
   $: imageUrl = imagePath ? `${IMAGE_BASE_URL}${imagePath}` : null;
@@ -42,6 +42,8 @@
     src={imageUrl || PLACEHOLDER_URL}
     on:error={handleImageError}
   />
+
+  <slot />
 </div>
 
 <style>
