@@ -46,14 +46,14 @@ export const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/original';
  * the API key and any necessary query parameters.
  *
  * @constant {Object} ENDPOINTS
- * @property {string} fetchTrending - Path to fetch trending movies and TV shows
- * @property {string} fetchNetflixOriginals - Path to fetch Netflix original content
- * @property {string} fetchTopRated - Path to fetch top rated movies
  * @property {string} fetchActionMovies - Path to fetch action genre movies
  * @property {string} fetchComedyMovies - Path to fetch comedy genre movies
- * @property {string} fetchHorrorMovies - Path to fetch horror genre movies
- * @property {string} fetchRomanceMovies - Path to fetch romance genre movies
  * @property {string} fetchDocumentaries - Path to fetch documentary genre movies
+ * @property {string} fetchHorrorMovies - Path to fetch horror genre movies
+ * @property {string} fetchNetflixOriginals - Path to fetch Netflix original content
+ * @property {string} fetchRomanceMovies - Path to fetch romance genre movies
+ * @property {string} fetchTopRated - Path to fetch top rated movies
+ * @property {string} fetchTrending - Path to fetch trending movies and TV shows
  *
  * @example Using with axios
  * const trendingMovies = await api.get(ENDPOINTS.fetchTrending);
@@ -66,7 +66,8 @@ export const ENDPOINTS: {
   fetchDocumentaries: `/discover/movie?api_key=${API_KEY}&with_genres=99`,
   fetchHorrorMovies: `/discover/movie?api_key=${API_KEY}&with_genres=27`,
   fetchNetflixOriginals: `/discover/tv?api_key=${API_KEY}&with_networks=213`,
+  fetchPopular: `/tv/popular?api_key=${API_KEY}&language=en-US&page=1`,
   fetchRomanceMovies: `/discover/movie?api_key=${API_KEY}&with_genres=10749`,
-  fetchTopRated: `/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1&per_page=10`,
+  fetchTopRated: `/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1`,
   fetchTrending: `/trending/all/week?api_key=${API_KEY}&language=en-US`,
 };

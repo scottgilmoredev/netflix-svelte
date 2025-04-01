@@ -165,8 +165,7 @@ export function createSliderStore(
     direction: SliderState['direction'],
     newIndex: number
   ): number {
-    const { isInitialNext, itemsToDisplayInRow, lowestVisibleIndex } = state;
-    const { totalItems } = get(derivedValues);
+    const { itemsToDisplayInRow, lowestVisibleIndex } = state;
 
     switch (direction) {
       case 'next':
