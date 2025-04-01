@@ -12,13 +12,17 @@
  */
 
 import { writable } from 'svelte/store';
+import type { Writable } from 'svelte/store';
 
 // Services
 import * as movieService from '../services/moviesService';
 
+// Stores
+import { continueWatching, createContinueWatchingList } from './continueWatchingStore';
+
 // Types
-import type { Writable } from 'svelte/store';
 import type { Movie } from '../types';
+import { get } from 'svelte/store';
 
 // Create stores for movie data
 export const actionMovies: Writable<Movie[]> = writable([]);
@@ -30,6 +34,7 @@ export const netflixOriginals: Writable<Movie[]> = writable([]);
 export const romanceMovies: Writable<Movie[]> = writable([]);
 export const topRated: Writable<Movie[]> = writable([]);
 export const trending: Writable<Movie[]> = writable([]);
+export const popular: Writable<Movie[]> = writable([]);
 
 export const error: Writable<string | null> = writable(null);
 
@@ -125,8 +130,22 @@ export async function initializeMovies(): Promise<void> {
       updateStore(() => movieService.fetchMoviesByCategory('fetchHorrorMovies'), horrorMovies),
       updateStore(() => movieService.fetchMoviesByCategory('fetchRomanceMovies'), romanceMovies),
       updateStore(() => movieService.fetchMoviesByCategory('fetchTrending'), trending),
+      updateStore(() => movieService.fetchMoviesByCategory('fetchPopular'), popular),
       updateStore(() => movieService.fetchTopRatedMovies(), topRated),
     ]);
+
+    // Create continue watching list from existing data
+    const trendingData = get(trending);
+    const topRatedData = get(topRated);
+    const popularData = get(popular);
+
+    const continueWatchingData = createContinueWatchingList(
+      originalsData,
+      trendingData,
+      topRatedData,
+      popularData
+    );
+    continueWatching.set(continueWatchingData);
   } catch (err) {
     console.error('Error initializing movies:', err);
     error.set(err instanceof Error ? err.message : String(err));
