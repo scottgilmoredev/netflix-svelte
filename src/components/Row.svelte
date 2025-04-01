@@ -31,6 +31,7 @@
   // Components
   import MediaItem from './MediaItem.svelte';
   import MediaItemRanked from './MediaItemRanked.svelte';
+  import MediaItemWithProgress from './MediaItemWithProgress.svelte';
   import Slider from './Slider.svelte';
 
   // Stores
@@ -44,12 +45,14 @@
     ResponsiveItemsStore,
     SliderDerived,
     SliderState,
+    WatchedMediaItem,
   } from '../types';
 
   // Component props
   export let movies: Movie[] = [];
   export let title: string = '';
   export let isTopMovies: boolean = false;
+  export let showProgress: boolean = false;
 
   // Create responsive items hook
   const itemsToDisplay: ResponsiveItemsStore = createResponsiveItems();
@@ -58,7 +61,7 @@
   const { state, derived, actions } = createSliderStore(movies, $itemsToDisplay);
 
   // Determine which media item component to use
-  $: MediaItemComponent = isTopMovies ? MediaItemRanked : MediaItem;
+  $: MediaItemComponent = getMediaItemComponent();
 
   // Update store when props change
   $: {
@@ -74,8 +77,32 @@
 
   // Also destructure for use in the template
   let itemWidth: number;
-  let sliderContent: MediaContent[];
+  let sliderContent: (MediaContent & { data: WatchedMediaItem })[];
   let totalItems: number;
+
+  /**
+   * Determines which media item component to use based on row configuration
+   *
+   * @function getMediaItemComponent
+   * @description Returns the appropriate component based on whether this is a top movies row,
+   * a continue watching row with progress bars, or a standard row
+   *
+   * @returns {typeof MediaItem | typeof MediaItemRanked | typeof MediaItemWithProgress} The component to use
+   */
+  function getMediaItemComponent():
+    | typeof MediaItem
+    | typeof MediaItemRanked
+    | typeof MediaItemWithProgress {
+    if (isTopMovies) {
+      return MediaItemRanked;
+    }
+
+    if (showProgress) {
+      return MediaItemWithProgress;
+    }
+
+    return MediaItem;
+  }
 
   // Subscribe to derived store to get values
   const unsubscribe = derived.subscribe((values) => {
@@ -83,7 +110,10 @@
     derivedValues = values;
 
     // Also destructure for template use
-    ({ itemWidth, sliderContent, totalItems } = values);
+    ({ itemWidth, totalItems } = values);
+    sliderContent = values.sliderContent.filter((item) => item.data !== null) as (MediaContent & {
+      data: WatchedMediaItem;
+    })[];
   });
 
   // Clean up subscriptions

@@ -1,7 +1,7 @@
 /**
  * Represents a media content item in the carousel
  *
- * @typedef {Object} MediaContent
+ * @interface MediaContent
  * @property {Movie|null} data - The movie data for this content item
  * @property {number} width - Width of the content item as a percentage
  */
@@ -11,9 +11,23 @@ export interface MediaContent {
 }
 
 /**
+ * Generic props interface for all media item components
+ *
+ * @interface MediaItemProps
+ * @property {string} [className] - Additional CSS class names to apply to the component
+ * @property {T|null} data - The data to display
+ * @property {number} [width] - Width of the component as a percentage
+ */
+export interface MediaItemProps<T> {
+  className?: string;
+  data: T | null;
+  width?: number;
+}
+
+/**
  * Represents a movie object from the TMDB API
  *
- * @typedef {Object} Movie
+ * @interface Movie
  * @property {boolean} adult - Indicates if the movie is for adults
  * @property {string|null} backdrop_path - Path to the backdrop image
  * @property {number[]} genre_ids - Array of genre IDs associated with the movie
@@ -50,7 +64,7 @@ export interface Movie {
 /**
  * Represents SVG data for rendering rank numbers
  *
- * @typedef {Object} RankSvgData
+ * @interface RankSvgData
  * @property {string} viewBox - SVG viewBox attribute value
  * @property {string} path - SVG path data for rendering the rank number
  */
@@ -68,3 +82,18 @@ export interface RankSvgData {
  * working with rank numbers.
  */
 export type RankSvgNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+
+/**
+ * Represents a movie with watch progress information
+ *
+ * @interface WatchedMediaItem
+ * @extends Movie
+ * @property {number} progress - Percentage of the movie that has been watched (0-80)
+ */
+export interface WatchedMediaItem extends Movie {
+  progress: number;
+}
+
+// Type aliases for specific component props
+export type StandardMediaItemProps = MediaItemProps<Movie>;
+export type WatchedMediaItemProps = MediaItemProps<WatchedMediaItem>;

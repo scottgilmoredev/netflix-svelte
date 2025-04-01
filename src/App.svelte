@@ -22,6 +22,7 @@
   import Row from './components/Row.svelte';
 
   // Stores
+  import { continueWatching } from './stores/continueWatchingStore';
   import { initializeMovies, error } from './stores/movieStore';
   import {
     actionMovies,
@@ -64,10 +65,11 @@
       </div>
     {:else}
       <!-- Movie category rows -->
-      <Row title="Only on Netflix" movies={$netflixOriginals} />
+      <Row title="Continue Watching" showProgress movies={$continueWatching} />
       <Row title="Top 10 Movies in the U.S. Today" isTopMovies movies={$topRated} />
-      <Row title="Documentaries" movies={$documentaries} />
+      <Row title="Only on Netflix" movies={$netflixOriginals} />
       <Row title="Trending Now" movies={$trending} />
+      <Row title="Documentaries" movies={$documentaries} />
       <Row title="Horror" movies={$horrorMovies} />
       <Row title="Comedy" movies={$comedyMovies} />
       <Row title="Action" movies={$actionMovies} />

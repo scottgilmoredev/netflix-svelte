@@ -189,7 +189,7 @@
   <!-- Sliding content container with dynamic transform -->
   <div class="slider__track" style={styleString} class:slider__track--moving={isSliderMoving}>
     <!-- Slider media items -->
-    <slot></slot>
+    <slot />
   </div>
 </div>
 

@@ -9,6 +9,7 @@
  * @requires ./apiService
  * @requires ../stores/movieStore
  * @requires ../types
+ * @requires ../utils/helperUtils
  */
 
 // Constants
@@ -23,30 +24,28 @@ import { error } from '../stores/movieStore';
 // Types
 import type { APIResponse, Movie } from '../types';
 
+// Utils
+import { filterDataWithBackdrops } from '../utils/helperUtils';
+
 /**
- * Fetches movies by category and updates the corresponding store
+ * Fetches movies by category
  *
  * @async
  * @function fetchMoviesByCategory
- * @description Retrieves movie data from TMDB API for a specific category and updates the provided store
+ * @description Retrieves movie data from TMDB API for a specific category
  *
  * @param {string} category - The category key from the ENDPOINTS object (e.g., 'fetchNetflixOriginals')
- * @param {import('svelte/store').Writable} store - The Svelte writable store to update with the results
+ * @returns {Promise<Movie[]>} A promise that resolves to an array of movie objects with backdrops
  *
- * @returns {Promise<Array>} A promise that resolves to an array of movie objects
- * @throws {Error} Logs error to console and updates global error store, but returns empty array instead of throwing
- *
- * @example Fetch Netflix originals and update the store
- * const movies = await fetchMoviesByCategory('fetchNetflixOriginals', netflixOriginals);
- * // The netflixOriginals store is now updated with the results
- * // movies contains the same data for immediate use
+ * @example
+ * const movies = await fetchMoviesByCategory('fetchNetflixOriginals');
  */
 export async function fetchMoviesByCategory(category: string): Promise<Movie[]> {
   try {
     const { data } = await api.get<APIResponse>(ENDPOINTS[category]);
 
-    // Filter out movies without backdrop images
-    return data.results.filter((result) => result.backdrop_path);
+    // Ensure we only work with movies that have backdrops
+    return filterDataWithBackdrops(data.results);
   } catch (err) {
     console.error(`Error fetching ${category}:`, err);
     error.set(err instanceof Error ? err.message : String(err));
@@ -70,8 +69,8 @@ export async function fetchTopRatedMovies(): Promise<Movie[]> {
   try {
     const { data } = await api.get<APIResponse>(ENDPOINTS.fetchTopRated);
 
-    // Filter out movies without backdrop images
-    const filteredData = data.results.filter((result) => result.backdrop_path);
+    // Ensure we only work with movies that have backdrops
+    const filteredData = filterDataWithBackdrops(data.results);
 
     // Sort by vote_average in descending order
     const sortedData = [...filteredData].sort((a, b) => b.vote_average - a.vote_average);
@@ -92,6 +91,23 @@ export async function fetchTopRatedMovies(): Promise<Movie[]> {
   }
 }
 
+/**
+ * Gets a random movie from an array of movies
+ *
+ * @function getRandomMovie
+ * @description Selects a random movie from the provided array of movies.
+ * Returns null if the array is empty.
+ *
+ * @param {Movie[]} movies - Array of movies to select from
+ * @returns {Movie | null} A randomly selected movie or null if the array is empty
+ *
+ * @example
+ * // Get a random movie for the billboard
+ * const featuredMovie = getRandomMovie(netflixOriginals);
+ * if (featuredMovie) {
+ *   billboardMovie.set(featuredMovie);
+ * }
+ */
 export function getRandomMovie(movies: Movie[]): Movie | null {
   if (movies.length === 0) return null;
 
