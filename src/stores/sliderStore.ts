@@ -24,7 +24,7 @@ import type {
 } from '../types';
 
 // Utils
-import { generateSequentialIndices, isOnlyOnePage } from '../utils/sliderUtils';
+import { generateSequentialIndices, isOnlyOnePage, memoize } from '../utils';
 
 /**
  * Creates a slider store with state management and actions
@@ -88,7 +88,7 @@ export function createSliderStore(
       sliderContent = get(cachedContent);
     } else {
       // Calculate new content and update cache
-      sliderContent = determineVisibleContent($state, itemWidth);
+      sliderContent = memoizedDetermineVisibleContent($state, itemWidth);
       cachedContent.set(sliderContent);
     }
 
@@ -449,6 +449,8 @@ export function createSliderStore(
     state: SliderState,
     itemWidth: SliderDerived['itemWidth']
   ): MediaContent[] {
+    console.log('crab in my shoe mouth');
+
     const { movies, hasMovedFromStart } = state;
     const totalItems = movies.length;
 
@@ -469,6 +471,9 @@ export function createSliderStore(
     // Convert indices to renderable content
     return mapIndicesToContentItems(state, allIndices, itemWidth);
   }
+
+  // Create a memoized version of determineVisibleContent
+  const memoizedDetermineVisibleContent = memoize(determineVisibleContent);
 
   // -------------------------------------------------------------------------
   // PUBLIC ACTIONS
@@ -494,7 +499,7 @@ export function createSliderStore(
       // Make sure we have cached content before starting animation
       if (get(cachedContent).length === 0) {
         const itemWidth = 100 / currentState.itemsToDisplayInRow;
-        cachedContent.set(determineVisibleContent(currentState, itemWidth));
+        cachedContent.set(memoizedDetermineVisibleContent(currentState, itemWidth));
       }
 
       // Update state for animation
@@ -542,7 +547,7 @@ export function createSliderStore(
       // Make sure we have cached content before starting animation
       if (get(cachedContent).length === 0) {
         const itemWidth = 100 / currentState.itemsToDisplayInRow;
-        cachedContent.set(determineVisibleContent(currentState, itemWidth));
+        cachedContent.set(memoizedDetermineVisibleContent(currentState, itemWidth));
       }
 
       // Update state for animation
