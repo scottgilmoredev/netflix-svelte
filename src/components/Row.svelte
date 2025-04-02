@@ -87,7 +87,8 @@
    * @description Returns the appropriate component based on whether this is a top movies row,
    * a continue watching row with progress bars, or a standard row
    *
-   * @returns {typeof MediaItem | typeof MediaItemRanked | typeof MediaItemWithProgress} The component to use
+   * The component to use
+   * @returns {typeof MediaItem | typeof MediaItemRanked | typeof MediaItemWithProgress}
    */
   function getMediaItemComponent():
     | typeof MediaItem
@@ -135,11 +136,6 @@
     {#if totalItems === 0}
       <!-- Empty state when no movies are available -->
       <div class="row--empty">No movies available</div>
-    {:else if totalItems <= $state.itemsToDisplayInRow}
-      <!-- Simple rendering for small datasets -->
-      {#each movies as item (item.id)}
-        <MediaItem data={item} width={itemWidth} />
-      {/each}
     {:else}
       <!-- Complex rendering for larger datasets that need slider behavior -->
       <Slider

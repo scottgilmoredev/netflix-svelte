@@ -23,6 +23,9 @@ import type {
   SliderStore,
 } from '../types';
 
+// Utils
+import { generateSequentialIndices, isOnlyOnePage, memoize } from '../utils';
+
 /**
  * Creates a slider store with state management and actions
  *
@@ -85,7 +88,7 @@ export function createSliderStore(
       sliderContent = get(cachedContent);
     } else {
       // Calculate new content and update cache
-      sliderContent = determineVisibleContent($state, itemWidth);
+      sliderContent = memoizedDetermineVisibleContent($state, itemWidth);
       cachedContent.set(sliderContent);
     }
 
@@ -289,6 +292,11 @@ export function createSliderStore(
     const { lowestVisibleIndex, itemsToDisplayInRow, movies, hasMovedFromStart } = state;
     const totalItems = movies.length;
 
+    // Edge case: We only have one page of items. use all available items in order
+    if (isOnlyOnePage(itemsToDisplayInRow, totalItems)) {
+      return generateSequentialIndices(itemsToDisplayInRow);
+    }
+
     // Items visible when user clicks "prev"
     const left: number[] = [];
     // Display items
@@ -330,6 +338,9 @@ export function createSliderStore(
   function addPeekIndices(indices: number[], totalItems: SliderDerived['totalItems']): number[] {
     const result = [...indices];
 
+    // Edge case: We only have one page of items, do not add peek items
+    if (indices.length <= totalItems) return result;
+
     // Add trailing peek item
     const trailingIndex =
       indices[indices.length - 1] === totalItems - 1 ? 0 : indices[indices.length - 1] + 1;
@@ -361,19 +372,21 @@ export function createSliderStore(
     itemWidth: SliderDerived['itemWidth']
   ): MediaContent[] {
     const { movies, itemsToDisplayInRow } = state;
-    const { totalItems } = get(derivedValues);
+    const totalItems = movies.length;
 
     // Calculate how many items we need for initial content
     const neededItems = itemsToDisplayInRow * 2 + 1;
-
-    let initialItems: Movie[];
+    let initialItems: Movie[] = [];
 
     if (totalItems >= neededItems) {
       // Normal case: We have enough items
       initialItems = [...movies].slice(0, neededItems);
-    } else {
-      // Special case: Not enough items, need to add peek item
+    } else if (totalItems < neededItems && totalItems > itemsToDisplayInRow) {
+      // Special case: We have more than one page of items, but not enough for two full pages, add the first item as a peek
       initialItems = [...movies, movies[0]];
+    } else if (isOnlyOnePage(itemsToDisplayInRow, totalItems)) {
+      // Edge case: We only have one page of items. use all available items
+      initialItems = [...movies];
     }
 
     // Map to required format
@@ -436,6 +449,8 @@ export function createSliderStore(
     state: SliderState,
     itemWidth: SliderDerived['itemWidth']
   ): MediaContent[] {
+    console.log('crab in my shoe mouth');
+
     const { movies, hasMovedFromStart } = state;
     const totalItems = movies.length;
 
@@ -456,6 +471,9 @@ export function createSliderStore(
     // Convert indices to renderable content
     return mapIndicesToContentItems(state, allIndices, itemWidth);
   }
+
+  // Create a memoized version of determineVisibleContent
+  const memoizedDetermineVisibleContent = memoize(determineVisibleContent);
 
   // -------------------------------------------------------------------------
   // PUBLIC ACTIONS
@@ -481,7 +499,7 @@ export function createSliderStore(
       // Make sure we have cached content before starting animation
       if (get(cachedContent).length === 0) {
         const itemWidth = 100 / currentState.itemsToDisplayInRow;
-        cachedContent.set(determineVisibleContent(currentState, itemWidth));
+        cachedContent.set(memoizedDetermineVisibleContent(currentState, itemWidth));
       }
 
       // Update state for animation
@@ -529,7 +547,7 @@ export function createSliderStore(
       // Make sure we have cached content before starting animation
       if (get(cachedContent).length === 0) {
         const itemWidth = 100 / currentState.itemsToDisplayInRow;
-        cachedContent.set(determineVisibleContent(currentState, itemWidth));
+        cachedContent.set(memoizedDetermineVisibleContent(currentState, itemWidth));
       }
 
       // Update state for animation

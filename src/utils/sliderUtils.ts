@@ -147,6 +147,19 @@ export function createTransformString(position: number): string {
 }
 
 /**
+ * Generates sequential indices
+ *
+ * @function generateSequentialIndices
+ * @description Creates an array of sequential indices
+ *
+ * @param {number} count - Number of indices to generate
+ * @returns {number[]} Array of sequential indices
+ */
+export function generateSequentialIndices(count: number): number[] {
+  return [...Array(count)].map((_, index) => index);
+}
+
+/**
  * Determines if this is an initial next movement that requires special handling
  *
  * @function isInitialNextMovement
@@ -165,6 +178,20 @@ export function isInitialNextMovement(state: SliderState): boolean {
   const { direction, isInitialNext, isSliderMoving } = state;
 
   return isSliderMoving && direction === 'next' && isInitialNext;
+}
+
+/**
+ * Checks if all content fits on a single page
+ *
+ * @function isOnlyOnePage
+ * @description Determines if we have a single-page scenario
+ *
+ * @param {number} itemsPerPage - Number of items that fit on one page
+ * @param {number} totalItems - Total number of items
+ * @returns {boolean} True if all content fits on a single page
+ */
+export function isOnlyOnePage(itemsPerPage: number, totalItems: number): boolean {
+  return totalItems <= itemsPerPage;
 }
 
 /**
@@ -228,16 +255,21 @@ export function calculateStyleString(
     movies,
   } = state;
 
-  // If row hasn't moved, return initial position
-  if (!element || !hasMovedFromStart) {
-    return createTransformString(0);
-  }
+  // Element doesn't exist in the DOM
+  if (!element) return createTransformString(0);
+
+  // Slider hasn't been scrolled yet
+  if (!hasMovedFromStart) return createTransformString(0);
+
+  // Not enough items to require scrolling
+  if (movies.length <= itemsToDisplayInRow) return createTransformString(0);
 
   const basePosition = calculateBasePosition(itemWidth, itemsToDisplayInRow, paddingOffset);
 
   // Handle initial next movement
   if (isInitialNextMovement(state)) {
     const totalItems = movies.length;
+
     // Check if we have fewer items than would fill two rows
     if (totalItems < itemsToDisplayInRow * 2) {
       // For the initial next click with fewer remaining items,

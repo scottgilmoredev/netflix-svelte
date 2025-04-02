@@ -54,6 +54,7 @@
     calculateContentRatio,
     calculateStyleString,
     getPaddingOffset,
+    isOnlyOnePage,
   } from '../utils/sliderUtils';
   import { createTouchHandlers } from '../utils/touchUtils';
 
@@ -83,7 +84,12 @@
   export let derived: SliderProps['derived'];
 
   // Add default values to prevent NaN during initialization
-  $: ({ currentPaginationIndex = 0, isSliderMoving = false, showPrev = false } = state || {});
+  $: ({
+    currentPaginationIndex = 0,
+    isSliderMoving = false,
+    itemsToDisplayInRow = 5,
+    showPrev = false,
+  } = state || {});
   $: ({
     itemWidth = 0,
     showControls = false,
@@ -179,7 +185,7 @@
   on:touchend={touchHandlers.handleTouchEnd}
 >
   <!-- Pagination indicators -->
-  {#if sliderContent.length > 0}
+  {#if !isOnlyOnePage(itemsToDisplayInRow, sliderContent.length)}
     <SliderPaginationIndicators
       indicators={paginationIndicators}
       currentIndex={currentPaginationIndex}

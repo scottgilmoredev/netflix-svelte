@@ -14,6 +14,35 @@ export function filterDataWithBackdrops(data: Movie[]): Movie[] {
 }
 
 /**
+ * Creates a memoized version of a function
+ *
+ * @function memoize
+ * @description Caches results of function calls based on input arguments
+ *
+ * @param {Function} fn - Function to memoize
+ * @returns {Function} Memoized function
+ */
+export function memoize<T extends (...args: any[]) => any>(fn: T): T {
+  const cache = new Map();
+
+  return ((...args: Parameters<T>): ReturnType<T> => {
+    // Create a cache key from the stringified arguments
+    const key = JSON.stringify(args);
+
+    // If we have a cached result, return it
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    // Otherwise, calculate the result and cache it
+    const result = fn(...args);
+    cache.set(key, result);
+
+    return result;
+  }) as T;
+}
+
+/**
  * Helper Utilities Module
  *
  * @module
