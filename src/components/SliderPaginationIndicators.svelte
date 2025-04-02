@@ -61,7 +61,7 @@
     margin: -24px 0 12px;
     padding: 0;
     position: absolute;
-    right: 4%;
+    right: calc(4% + var(--item-gap));
     top: 0;
 
     /* Indicator */
