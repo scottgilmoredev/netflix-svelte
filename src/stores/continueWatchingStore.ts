@@ -7,21 +7,64 @@
  *
  * @requires svelte/store
  * @requires ../types
- * @requires ../utils/helperUtils
+ * @requires ../utils/typeGuards
  */
 
 import { writable } from 'svelte/store';
 
 // Types
-import type { Movie, WatchedMediaItem } from '../types';
+import type { AnyMedia, MediaStore, MediaWatched } from '../types';
 
 // Utils
-import { filterDataWithBackdrops } from '../utils/helperUtils';
+import { createMedia } from '../utils/typeGuards';
 
 /**
- * Store for continue watching data
+ * Continue Watching Store
+ *
+ * @constant {MediaStore<MediaWatched>}
+ * @description Provides a specialized store for tracking media that the user has partially watched.
+ * This store extends the base writable store with a displayTitle property and maintains
+ * an array of MediaWatched objects, each containing progress information.
+ *
+ * The store is used to populate the "Continue Watching" row in the UI, allowing users
+ * to resume watching content they've started but not completed.
+ *
+ * @property {string} displayTitle - Human-readable title for UI display ("Continue Watching")
+ * @property {function} subscribe - Svelte store subscription method
+ * @property {function} set - Method to replace the entire store content
+ * @property {function} update - Method to update the store with a callback function
+ *
+ * @example
+ * // Subscribe to the continue watching store
+ * import { continueWatching } from '../stores/continueWatchingStore';
+ *
+ * $: watchedItems = $continueWatching;
+ *
+ * @example
+ * // Add a new item to the continue watching list
+ * continueWatching.update(items => [
+ *   ...items,
+ *   {
+ *     id: 12345,
+ *     name: 'Movie Title',
+ *     backdrop_path: '/path/to/image.jpg',
+ *     progress: 35, // Watched 35%
+ *     type: 'watched',
+ *     // other required properties...
+ *   }
+ * ]);
  */
-export const continueWatching = writable<WatchedMediaItem[]>([]);
+export const continueWatching: MediaStore<MediaWatched> = (() => {
+  const store = writable<MediaWatched[]>([]);
+
+  return {
+    ...store,
+    displayTitle: 'Continue Watching',
+    subscribe: store.subscribe,
+    set: store.set,
+    update: store.update,
+  };
+})();
 
 /**
  * Creates the "Continue Watching" list from existing store data
@@ -31,20 +74,21 @@ export const continueWatching = writable<WatchedMediaItem[]>([]);
  * If data exists in localStorage, it returns that. Otherwise, it creates a new list
  * from existing store data and assigns random progress.
  *
- * @param {Movie[]} netflixOriginalsData - Data from Netflix Originals store
- * @param {Movie[]} trendingData - Data from Trending store
- * @param {Movie[]} topRatedData - Data from Top Rated store
- * @param {Movie[]} popularData - Data from Popular store (if available)
- * @returns {WatchedMediaItem[]} Array of data with watch progress
+ * @param {AnyMedia[]} netflixOriginalsData - Data from Netflix Originals store
+ * @param {AnyMedia[]} trendingData - Data from Trending store
+ * @param {AnyMedia[]} topRatedData - Data from Top Rated store
+ * @param {AnyMedia[]} popularData - Data from Popular store (if available)
+ * @returns {MediaWatched[]} Array of data with watch progress
  */
 export function createContinueWatchingList(
-  netflixOriginalsData: Movie[],
-  trendingData: Movie[],
-  topRatedData: Movie[],
-  popularData: Movie[] = []
-): WatchedMediaItem[] {
+  netflixOriginalsData: AnyMedia[],
+  trendingData: AnyMedia[],
+  topRatedData: AnyMedia[],
+  popularData: AnyMedia[] = []
+): MediaWatched[] {
   // First, try to get from localStorage
   const savedData = loadContinueWatchingFromStorage();
+
   if (savedData && savedData.length > 0) {
     return savedData;
   }
@@ -53,16 +97,20 @@ export function createContinueWatchingList(
   try {
     // Combine all data and filter out those without backdrops
     const allData = [...netflixOriginalsData, ...trendingData, ...topRatedData, ...popularData];
-    const filteredData = filterDataWithBackdrops(allData);
 
     // Shuffle the data
-    const shuffledData = [...filteredData].sort(() => 0.5 - Math.random());
+    const shuffledData = [...allData].sort(() => 0.5 - Math.random());
 
     // Take 6 random data and add progress
-    const watchedItems = shuffledData.slice(0, 6).map((movie) => ({
-      ...movie,
-      progress: generateRandomProgress(),
-    }));
+    const watchedItems = shuffledData.slice(0, 6).map((movie) =>
+      createMedia<MediaWatched>(
+        {
+          ...movie,
+          progress: generateRandomProgress(),
+        },
+        'watched'
+      )
+    );
 
     // Save to localStorage
     saveContinueWatchingToStorage(watchedItems);
@@ -93,9 +141,9 @@ function generateRandomProgress(): number {
  * @function loadContinueWatchingFromStorage
  * @description Retrieves continue watching data from localStorage
  *
- * @returns {WatchedMediaItem[] | null} Array of watched data or null if none found
+ * @returns {MediaWatched[] | null} Array of watched data or null if none found
  */
-function loadContinueWatchingFromStorage(): WatchedMediaItem[] | null {
+function loadContinueWatchingFromStorage(): MediaWatched[] | null {
   try {
     const data = localStorage.getItem('netflix_continue_watching');
     return data ? JSON.parse(data) : null;
@@ -111,9 +159,9 @@ function loadContinueWatchingFromStorage(): WatchedMediaItem[] | null {
  * @function saveContinueWatchingToStorage
  * @description Stores the continue watching data in localStorage
  *
- * @param {WatchedMediaItem[]} data - Array of watched data to save
+ * @param {MediaWatched[]} data - Array of watched data to save
  */
-function saveContinueWatchingToStorage(data: WatchedMediaItem[]): void {
+function saveContinueWatchingToStorage(data: MediaWatched[]): void {
   try {
     localStorage.setItem('netflix_continue_watching', JSON.stringify(data));
   } catch (err) {

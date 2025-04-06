@@ -1,5 +1,5 @@
 /**
- * Movie Store Module
+ * Media Store Module
  *
  * @module
  * @description Centralizes movie data management for the application.
@@ -11,30 +11,47 @@
  * @requires ../types
  */
 
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 
 // Services
-import * as movieService from '../services/moviesService';
+import * as movieService from '../services/mediaService';
 
 // Stores
 import { continueWatching, createContinueWatchingList } from './continueWatchingStore';
 
 // Types
-import type { Movie } from '../types';
-import { get } from 'svelte/store';
+import type { AnyMedia, Media, MediaRanked, MediaStore } from '../types';
+
+/**
+ * Creates a movie store with additional metadata
+ *
+ * @param displayTitle - The human-readable title for this store
+ * @returns An enhanced writable store with metadata
+ */
+function createMediaStore<T extends AnyMedia>(displayTitle: string): MediaStore<T> {
+  const store = writable<T[]>([]);
+
+  return {
+    ...store,
+    displayTitle,
+    subscribe: store.subscribe,
+    set: store.set,
+    update: store.update,
+  };
+}
 
 // Create stores for movie data
-export const actionMovies: Writable<Movie[]> = writable([]);
-export const billboardMovie: Writable<Movie | null> = writable(null);
-export const documentaries: Writable<Movie[]> = writable([]);
-export const comedyMovies: Writable<Movie[]> = writable([]);
-export const horrorMovies: Writable<Movie[]> = writable([]);
-export const netflixOriginals: Writable<Movie[]> = writable([]);
-export const romanceMovies: Writable<Movie[]> = writable([]);
-export const topRated: Writable<Movie[]> = writable([]);
-export const trending: Writable<Movie[]> = writable([]);
-export const popular: Writable<Movie[]> = writable([]);
+export const actionMovies = createMediaStore<Media>('Action');
+export const billboardMedia: Writable<AnyMedia | null> = writable(null);
+export const comedyMovies = createMediaStore<Media>('Comedy');
+export const documentaries = createMediaStore<Media>('Documentaries');
+export const horrorMovies = createMediaStore<Media>('Horror');
+export const netflixOriginals = createMediaStore<Media>('Only on Netflix');
+export const popular = createMediaStore<Media>('Popular');
+export const romanceMovies = createMediaStore<Media>('Romance');
+export const topRated = createMediaStore<MediaRanked>('Top 10 Movies in the U.S. Today');
+export const trending = createMediaStore<Media>('Trending Now');
 
 export const error: Writable<string | null> = writable(null);
 
@@ -54,7 +71,7 @@ export const error: Writable<string | null> = writable(null);
  * @example
  * // Update the trending movies store
  * const data = await updateStore(
- *   () => movieService.fetchMoviesByCategory('fetchTrending'),
+ *   () => movieService.fetchMediaByCategory('fetchTrending'),
  *   trending
  * );
  */
@@ -75,7 +92,7 @@ async function updateStore<T>(fetchFunction: () => Promise<T>, store: Writable<T
  * Initializes all movie data for the application
  *
  * @async
- * @function initializeMovies
+ * @function initializeMedia
  * @description Fetches all movie categories from the TMDB API, updates the corresponding stores,
  * and selects a random Netflix original for the billboard. Manages error states.
  *
@@ -83,55 +100,56 @@ async function updateStore<T>(fetchFunction: () => Promise<T>, store: Writable<T
  *
  * @example Initialize all movie data on component mount
  * onMount(() => {
- *   initializeMovies();
+ *   initializeMedia();
  * });
  *
  * @example Initialize with error handling
  * try {
- *   await initializeMovies();
+ *   await initializeMedia();
  *   console.log('All movies loaded successfully');
  * } catch (err) {
  *   console.error('Failed to initialize movies');
  * }
  *
- * @fires {actionMovies.set} Updates the action movies store
- * @fires {billboardMovie.set} Sets a random Netflix original as the billboard movie
- * @fires {comedyMovies.set} Updates the comedy movies store
+ * @fires {actionMedia.set} Updates the action movies store
+ * @fires {billboardMedia.set} Sets a random Netflix original as the billboard movie
+ * @fires {comedyMedia.set} Updates the comedy movies store
  * @fires {documentaries.set} Updates the documentaries store
- * @fires {horrorMovies.set} Updates the horror movies store
+ * @fires {horrorMedia.set} Updates the horror movies store
  * @fires {netflixOriginals.set} Updates the Netflix originals store
- * @fires {romanceMovies.set} Updates the romance movies store
+ * @fires {romanceMedia.set} Updates the romance movies store
  * @fires {topRated.set} Updates the top rated movies store
  * @fires {trending.set} Updates the trending movies store
+ * @fires {continueWatching.set} Updates the continueWatching store
  *
  * @fires {error.set} Updates the error state if an error occurs
  */
-export async function initializeMovies(): Promise<void> {
+export async function initializeMedia(): Promise<void> {
   error.set(null);
 
   try {
     // Fetch Netflix originals first for the billboard
     const originalsData = await updateStore(
-      () => movieService.fetchMoviesByCategory('fetchNetflixOriginals'),
+      () => movieService.fetchMediaByCategory('fetchNetflixOriginals'),
       netflixOriginals
     );
 
     // Set random movie for billboard
     if (originalsData.length > 0) {
-      const randomMovie = movieService.getRandomMovie(originalsData);
-      billboardMovie.set(randomMovie);
+      const randomMedia = movieService.getRandomMedia(originalsData);
+      billboardMedia.set(randomMedia);
     }
 
     // Fetch other categories in parallel
     await Promise.all([
-      updateStore(() => movieService.fetchMoviesByCategory('fetchActionMovies'), actionMovies),
-      updateStore(() => movieService.fetchMoviesByCategory('fetchComedyMovies'), comedyMovies),
-      updateStore(() => movieService.fetchMoviesByCategory('fetchDocumentaries'), documentaries),
-      updateStore(() => movieService.fetchMoviesByCategory('fetchHorrorMovies'), horrorMovies),
-      updateStore(() => movieService.fetchMoviesByCategory('fetchRomanceMovies'), romanceMovies),
-      updateStore(() => movieService.fetchMoviesByCategory('fetchTrending'), trending),
-      updateStore(() => movieService.fetchMoviesByCategory('fetchPopular'), popular),
-      updateStore(() => movieService.fetchTopRatedMovies(), topRated),
+      updateStore(() => movieService.fetchMediaByCategory('fetchActionMovies'), actionMovies),
+      updateStore(() => movieService.fetchMediaByCategory('fetchComedyMovies'), comedyMovies),
+      updateStore(() => movieService.fetchMediaByCategory('fetchDocumentaries'), documentaries),
+      updateStore(() => movieService.fetchMediaByCategory('fetchHorrorMovies'), horrorMovies),
+      updateStore(() => movieService.fetchMediaByCategory('fetchRomanceMovies'), romanceMovies),
+      updateStore(() => movieService.fetchMediaByCategory('fetchTrending'), trending),
+      updateStore(() => movieService.fetchMediaByCategory('fetchPopular'), popular),
+      updateStore(() => movieService.fetchTopRatedMedia(), topRated),
     ]);
 
     // Create continue watching list from existing data
@@ -145,6 +163,7 @@ export async function initializeMovies(): Promise<void> {
       topRatedData,
       popularData
     );
+
     continueWatching.set(continueWatchingData);
   } catch (err) {
     console.error('Error initializing movies:', err);

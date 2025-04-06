@@ -1,64 +1,107 @@
+import type { Writable } from 'svelte/store';
+
 /**
- * Represents a media content item in the carousel
- *
- * @interface MediaContent
- * @property {Movie|null} data - The movie data for this content item
- * @property {number} width - Width of the content item as a percentage
+ * Union type for all media types
  */
-export interface MediaContent {
-  data: Movie | null;
-  width: number;
+export type AnyMedia = Media | MediaRanked | MediaWatched;
+
+/**
+ * Represents a media object from the TMDB API
+ *
+ * @interface BaseMedia
+ * @property {MediaType} type - Discriminator field to identify the media type
+ * @property {string|null} backdrop_path - Path to the backdrop image
+ * @property {number} id - Unique identifier for the media
+ * @property {string} name - name of the media
+ * @property {string} original_name - Original name of the media
+ * @property {string} overview - Brief description of the media
+ * @property {string|null} poster_path - Path to the media poster image
+ * @property {number} vote_average - Average vote rating
+ */
+export interface BaseMedia {
+  type: MediaType;
+  backdrop_path: string | null;
+  id: number;
+  name: string;
+  original_name: string;
+  overview: string;
+  poster_path: string | null;
+  vote_average: number;
 }
 
 /**
- * Generic props interface for all media item components
+ * Base props interface for all media item components
  *
- * @interface MediaItemProps
+ * @interface BaseMediaItemProps
+ * @template T extends AnyMedia
  * @property {string} [className] - Additional CSS class names to apply to the component
- * @property {T|null} data - The data to display
- * @property {number} [width] - Width of the component as a percentage
+ * @property {AnyMedia | null} data - The media data to display
+ * @property {'backdrop' | 'poster'} [imageType] - Type of image to display
+ * @property {number} [width] - Width as percentage of container
  */
-export interface MediaItemProps<T> {
+export interface BaseMediaItemProps {
   className?: string;
-  data: T | null;
+  data: AnyMedia | null;
+  imageType?: 'backdrop' | 'poster';
   width?: number;
 }
 
 /**
- * Represents a movie object from the TMDB API
+ * Standard media interface
  *
- * @interface Movie
- * @property {boolean} adult - Indicates if the movie is for adults
- * @property {string|null} backdrop_path - Path to the backdrop image
- * @property {number[]} genre_ids - Array of genre IDs associated with the movie
- * @property {number} id - Unique identifier for the movie
- * @property {string} original_language - Original language of the movie
- * @property {string} original_name - Original name of the movie
- * @property {string} overview - Brief description of the movie
- * @property {number} popularity - Popularity score of the movie
- * @property {string|null} poster_path - Path to the movie poster image
- * @property {string} release_date - Release date of the movie
- * @property {string} name - name of the movie
- * @property {boolean} video - Indicates if it's a video
- * @property {number} vote_average - Average vote rating
- * @property {number} vote_count - Number of votes
+ * @interface Media
+ * @extends BaseMedia
  */
-export interface Movie {
-  adult: boolean;
-  backdrop_path: string | null;
-  genre_ids: number[];
-  id: number;
-  original_language: string;
-  original_name: string;
-  overview: string;
-  popularity: number;
-  poster_path: string | null;
-  release_date: string;
-  rank?: number;
-  name: string;
-  video: boolean;
-  vote_average: number;
-  vote_count: number;
+export interface Media extends BaseMedia {
+  type: 'standard';
+}
+
+/**
+ * Represents a media content item in the carousel
+ *
+ * @interface MediaContent
+ * @property {Media|null} data - The media data for this content item
+ * @property {number} width - Width of the content item as a percentage
+ */
+export interface MediaContent {
+  data: AnyMedia | null;
+  width: number;
+}
+
+/**
+ * Ranked media interface for top media
+ *
+ * @interface MediaRanked
+ * @extends BaseMedia
+ * @property {number} rank - Rank position (1-10)
+ */
+export interface MediaRanked extends BaseMedia {
+  rank: number;
+  type: 'ranked';
+}
+
+export interface MediaStore<T extends AnyMedia = AnyMedia> extends Writable<T[]> {
+  displayTitle: string;
+}
+
+/**
+ * Media Type Discriminator
+ *
+ * @type {string}
+ * @description Used to discriminate between different media types
+ */
+export type MediaType = 'standard' | 'ranked' | 'watched';
+
+/**
+ * Watched media interface with progress information
+ *
+ * @interface MediaWatched
+ * @extends BaseMedia
+ * @property {number} progress - Percentage of the media that has been watched (0-80)
+ */
+export interface MediaWatched extends BaseMedia {
+  progress: number;
+  type: 'watched';
 }
 
 /**
@@ -82,18 +125,3 @@ export interface RankSvgData {
  * working with rank numbers.
  */
 export type RankSvgNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-
-/**
- * Represents a movie with watch progress information
- *
- * @interface WatchedMediaItem
- * @extends Movie
- * @property {number} progress - Percentage of the movie that has been watched (0-80)
- */
-export interface WatchedMediaItem extends Movie {
-  progress: number;
-}
-
-// Type aliases for specific component props
-export type StandardMediaItemProps = MediaItemProps<Movie>;
-export type WatchedMediaItemProps = MediaItemProps<WatchedMediaItem>;
