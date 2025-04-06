@@ -1,4 +1,4 @@
-import type { Movie } from '../types';
+import type { TMDBMediaResponse } from '../types';
 
 /**
  * Filters out data without backdrop images
@@ -6,11 +6,11 @@ import type { Movie } from '../types';
  * @function filterDataWithBackdrops
  * @description Removes data that don't have backdrop images from an array of data
  *
- * @param {Movie[]} data - Array of data to filter
- * @returns {Movie[]} Array of data that have backdrop images
+ * @param {TMDBMediaResponse[]} data - Array of data to filter
+ * @returns {TMDBMediaResponse[]} Array of data that have backdrop images
  */
-export function filterDataWithBackdrops(data: Movie[]): Movie[] {
-  return data.filter((movie) => movie.backdrop_path);
+export function filterDataWithBackdrops(data: TMDBMediaResponse[]): TMDBMediaResponse[] {
+  return data.filter((media) => media.backdrop_path);
 }
 
 /**
