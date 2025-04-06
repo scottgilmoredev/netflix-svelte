@@ -1,7 +1,7 @@
 import type { Writable, Readable } from 'svelte/store';
 
 // Types
-import type { MediaContent, Movie } from './media';
+import type { AnyMedia, MediaContent } from './media';
 
 /**
  * Represents actions that can be performed on a slider
@@ -47,7 +47,7 @@ export interface SliderDerived {
  * @property {number} itemsToDisplayInRow - Number of items to display in a single row
  * @property {number} lowestVisibleIndex - Index of the first visible item
  * @property {number} movePercentage - Percentage of movement during animation
- * @property {Movie[]} movies - Array of movies to display in the slider
+ * @property {AnyMedia[]} media - Array of media to display in the slider
  * @property {boolean} showPrev - Whether to show previous navigation control
  */
 export interface SliderState {
@@ -59,7 +59,7 @@ export interface SliderState {
   itemsToDisplayInRow: number;
   lowestVisibleIndex: number;
   movePercentage: number;
-  movies: Movie[];
+  media: AnyMedia[];
   showPrev: boolean;
 }
 
