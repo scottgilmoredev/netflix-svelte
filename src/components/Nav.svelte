@@ -84,7 +84,7 @@
     min-height: 70px;
     position: fixed;
     top: 0px;
-    z-index: 1;
+    z-index: 11;
   }
 
   /* Full-width container that spans the viewport - creates positioning context */
