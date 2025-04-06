@@ -10,116 +10,107 @@
    * optimized rendering for different dataset sizes. Handles all slider animation
    * and state management internally.
    *
-   * @prop {Movie[]} movies - Array of movie objects to display in the row
+   * @prop {Media[]} movies - Array of movie objects to display in the row
    * @prop {string} title - Title text to display above the row
-   * @prop {boolean} isTopMovies - Whether this row displays top-ranked movies with rank numbers
+   * @prop {boolean} isTopMedia - Whether this row displays top-ranked movies with rank numbers
    *
    * @requires svelte
-   * @requires ./MediaItem.svelte
-   * @requires ./MediaItemRanked.svelte
+   * @requires svelte/store
+   * @requires ./registry/mediaComponentRegistry
+   * @requires ./RowHeader.svelte
    * @requires ./Slider.svelte
-   * @requires ./SliderControl.svelte
+   * @requires ../contexts/rowContext
    * @requires ../stores/responsiveStore
-   * @requires ../stores/sliderStore
    * @requires ../types
-   * @requires ../utils/sliderUtils
-   * @requires ../utils/touchUtils
+   * @requires ../utils
    */
 
   import { onDestroy } from 'svelte';
+  import type { Unsubscriber } from 'svelte/store';
+
+  // Component Registry
+  import { getComponentForRow } from './registry/mediaComponentRegistry';
 
   // Components
-  import MediaItem from './MediaItem.svelte';
-  import MediaItemRanked from './MediaItemRanked.svelte';
-  import MediaItemWithProgress from './MediaItemWithProgress.svelte';
+  import RowHeader from './RowHeader.svelte';
   import Slider from './Slider.svelte';
 
   // Stores
   import { createResponsiveItems } from '../stores/responsiveStore';
-  import { createSliderStore } from '../stores/sliderStore';
 
   // Types
   import type {
+    MediaStore,
     MediaContent,
-    Movie,
     ResponsiveItemsStore,
     SliderDerived,
     SliderState,
-    WatchedMediaItem,
   } from '../types';
 
+  // Utils
+  import { setupRowStores } from '../utils';
+
   // Component props
-  export let movies: Movie[] = [];
-  export let title: string = '';
-  export let isTopMovies: boolean = false;
+  export let mediaStore: MediaStore;
+  export let isTopMedia: boolean = false;
   export let showProgress: boolean = false;
 
   // Create responsive items hook
   const itemsToDisplay: ResponsiveItemsStore = createResponsiveItems();
 
-  // Create and initialize carousel store
-  const { state, derived, actions } = createSliderStore(movies, $itemsToDisplay);
+  // Create and initialize slider store
+  const { sliderStore, cleanup } = setupRowStores(mediaStore, itemsToDisplay);
+  const { state, derived, actions } = sliderStore;
 
-  // Determine which media item component to use
-  $: MediaItemComponent = getMediaItemComponent();
-
-  // Update store when props change
-  $: {
-    state.update((s: SliderState) => ({
-      ...s,
-      movies,
-      itemsToDisplayInRow: $itemsToDisplay,
-    }));
-  }
-
-  // Store the full derived values object
+  // Store the full slider derived values object
   let derivedValues: SliderDerived;
 
   // Also destructure for use in the template
   let itemWidth: number;
-  let sliderContent: (MediaContent & { data: WatchedMediaItem })[];
+  let sliderContent: MediaContent[];
   let totalItems: number;
 
   /**
-   * Determines which media item component to use based on row configuration
+   * Subscribe to the derived slider store to get updated values
    *
-   * @function getMediaItemComponent
-   * @description Returns the appropriate component based on whether this is a top movies row,
-   * a continue watching row with progress bars, or a standard row
+   * @description Subscribes to the derived slider store to get updated values for the slider.
+   * Stores the full derived values object and destructures specific values for use in the template.
+   * Filters out any slider content items that have null data.
    *
-   * The component to use
-   * @returns {typeof MediaItem | typeof MediaItemRanked | typeof MediaItemWithProgress}
+   * @type {Unsubscriber}
    */
-  function getMediaItemComponent():
-    | typeof MediaItem
-    | typeof MediaItemRanked
-    | typeof MediaItemWithProgress {
-    if (isTopMovies) {
-      return MediaItemRanked;
-    }
-
-    if (showProgress) {
-      return MediaItemWithProgress;
-    }
-
-    return MediaItem;
-  }
-
-  // Subscribe to derived store to get values
-  const unsubscribe = derived.subscribe((values) => {
+  const derivedUnsubscribe: Unsubscriber = derived.subscribe((values) => {
     // Store the full object
     derivedValues = values;
 
     // Also destructure for template use
     ({ itemWidth, totalItems } = values);
-    sliderContent = values.sliderContent.filter((item) => item.data !== null) as (MediaContent & {
-      data: WatchedMediaItem;
-    })[];
+
+    // Filter content to ensure we only have valid items
+    sliderContent = values.sliderContent.filter((item) => item.data !== null) as MediaContent[];
   });
 
-  // Clean up subscriptions
+  // Determine which media item component to use
+  $: MediaItemComponent = getComponentForRow(isTopMedia, showProgress);
+
+  // Update slider store when props change
+  $: {
+    state.update((s: SliderState) => ({
+      ...s,
+      itemsToDisplayInRow: $itemsToDisplay,
+    }));
+  }
+
+  /**
+   * Clean up subscriptions and resources when component is destroyed
+   *
+   * @function
+   * @description Unsubscribes from all store subscriptions and cleans up resources
+   * to prevent memory leaks when the component is unmounted.
+   */
   onDestroy(() => {
-    unsubscribe();
+    cleanup();
+    derivedUnsubscribe();
     itemsToDisplay.destroy();
   });
 </script>
@@ -135,7 +126,7 @@
       <!-- Empty state when no movies are available -->
       <div class="row--empty">No movies available</div>
     {:else}
-      <!-- Complex rendering for larger datasets that need slider behavior -->
+      <!-- Slider component for horizontal scrolling -->
       <Slider
         derived={derivedValues}
         state={$state}
@@ -155,25 +146,13 @@
 <style>
   /* Main row container */
   .row {
-    color: white;
+    box-sizing: border-box;
     margin: 3vw 0;
+    outline: 0;
+    padding: 0;
     position: relative;
+    transition: transform 0.54s cubic-bezier(0.5, 0, 0.1, 1) 0s;
     z-index: 10;
-  }
-
-  .row__header {
-    font-size: 12px;
-    color: #e5e5e5;
-    display: inline-block;
-    font-weight: 500;
-    margin: 0 4% 0.5em;
-    min-width: 6em;
-  }
-
-  .row__title {
-    display: table-cell;
-    line-height: 1.25vw;
-    vertical-align: bottom;
   }
 
   /* Container for the slider and controls */
@@ -187,11 +166,5 @@
     text-align: center;
     padding: 2rem;
     color: #999;
-  }
-
-  @media screen and (min-width: 800px) {
-    .row__header {
-      font-size: 1.4vw;
-    }
   }
 </style>

@@ -35,7 +35,7 @@
    *   on:prev={actions.movePrev}
    * >
    *   {#each rowContent as item}
-   *     <MediaItem data={item.data} width={itemWidth} />
+   *     <MediaItemBase data={item.data} width={itemWidth} />
    *   {/each}
    * </Slider>
    */

@@ -22,5 +22,7 @@
 
 export * from './errorUtils';
 export * from './helperUtils';
+export * from './rowUtils';
 export * from './sliderUtils';
 export * from './touchUtils';
+export * from './typeGuards';

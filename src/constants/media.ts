@@ -12,7 +12,16 @@
  * @requires ../types
  */
 
-import type { RankSvgData } from '../types';
+// Types
+import type { BaseMediaItemProps, RankSvgData } from '../types';
+
+// shared-defaults.ts
+export const MEDIA_ITEM_DEFAULTS: BaseMediaItemProps = {
+  className: '',
+  data: null,
+  imageType: 'backdrop',
+  width: 20,
+};
 
 /**
  * Placeholder Image URL
@@ -20,9 +29,9 @@ import type { RankSvgData } from '../types';
  * @constant
  * @type {string}
  * @description URL for a placeholder image to display when media images are not available.
- * Used as a fallback in MediaItem and MediaItemRanked components.
+ * Used as a fallback in MediaItemBase and MediaItemRanked components.
  */
-export const PLACEHOLDER_URL = 'https://placehold.co/500x281?text=Image+Not+Available';
+export const PLACEHOLDER_URL: string = 'https://placehold.co/500x281?text=Image+Not+Available';
 
 /**
  * Rank SVG Data Map
@@ -104,7 +113,7 @@ export const RANK_SVG_STROKE_WIDTH: number = 4;
  * @description Default stroke width for rank number SVGs.
  * Controls the thickness of the lines in the rank number display.
  */
-export const RANK_MIN = 1;
+export const RANK_MIN: number = 1;
 
 /**
  * Maximum Rank Value
@@ -114,4 +123,4 @@ export const RANK_MIN = 1;
  * @description The maximum valid rank number (10).
  * Used for validation and constraints in rank-related components.
  */
-export const RANK_MAX = 10;
+export const RANK_MAX: number = 10;

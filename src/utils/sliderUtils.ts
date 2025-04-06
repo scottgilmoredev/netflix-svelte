@@ -252,7 +252,7 @@ export function calculateStyleString(
     isSliderMoving,
     itemsToDisplayInRow,
     movePercentage,
-    movies,
+    media,
   } = state;
 
   // Element doesn't exist in the DOM
@@ -262,13 +262,13 @@ export function calculateStyleString(
   if (!hasMovedFromStart) return createTransformString(0);
 
   // Not enough items to require scrolling
-  if (movies.length <= itemsToDisplayInRow) return createTransformString(0);
+  if (media.length <= itemsToDisplayInRow) return createTransformString(0);
 
   const basePosition = calculateBasePosition(itemWidth, itemsToDisplayInRow, paddingOffset);
 
   // Handle initial next movement
   if (isInitialNextMovement(state)) {
-    const totalItems = movies.length;
+    const totalItems = media.length;
 
     // Check if we have fewer items than would fill two rows
     if (totalItems < itemsToDisplayInRow * 2) {

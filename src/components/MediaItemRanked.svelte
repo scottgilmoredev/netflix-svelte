@@ -5,65 +5,42 @@
    * @component
    * @description Displays a ranked media item with its rank number and poster image.
    * The component is designed to show movies or TV shows in a ranked list format,
-   * with the rank number prominently displayed alongside the poster image. Handles
-   * image loading errors and supports customizable width.
+   * with the rank number prominently displayed alongside the poster image.
    *
-   * @prop {Movie|null} data - The movie or TV show data to display, including rank information
+   * @prop {string} className - Additional CSS class names to apply to the component
+   * @prop {AnyMedia | null} data - The movie or TV show data to display, including rank information
    * @prop {number} width - The width of the component as a percentage
    *
+   * @requires ./MediaItemBase.svelte
    * @requires ./MediaItemRankNumber.svelte
-   * @requires ../constants
    * @requires ../types
-   * @requires ../utils/errorUtils
    */
 
   // Components
+  import MediaItemBase from './MediaItemBase.svelte';
   import MediaItemRankNumber from './MediaItemRankNumber.svelte';
 
   // Constants
-  import { IMAGE_BASE_URL, PLACEHOLDER_URL } from '../constants';
+  import { MEDIA_ITEM_DEFAULTS } from '../constants';
 
   // Types
-  import type { StandardMediaItemProps } from '../types';
+  import type { BaseMediaItemProps } from '../types';
 
-  // Utils
-  import { handleImageError } from '../utils/errorUtils';
+  export let className: BaseMediaItemProps['className'] = MEDIA_ITEM_DEFAULTS.className;
+  export let data: BaseMediaItemProps['data'] = MEDIA_ITEM_DEFAULTS.data;
+  export let width: BaseMediaItemProps['width'] = MEDIA_ITEM_DEFAULTS.width;
 
-  export let className: StandardMediaItemProps['className'] = '';
-  export let data: StandardMediaItemProps['data'] = null;
-  export let width: StandardMediaItemProps['width'] = 20;
-
-  $: imagePath = data?.poster_path;
-  $: imageUrl = imagePath ? `${IMAGE_BASE_URL}${imagePath}` : null;
-  $: title = data?.name || data?.original_name || '';
+  $: rank = data && 'rank' in data ? data.rank : undefined;
 </script>
 
-<div class={`ranked-media-item ${className}`} style={`width: ${width}%;`}>
-  <!-- Rank number SVG -->
-  <div class="ranked-media-item__rank">
-    <MediaItemRankNumber rank={data?.rank} />
+<MediaItemBase className={`ranked-media-item ${className}`} {data} imageType="poster" {width}>
+  <div slot="before-image" class="ranked-media-item__rank">
+    <MediaItemRankNumber {rank} />
   </div>
-
-  <!-- Movie Poster Image -->
-  <img
-    alt={title}
-    class="ranked-media-item__image"
-    src={imageUrl || PLACEHOLDER_URL}
-    on:error={handleImageError}
-  />
-</div>
+</MediaItemBase>
 
 <style>
-  .ranked-media-item {
-    aspect-ratio: 10 / 7;
-    position: relative;
-    flex-shrink: 0;
-    overflow: hidden;
-    padding: 0 var(--item-gap);
-    box-sizing: border-box;
-    border-radius: var(--item-gap);
-  }
-
+  /* These styles apply to the slot content we're providing */
   .ranked-media-item__rank {
     bottom: 0;
     left: 0;
@@ -73,11 +50,18 @@
     width: 50%;
   }
 
-  .ranked-media-item__image {
+  /* Use :global for styles that need to affect the MediaItemBase component */
+  :global(.ranked-media-item) {
+    aspect-ratio: 10 / 7;
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--item-gap);
+  }
+
+  :global(.ranked-media-item .media-item__image) {
     bottom: 0;
     height: 100%;
     left: auto;
-    -o-object-fit: cover;
     object-fit: cover;
     position: absolute;
     right: 0;

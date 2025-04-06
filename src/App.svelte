@@ -4,14 +4,14 @@
    *
    * @component
    * @description The root component of the Netflix clone application. Manages the overall
-   * layout and coordinates the initialization of movie data. Renders the navigation bar,
-   * billboard, and movie rows, handling any potential errors during data fetching.
+   * layout and coordinates the initialization of media data. Renders the navigation bar,
+   * billboard, and media rows, handling any potential errors during data fetching.
    *
    * @requires svelte
    * @requires ./components/billboard.svelte
    * @requires ./components/Nav.svelte
    * @requires ./components/Row.svelte
-   * @requires ./stores/movieStore
+   * @requires ./stores/mediaStore
    */
 
   import { onMount } from 'svelte';
@@ -24,7 +24,7 @@
 
   // Stores
   import { continueWatching } from './stores/continueWatchingStore';
-  import { initializeMovies, error } from './stores/movieStore';
+  import { initializeMedia, error } from './stores/mediaStore';
   import {
     actionMovies,
     comedyMovies,
@@ -34,18 +34,18 @@
     romanceMovies,
     topRated,
     trending,
-  } from './stores/movieStore';
+  } from './stores/mediaStore';
 
   /**
    * Lifecycle hook that runs when the component is mounted to the DOM
    *
    * @function
-   * @description Initializes all movie data by calling the initializeMovies function
-   * from the movieStore. This fetches data for all movie categories and sets up
-   * the billboard movie.
+   * @description Initializes all media data by calling the initializeMedia function
+   * from the mediaStore. This fetches data for all media categories and sets up
+   * the billboard media.
    */
   onMount(() => {
-    initializeMovies();
+    initializeMedia();
   });
 </script>
 
@@ -56,25 +56,25 @@
   <!-- Featured content billboard -->
   <Billboard />
 
-  <!-- Main content area with movie rows -->
+  <!-- Main content area with media rows -->
   <main>
     {#if $error}
       <!-- Error message display if data fetching fails -->
       <div class="error-message">
         <p>Error: {$error}</p>
-        <button on:click={initializeMovies}>Try Again</button>
+        <button on:click={initializeMedia}>Try Again</button>
       </div>
     {:else}
       <!-- Movie category rows -->
-      <Row title="Continue Watching" showProgress movies={$continueWatching} />
-      <Row title="Top 10 Movies in the U.S. Today" isTopMovies movies={$topRated} />
-      <Row title="Only on Netflix" movies={$netflixOriginals} />
-      <Row title="Trending Now" movies={$trending} />
-      <Row title="Documentaries" movies={$documentaries} />
-      <Row title="Horror" movies={$horrorMovies} />
-      <Row title="Comedy" movies={$comedyMovies} />
-      <Row title="Action" movies={$actionMovies} />
-      <Row title="Romance" movies={$romanceMovies} />
+      <Row mediaStore={continueWatching} showProgress />
+      <Row mediaStore={topRated} isTopMedia />
+      <Row mediaStore={netflixOriginals} />
+      <Row mediaStore={trending} />
+      <Row mediaStore={documentaries} />
+      <Row mediaStore={horrorMovies} />
+      <Row mediaStore={comedyMovies} />
+      <Row mediaStore={actionMovies} />
+      <Row mediaStore={romanceMovies} />
     {/if}
   </main>
 

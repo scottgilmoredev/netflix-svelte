@@ -3,14 +3,14 @@
    * billboard Component
    *
    * @component
-   * @description Displays a featured movie or TV show at the top of the page with
+   * @description Displays a featured media or TV show at the top of the page with
    * a background image, title, description, and action buttons. The component
    * automatically selects a random Netflix original from the store.
    *
    * @requires svelte
    * @requires ../constants/tmdb
    * @requires ../components/IconInfo
-   * @requires ../stores/movieStore
+   * @requires ../stores/mediaStore
    * @requires ../types
    * @requires ../utils/helperUtils
    */
@@ -24,10 +24,10 @@
   import { IMAGE_BASE_URL } from '../constants/tmdb';
 
   // Stores
-  import { billboardMovie } from '../stores/movieStore';
+  import { billboardMedia } from '../stores/mediaStore';
 
   // Types
-  import type { Movie } from '../types';
+  import type { AnyMedia } from '../types';
 
   // Utils
   import { truncate } from '../utils/helperUtils';
@@ -36,29 +36,29 @@
   let billboardDescription: string;
 
   /**
-   * The current billboard movie from the store
-   * @type {Readable<Movie | null>}
+   * The current billboard media from the store
+   * @type {Readable<AnyMedia | null>}
    */
-  const billboardMovieStore: Readable<Movie | null> = billboardMovie;
+  const billboardMediaStore: Readable<AnyMedia | null> = billboardMedia;
 
   /**
    * Reactive declaration for the billboard background style
    *
    * @description Dynamically computes the CSS background-image style based on the
-   * current billboard movie. If no backdrop path is available, an empty string is used.
+   * current billboard media. If no backdrop path is available, an empty string is used.
    */
-  $: billboardImage = $billboardMovieStore?.backdrop_path
-    ? `${IMAGE_BASE_URL}${$billboardMovieStore.backdrop_path}`
+  $: billboardImage = $billboardMediaStore?.backdrop_path
+    ? `${IMAGE_BASE_URL}${$billboardMediaStore.backdrop_path}`
     : '';
 
   /**
    * Computes the title to display for the billboard
    *
-   * @description Returns the title of the movie, falling back to original_title if title is not available.
+   * @description Returns the title of the media, falling back to original_title if title is not available.
    *
    * @type {string}
    */
-  $: billboardTitle = $billboardMovieStore?.name || $billboardMovieStore?.original_name || '';
+  $: billboardTitle = $billboardMediaStore?.name || $billboardMediaStore?.original_name || '';
 
   /**
    * Truncates and prepares the overview text for display
@@ -67,7 +67,7 @@
    *
    * @type {string}
    */
-  $: billboardDescription = truncate($billboardMovieStore?.overview || '', 150);
+  $: billboardDescription = truncate($billboardMediaStore?.overview || '', 150);
 </script>
 
 <!-- style="{billboardStyle} background-size: cover; background-position: center center;" -->
@@ -88,12 +88,12 @@
       </div>
 
       <div class="billboard__metadata">
-        <!-- Title of the movie or TV show. Falls back to name or original_name -->
+        <!-- Title of the media or TV show. Falls back to name or original_name -->
         <h1 class="billboard__title">
           {billboardTitle}
         </h1>
 
-        <!-- Description of the movie or TV show, truncated to 150 characters -->
+        <!-- Description of the media or TV show, truncated to 150 characters -->
         <h1 class="billboard__description">
           {billboardDescription}
         </h1>
@@ -209,7 +209,7 @@
     z-index: 10;
   }
 
-  /* Movie or show title styling */
+  /* Media or show title styling */
   .billboard__title {
     color: #fff;
     font-size: 1.5rem;
@@ -217,7 +217,7 @@
     padding-bottom: 0.3rem;
   }
 
-  /* Movie or show description styling */
+  /* Media or show description styling */
   .billboard__description {
     color: white;
     font-size: 12px;

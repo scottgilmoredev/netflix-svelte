@@ -15,7 +15,7 @@ import type { Writable, Readable } from 'svelte/store';
 
 // Types
 import type {
-  Movie,
+  AnyMedia,
   MediaContent,
   SliderActions,
   SliderDerived,
@@ -32,13 +32,13 @@ import { generateSequentialIndices, isOnlyOnePage, memoize } from '../utils';
  * @function createSliderStore
  * @description Factory function that creates a complete slider store with state, derived values, and actions
  *
- * @param {Movie[]} initialMovies - Initial array of movies
+ * @param {Media[]} initialMedia - Initial array of media
  * @param {number} initialItemsToDisplay - Initial number of items to display in a row
  * @returns {Object} Object containing state stores, derived stores, and action methods
  *
  * @example
- * // Create a slider store with initial movies and 5 items per row
- * const { state, derived, actions } = createSliderStore(movieList, 5);
+ * // Create a slider store with initial media and 5 items per row
+ * const { state, derived, actions } = createSliderStore(mediaList, 5);
  *
  * // Use the store in a component
  * $: ({ totalItems, showControls, itemWidth, sliderContent } = $derived);
@@ -49,7 +49,7 @@ import { generateSequentialIndices, isOnlyOnePage, memoize } from '../utils';
  * }
  */
 export function createSliderStore(
-  initialMovies: Movie[] = [],
+  initialMedia: AnyMedia[] = [],
   initialItemsToDisplay: number = 5
 ): SliderStore {
   // Create the core state store
@@ -61,8 +61,8 @@ export function createSliderStore(
     isSliderMoving: false,
     itemsToDisplayInRow: initialItemsToDisplay,
     lowestVisibleIndex: 0,
+    media: initialMedia,
     movePercentage: 0,
-    movies: initialMovies,
     showPrev: false,
   });
 
@@ -71,9 +71,9 @@ export function createSliderStore(
 
   // Create derived values from the state
   const derivedValues: Readable<SliderDerived> = derived(state, ($state) => {
-    const { isSliderMoving, itemsToDisplayInRow, movies } = $state;
+    const { isSliderMoving, itemsToDisplayInRow, media } = $state;
     const itemWidth = 100 / itemsToDisplayInRow;
-    const totalItems = movies.length;
+    const totalItems = media.length;
     const showControls = totalItems > itemsToDisplayInRow;
 
     // Calculate pagination indicators
@@ -211,8 +211,8 @@ export function createSliderStore(
    * const newIndex = calculateNewIndex(currentState, 'next');
    */
   function calculateNewIndex(state: SliderState, direction: SliderState['direction']): number {
-    const { lowestVisibleIndex, itemsToDisplayInRow, movies } = state;
-    const totalItems = movies.length;
+    const { lowestVisibleIndex, itemsToDisplayInRow, media } = state;
+    const totalItems = media.length;
     const firstIndex = 0;
     const lastValidIndex = totalItems - itemsToDisplayInRow;
     const stepSize = itemsToDisplayInRow;
@@ -289,8 +289,8 @@ export function createSliderStore(
    * const indices = calculateCarouselIndices(currentState);
    */
   function calculateSliderIndices(state: SliderState): number[] {
-    const { lowestVisibleIndex, itemsToDisplayInRow, movies, hasMovedFromStart } = state;
-    const totalItems = movies.length;
+    const { lowestVisibleIndex, itemsToDisplayInRow, media, hasMovedFromStart } = state;
+    const totalItems = media.length;
 
     // Edge case: We only have one page of items. use all available items in order
     if (isOnlyOnePage(itemsToDisplayInRow, totalItems)) {
@@ -338,9 +338,6 @@ export function createSliderStore(
   function addPeekIndices(indices: number[], totalItems: SliderDerived['totalItems']): number[] {
     const result = [...indices];
 
-    // Edge case: We only have one page of items, do not add peek items
-    if (indices.length <= totalItems) return result;
-
     // Add trailing peek item
     const trailingIndex =
       indices[indices.length - 1] === totalItems - 1 ? 0 : indices[indices.length - 1] + 1;
@@ -371,33 +368,33 @@ export function createSliderStore(
     state: SliderState,
     itemWidth: SliderDerived['itemWidth']
   ): MediaContent[] {
-    const { movies, itemsToDisplayInRow } = state;
-    const totalItems = movies.length;
+    const { media, itemsToDisplayInRow } = state;
+    const totalItems = media.length;
 
     // Calculate how many items we need for initial content
     const neededItems = itemsToDisplayInRow * 2 + 1;
-    let initialItems: Movie[] = [];
+    let initialItems: AnyMedia[] = [];
 
     if (totalItems >= neededItems) {
       // Normal case: We have enough items
-      initialItems = [...movies].slice(0, neededItems);
+      initialItems = [...media].slice(0, neededItems);
     } else if (totalItems < neededItems && totalItems > itemsToDisplayInRow) {
       // Special case: We have more than one page of items, but not enough for two full pages, add the first item as a peek
-      initialItems = [...movies, movies[0]];
+      initialItems = [...media, media[0]];
     } else if (isOnlyOnePage(itemsToDisplayInRow, totalItems)) {
       // Edge case: We only have one page of items. use all available items
-      initialItems = [...movies];
+      initialItems = [...media];
     }
 
     // Map to required format
-    return initialItems.map((movie) => ({
-      data: movie,
+    return initialItems.map((media) => ({
+      data: media,
       width: itemWidth,
     }));
   }
 
   /**
-   * Maps movie indices to renderable content items
+   * Maps media indices to renderable content items
    *
    * @function mapIndicesToContentItems
    * @description Transforms array indices into renderable media content items with proper width
@@ -416,14 +413,14 @@ export function createSliderStore(
     indices: number[],
     itemWidth: SliderDerived['itemWidth']
   ): MediaContent[] {
-    const { movies } = state;
+    const { media } = state;
     const sliderContents: MediaContent[] = [];
 
     indices.forEach((index) => {
-      const movie = movies[index];
+      const content = media[index];
 
       sliderContents.push({
-        data: movie,
+        data: content,
         width: itemWidth,
       });
     });
@@ -449,12 +446,10 @@ export function createSliderStore(
     state: SliderState,
     itemWidth: SliderDerived['itemWidth']
   ): MediaContent[] {
-    console.log('crab in my shoe mouth');
+    const { media, hasMovedFromStart } = state;
+    const totalItems = media.length;
 
-    const { movies, hasMovedFromStart } = state;
-    const totalItems = movies.length;
-
-    // If no movies, return empty array
+    // If no media, return empty array
     if (totalItems < 1) return [];
 
     // For initial render, use simplified content
@@ -581,8 +576,8 @@ export function createSliderStore(
      * @param {SliderState['itemsToDisplayInRow']} count - New number of items to display
      */
     updateItemsToDisplay: (count: SliderState['itemsToDisplayInRow']) => {
-      const { movies, currentPaginationIndex } = get(state);
-      const totalItems = movies.length;
+      const { media, currentPaginationIndex } = get(state);
+      const totalItems = media.length;
 
       state.update((s) => ({
         ...s,
