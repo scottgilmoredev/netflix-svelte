@@ -128,9 +128,7 @@
 <svelte:window />
 
 <div class="row">
-  <h2 class="row__header">
-    <div class="row__title">{title}</div>
-  </h2>
+  <RowHeader {isTopMedia} {mediaStore} />
 
   <div class="row__container">
     {#if totalItems === 0}
