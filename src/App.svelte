@@ -18,6 +18,7 @@
 
   // Components
   import Billboard from './components/Billboard.svelte';
+  import GlobalModal from './components/GlobalModal.svelte';
   import Nav from './components/Nav.svelte';
   import Row from './components/Row.svelte';
 
@@ -76,6 +77,9 @@
       <Row title="Romance" movies={$romanceMovies} />
     {/if}
   </main>
+
+  <!-- Global modal component -->
+  <GlobalModal />
 </div>
 
 <style>
