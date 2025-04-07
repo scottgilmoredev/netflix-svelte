@@ -56,6 +56,25 @@
   const TRANSITION_DURATION = 150;
 
   /**
+   * Utility function to safely clear one or more timeouts
+   *
+   * @function clearTimeouts
+   * @param {...(number|null)} timeoutIds - One or more timeout IDs to clear
+   * @description Checks if each timeout ID is not null before clearing it
+   * @example
+   * // Clear a single timeout
+   * clearTimeouts(myTimeout);
+   *
+   * // Clear multiple timeouts
+   * clearTimeouts(triggerTimeout, dropdownTimeout);
+   */
+  export function clearTimeouts(...timeoutIds: (number | null)[]): void {
+    timeoutIds.forEach((id) => {
+      if (id !== null) clearTimeout(id);
+    });
+  }
+
+  /**
    * Handles mouse entering the trigger
    *
    * @function handleTriggerMouseEnter
@@ -83,9 +102,7 @@
     isMouseOverTrigger = false;
 
     // Clear any existing timeout
-    if (triggerTimeout !== null) {
-      clearTimeout(triggerTimeout);
-    }
+    clearTimeouts(triggerTimeout);
 
     // setTimeout to allow the mouse to move to the dropdown
     // Type assertion to ensure setTimeout ID is treated as number across all environments
@@ -120,9 +137,7 @@
     isMouseOverDropdown = false;
 
     // Clear any existing timeout
-    if (dropdownTimeout !== null) {
-      clearTimeout(dropdownTimeout);
-    }
+    clearTimeouts(triggerTimeout);
 
     // setTimeout to provide slight delay before closing the dropdown
     // Type assertion to ensure setTimeout ID is treated as number across all environments
@@ -172,8 +187,7 @@
    * and avoid executing callbacks after component unmount
    */
   onDestroy(() => {
-    if (triggerTimeout !== null) clearTimeout(triggerTimeout);
-    if (dropdownTimeout !== null) clearTimeout(dropdownTimeout);
+    clearTimeouts(triggerTimeout, dropdownTimeout);
   });
 </script>
 
