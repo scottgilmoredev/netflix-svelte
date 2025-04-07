@@ -135,10 +135,28 @@
    * <button on:keydown={handleKeydown}>Trigger</button>
    */
   function handleKeydown(event: KeyboardEvent): void {
+    // Check if the dropdown is open and the key pressed is Enter or Space. If so, toggle the dropdown state
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       isDropdownOpen = !isDropdownOpen;
     }
+
+    // Check if the dropdown is open and the key pressed is Escape,.If so, close the dropdown
+    if (event.key === 'Escape' && isDropdownOpen) {
+      event.preventDefault();
+      isDropdownOpen = false;
+    }
+  }
+
+  /**
+   * Updates the dropdown visibility based on mouse position
+   *
+   * @function updateDropdownState
+   * @description Determines if the dropdown should be visible based on
+   * whether the mouse is over the trigger or the dropdown itself
+   */
+  function updateDropdownState(): void {
+    isDropdownOpen = isMouseOverTrigger || isMouseOverDropdown;
   }
 </script>
 
@@ -151,6 +169,7 @@
       class="nav__menu--trigger"
       role="button"
       tabindex="0"
+      on:keydown={handleKeydown}
       on:mouseenter={handleTriggerMouseEnter}
       on:mouseleave={handleTriggerMouseLeave}
     >
