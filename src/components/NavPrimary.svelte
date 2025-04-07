@@ -36,9 +36,9 @@
    *
    * @type {boolean}
    */
-  let isDropdownOpen = false;
-  let isMouseOverTrigger = false;
-  let isMouseOverDropdown = false;
+  let isDropdownOpen: boolean = false;
+  let isMouseOverTrigger: boolean = false;
+  let isMouseOverDropdown: boolean = false;
 
   /**
    * Transition duration in milliseconds
