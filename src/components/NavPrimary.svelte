@@ -56,6 +56,13 @@
   const TRANSITION_DURATION = 150;
 
   /**
+   * Delay constants in milliseconds
+   * @constant {number}
+   */
+  const TRIGGER_TIMEOUT_DELAY = 350;
+  const DROPDOWN_TIMEOUT_DELAY = 50;
+
+  /**
    * Utility function to safely clear one or more timeouts
    *
    * @function clearTimeouts
@@ -106,7 +113,7 @@
 
     // setTimeout to allow the mouse to move to the dropdown
     // Type assertion to ensure setTimeout ID is treated as number across all environments
-    triggerTimeout = setTimeout(updateDropdownState, 350) as unknown as number;
+    triggerTimeout = setTimeout(updateDropdownState, TRIGGER_TIMEOUT_DELAY) as unknown as number;
   }
 
   /**
@@ -141,7 +148,7 @@
 
     // setTimeout to provide slight delay before closing the dropdown
     // Type assertion to ensure setTimeout ID is treated as number across all environments
-    dropdownTimeout = setTimeout(updateDropdownState, 50) as unknown as number;
+    dropdownTimeout = setTimeout(updateDropdownState, DROPDOWN_TIMEOUT_DELAY) as unknown as number;
   }
 
   /**
