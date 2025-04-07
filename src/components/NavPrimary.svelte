@@ -9,12 +9,17 @@
    * @prop {NavItem[]} items - Array of navigation items to display
    * @prop {string} [currentItem="Home"] - The currently active navigation item
    *
+   * @requires svelte
+   * @requires svelte/transition
+   * @requires ./NavSubMenu
    * @requires ../types
    */
 
+  import { onDestroy } from 'svelte';
+  import { fade } from 'svelte/transition';
+
   // Components
   import NavSubMenu from './NavSubMenu.svelte';
-  import { fade } from 'svelte/transition';
 
   // Types
   import type { NavItem } from '../types';
@@ -158,6 +163,18 @@
   function updateDropdownState(): void {
     isDropdownOpen = isMouseOverTrigger || isMouseOverDropdown;
   }
+
+  /**
+   * Cleanup function that runs when component is destroyed
+   *
+   * @function onDestroy
+   * @description Clears any pending timeouts to prevent memory leaks
+   * and avoid executing callbacks after component unmount
+   */
+  onDestroy(() => {
+    if (triggerTimeout !== null) clearTimeout(triggerTimeout);
+    if (dropdownTimeout !== null) clearTimeout(dropdownTimeout);
+  });
 </script>
 
 <ul class="nav__primary">
