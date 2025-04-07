@@ -3,28 +3,33 @@
    * NavSecondary Component
    *
    * @component
-   * @description Secondary navigation section for the Netflix-style navigation bar.
-   * Contains the search icon, notifications, and user avatar.
+   * @description Secondary navigation section for the navigation bar.
+   * Contains the search icon, notifications, and user avatar. Positioned at the right
+   * side of the navigation bar to provide user-specific functionality.
    *
+   * @prop {string} [avatarAlt="Netflix user avatar"] - Alt text for the avatar image
+   * @prop {string} avatarSrc - Source URL for the user avatar image
    * @prop {number} [notificationCount=0] - Number of notifications to display
    * @prop {boolean} [showNotifications=false] - Whether to show the notification badge
-   * @prop {string} avatarSrc - Source URL for the user avatar image
-   * @prop {string} [avatarAlt="Netflix user avatar"] - Alt text for the avatar image
+   *
+   * @requires ./IconNotification
+   * @requires ./IconSearch
+   * @requires ./UserAvatar
    */
 
   // Components
-  import IconSearch from './IconSearch.svelte';
   import IconNotification from './IconNotification.svelte';
+  import IconSearch from './IconSearch.svelte';
   import UserAvatar from './UserAvatar.svelte';
 
   /**
    * Props for the NavSecondary component
    *
-   * @typedef {Object} NavSecondaryProps
-   * @property {number} [notificationCount=0] - Number of notifications to display
-   * @property {boolean} [showNotifications=false] - Whether to show the notification badge
+   * @interface NavSecondaryProps
    * @property {string} avatarSrc - Source URL for the user avatar image
    * @property {string} [avatarAlt="Netflix user avatar"] - Alt text for the avatar image
+   * @property {number} [notificationCount=0] - Number of notifications to display
+   * @property {boolean} [showNotifications=false] - Whether to show the notification badge
    */
   interface NavSecondaryProps {
     notificationCount?: number;
@@ -33,10 +38,10 @@
     avatarAlt?: string;
   }
 
+  export let avatarAlt: NavSecondaryProps['avatarAlt'] = 'Netflix user avatar';
+  export let avatarSrc: NavSecondaryProps['avatarSrc'];
   export let notificationCount: NavSecondaryProps['notificationCount'] = 0;
   export let showNotifications: NavSecondaryProps['showNotifications'] = false;
-  export let avatarSrc: NavSecondaryProps['avatarSrc'];
-  export let avatarAlt: NavSecondaryProps['avatarAlt'] = 'Netflix user avatar';
 </script>
 
 <div class="nav__secondary">
@@ -72,6 +77,6 @@
 
   /* Spacing between secondary navigation elements */
   .nav__secondary--element:not(:last-child) {
-    margin-right: 10px;
+    margin-right: 1rem;
   }
 </style>

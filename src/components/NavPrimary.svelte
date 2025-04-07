@@ -3,237 +3,25 @@
    * NavPrimary Component
    *
    * @component
-   * @description Primary navigation menu for the Netflix-style navigation bar.
+   * @description Primary navigation menu for the navigation bar.
    * Displays navigation items and handles responsive behavior between mobile and desktop views.
+   * Serves as a container for both mobile and desktop navigation components.
    *
-   * @prop {NavItem[]} items - Array of navigation items to display
-   * @prop {string} [currentItem="Home"] - The currently active navigation item
-   *
-   * @requires svelte
-   * @requires svelte/transition
-   * @requires ./NavSubMenu
-   * @requires ../types
+   * @requires ./NavDesktop
+   * @requires ./NavMobile
    */
-
-  import { onDestroy } from 'svelte';
-  import { fade } from 'svelte/transition';
 
   // Components
-  import NavSubMenu from './NavSubMenu.svelte';
-
-  // Types
-  import type { NavItem } from '../types';
-
-  /**
-   * Props for the NavPrimary component
-   *
-   * @typedef {Object} NavPrimaryProps
-   * @property {NavItem[]} items - Array of navigation items to display
-   */
-  interface NavPrimaryProps {
-    items: NavItem[];
-  }
-
-  export let items: NavPrimaryProps['items'];
-
-  /**
-   * State variables for dropdown interaction
-   *
-   * @type {boolean}
-   */
-  let isDropdownOpen: boolean = false;
-  let isMouseOverTrigger: boolean = false;
-  let isMouseOverDropdown: boolean = false;
-
-  // Track timeouts to clear them if needed
-  let triggerTimeout: number | null = null;
-  let dropdownTimeout: number | null = null;
-
-  /**
-   * Transition duration in milliseconds
-   * @constant {number}
-   */
-  const TRANSITION_DURATION = 150;
-
-  /**
-   * Delay constants in milliseconds
-   * @constant {number}
-   */
-  const TRIGGER_TIMEOUT_DELAY = 350;
-  const DROPDOWN_TIMEOUT_DELAY = 50;
-
-  /**
-   * Utility function to safely clear one or more timeouts
-   *
-   * @function clearTimeouts
-   * @param {...(number|null)} timeoutIds - One or more timeout IDs to clear
-   * @description Checks if each timeout ID is not null before clearing it
-   * @example
-   * // Clear a single timeout
-   * clearTimeouts(myTimeout);
-   *
-   * // Clear multiple timeouts
-   * clearTimeouts(triggerTimeout, dropdownTimeout);
-   */
-  export function clearTimeouts(...timeoutIds: (number | null)[]): void {
-    timeoutIds.forEach((id) => {
-      if (id !== null) clearTimeout(id);
-    });
-  }
-
-  /**
-   * Handles mouse entering the trigger
-   *
-   * @function handleTriggerMouseEnter
-   * @description Updates state when mouse enters the dropdown trigger
-   *
-   * @example
-   * <button on:mouseenter={handleTriggerMouseEnter}>Trigger</button>
-   */
-  function handleTriggerMouseEnter(): void {
-    isMouseOverTrigger = true;
-    updateDropdownState();
-  }
-
-  /**
-   * Handles mouse leaving the trigger
-   *
-   * @function handleTriggerMouseLeave
-   * @description Updates state when mouse leaves the dropdown trigger
-   * with a delay to allow movement to the dropdown
-   *
-   * @example
-   * <button on:mouseleave={handleTriggerMouseLeave}>Trigger</button>
-   */
-  function handleTriggerMouseLeave(): void {
-    isMouseOverTrigger = false;
-
-    // Clear any existing timeout
-    clearTimeouts(triggerTimeout);
-
-    // setTimeout to allow the mouse to move to the dropdown
-    // Type assertion to ensure setTimeout ID is treated as number across all environments
-    triggerTimeout = setTimeout(updateDropdownState, TRIGGER_TIMEOUT_DELAY) as unknown as number;
-  }
-
-  /**
-   * Handles mouse entering the dropdown
-   *
-   * @function handleDropdownMouseEnter
-   * @description Updates state when mouse enters the dropdown menu
-   *
-   * @example
-   * <div on:mouseenter={handleDropdownMouseEnter}>Dropdown</div>
-   */
-  function handleDropdownMouseEnter(): void {
-    isMouseOverDropdown = true;
-    updateDropdownState();
-  }
-
-  /**
-   * Handles mouse leaving the dropdown
-   *
-   * @function handleDropdownMouseLeave
-   * @description Updates state when mouse leaves the dropdown menu
-   * with a short delay to prevent flickering
-   *
-   * @example
-   * <div on:mouseleave={handleDropdownMouseLeave}>Dropdown</div>
-   */
-  function handleDropdownMouseLeave(): void {
-    isMouseOverDropdown = false;
-
-    // Clear any existing timeout
-    clearTimeouts(dropdownTimeout);
-
-    // setTimeout to provide slight delay before closing the dropdown
-    // Type assertion to ensure setTimeout ID is treated as number across all environments
-    dropdownTimeout = setTimeout(updateDropdownState, DROPDOWN_TIMEOUT_DELAY) as unknown as number;
-  }
-
-  /**
-   * Handles keyboard interaction with the dropdown trigger
-   *
-   * @function handleKeydown
-   * @param {KeyboardEvent} event - The keyboard event
-   * @description Toggles the dropdown when Enter or Space is pressed
-   *
-   * @example
-   * <button on:keydown={handleKeydown}>Trigger</button>
-   */
-  function handleKeydown(event: KeyboardEvent): void {
-    // Check if the dropdown is open and the key pressed is Enter or Space. If so, toggle the dropdown state
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      isDropdownOpen = !isDropdownOpen;
-    }
-
-    // Check if the dropdown is open and the key pressed is Escape,.If so, close the dropdown
-    if (event.key === 'Escape' && isDropdownOpen) {
-      event.preventDefault();
-      isDropdownOpen = false;
-    }
-  }
-
-  /**
-   * Updates the dropdown visibility based on mouse position
-   *
-   * @function updateDropdownState
-   * @description Determines if the dropdown should be visible based on
-   * whether the mouse is over the trigger or the dropdown itself
-   */
-  function updateDropdownState(): void {
-    isDropdownOpen = isMouseOverTrigger || isMouseOverDropdown;
-  }
-
-  /**
-   * Cleanup function that runs when component is destroyed
-   *
-   * @function onDestroy
-   * @description Clears any pending timeouts to prevent memory leaks
-   * and avoid executing callbacks after component unmount
-   */
-  onDestroy(() => {
-    clearTimeouts(triggerTimeout, dropdownTimeout);
-  });
+  import DesktopNav from './NavDesktop.svelte';
+  import MobileNav from './NavMobile.svelte';
 </script>
 
 <ul class="nav__primary">
-  <!-- Mobile Nav with dropdown -->
-  <li class="nav__menu">
-    <span
-      aria-haspopup="true"
-      aria-expanded={isDropdownOpen}
-      class="nav__menu--trigger"
-      role="button"
-      tabindex="0"
-      on:keydown={handleKeydown}
-      on:mouseenter={handleTriggerMouseEnter}
-      on:mouseleave={handleTriggerMouseLeave}
-    >
-      Browse
-    </span>
+  <!-- Mobile Navigation -->
+  <MobileNav />
 
-    {#if isDropdownOpen}
-      <div
-        class="dropdown-container"
-        role="menu"
-        tabindex="0"
-        on:mouseenter={handleDropdownMouseEnter}
-        on:mouseleave={handleDropdownMouseLeave}
-        transition:fade={{ duration: TRANSITION_DURATION }}
-      >
-        <NavSubMenu {items} isOpen={true} />
-      </div>
-    {/if}
-  </li>
-
-  <!-- Desktop Nav -->
-  {#each items as item}
-    <li class={item.isCurrent ? 'nav__tabbed nav__tabbed--current' : 'nav__tabbed'}>
-      {item.label}
-    </li>
-  {/each}
+  <!-- Desktop Navigation -->
+  <DesktopNav />
 </ul>
 
 <style>
@@ -243,60 +31,5 @@
     display: flex;
     margin: 0;
     padding: 0;
-  }
-
-  /* Mobile menu trigger element */
-  .nav__menu {
-    color: #fff;
-    display: block;
-    list-style: none;
-    margin-left: 18px;
-  }
-
-  /* Text and dropdown trigger for mobile menu */
-  .nav__menu--trigger {
-    align-items: center;
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    font-weight: 500;
-    height: 100%;
-    position: relative;
-    text-decoration: none;
-  }
-
-  /* Triangle indicator using ::after pseudo-element */
-  .nav__menu--trigger::after {
-    border-color: #fff transparent transparent;
-    border-style: solid;
-    border-width: 5px 5px 0;
-    content: '';
-    height: 0;
-    margin-left: 5px;
-    width: 0;
-  }
-
-  /* Individual navigation item */
-  .nav__tabbed {
-    color: #fff;
-    display: none;
-    list-style: none;
-    margin-left: 18px;
-  }
-
-  /* Current/active navigation item */
-  .nav__tabbed--current {
-    font-weight: 700;
-  }
-
-  /* Responsive behavior - show tabs on larger screens */
-  @media screen and (min-width: 885px) {
-    .nav__menu {
-      display: none;
-    }
-
-    .nav__tabbed {
-      display: block;
-    }
   }
 </style>

@@ -10,41 +10,29 @@
    * @prop {boolean} [isOpen=false] - Whether the dropdown menu is currently open
    * @prop {NavItem[]} [items=[]] - Array of navigation items to display in the dropdown
    *
+   * @requires ./NavItem
    * @requires ../types
    */
 
+  // Components
+  import NavItem from './NavItem.svelte';
+
   // Types
-  import type { NavItem } from '../types';
+  import type { NavItem as NavItemType } from '../types';
 
   /**
    * Props for the NavSubMenu component
    *
    * @typedef {Object} NavSubMenuProps
    * @property {boolean} isOpen - Whether the dropdown menu is currently open
-   * @property {NavItem[]} items - Array of navigation items to display
+   * @property {NavItemType[]} items - Array of navigation items to display
    */
   interface NavSubMenuProps {
     isOpen: boolean;
-    items: NavItem[];
+    items: NavItemType[];
   }
 
-  /**
-   * Controls the visibility of the dropdown menu
-   * When true, the menu is visible with full opacity
-   * When false, the menu is hidden
-   *
-   * @type {boolean}
-   * @default false
-   */
   export let isOpen: NavSubMenuProps['isOpen'] = false;
-
-  /**
-   * The navigation items to display in the dropdown menu
-   * Each item can have a current/active state that affects its styling
-   *
-   * @type {NavItem[]}
-   * @default []
-   */
   export let items: NavSubMenuProps['items'] = [];
 </script>
 
@@ -58,9 +46,7 @@
   <!-- The list of navigation items -->
   <ul class="sub-menu__list">
     {#each items as item}
-      <li class="sub-menu__list-item" class:sub-menu__list-item--current={item.isCurrent}>
-        {item.label}
-      </li>
+      <NavItem label={item.label} isCurrent={item.isCurrent} className="sub-menu__list-item" />
     {/each}
   </ul>
 </div>
@@ -77,7 +63,7 @@
     line-height: 21px;
     opacity: 0;
     position: absolute;
-    top: 64px;
+    top: 3rem;
     margin-left: -90px;
   }
 
@@ -107,7 +93,6 @@
   .nav__sub-menu--open {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
   }
 
   /* Container for the navigation items list */
@@ -117,7 +102,7 @@
   }
 
   /* Individual navigation item in the dropdown */
-  .sub-menu__list-item {
+  :global(.sub-menu__list-item) {
     display: block;
     line-height: 24px;
     align-items: center;
@@ -130,10 +115,9 @@
     width: 260px;
   }
 
-  /* Current/active navigation item and hover state */
-  .sub-menu__list-item--current,
-  .sub-menu__list-item:hover {
-    font-weight: 700;
+  /* Hover state for non-current navigation items */
+  :global(.sub-menu__list-item):not(.nav-item--current):hover {
     color: #fff;
+    font-weight: 700;
   }
 </style>

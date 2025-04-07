@@ -8,12 +8,13 @@
    * Contains the Netflix logo and user avatar.
    *
    * @requires svelte
-   * @requires ../constants
    * @requires ./NavPrimary
    * @requires ./NavSecondary
+   * @requires ../constants
+   * @requires ../stores/navStore
    */
 
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
 
   // Components
   import NavPrimary from './NavPrimary.svelte';
@@ -22,6 +23,9 @@
   // Constants
   import { NAV_ITEMS, NETFLIX_LOGO_URL, USER_AVATAR_URL } from '../constants';
 
+  // Stores
+  import { navStore } from '../stores/navStore';
+
   /**
    * State variable to control the visibility of the navigation background
    *
@@ -29,6 +33,24 @@
    * @default false
    */
   let show: boolean = false;
+
+  /**
+   * Handles the scroll event to show/hide the navigation background
+   *
+   * @function
+   * @description Sets the 'show' state to true when the user scrolls more than 10px
+   * down the page, and false otherwise. This controls the visibility of the
+   * navigation background.
+   *
+   * @returns {void}
+   */
+  onMount(() => {
+    // Initialize the nav store with items from constants
+    navStore.updateItems(NAV_ITEMS);
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+  });
 
   /**
    * Handles the scroll event to show/hide the navigation background
@@ -45,20 +67,20 @@
   }
 
   /**
-   * Lifecycle hook that runs when the component is mounted to the DOM
+   * Lifecycle hook that runs when the component is destroyed
    *
    * @function
-   * @description Adds a scroll event listener to the window when the component
-   * is mounted and removes it when the component is destroyed to prevent memory leaks.
+   * @description Removes the scroll event listener and cleans up any resources
+   * used by the component to prevent memory leaks.
    *
-   * @returns {Function} Cleanup function that removes the event listener
+   * @returns {void}
    */
-  onMount(() => {
-    window.addEventListener('scroll', handleScroll);
+  onDestroy(() => {
+    // Remove scroll event listener
+    window.removeEventListener('scroll', handleScroll);
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    // Clean up any resources used by the navStore
+    navStore.cleanup();
   });
 </script>
 
@@ -69,7 +91,7 @@
       <img alt="Netflix Logo" class="nav__logo" src={NETFLIX_LOGO_URL} />
 
       <!-- Primary navigation -->
-      <NavPrimary items={NAV_ITEMS} />
+      <NavPrimary />
 
       <!-- Secondary navigation -->
       <NavSecondary avatarSrc={USER_AVATAR_URL} showNotifications={true} notificationCount={5} />
