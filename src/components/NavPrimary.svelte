@@ -40,6 +40,10 @@
   let isMouseOverTrigger: boolean = false;
   let isMouseOverDropdown: boolean = false;
 
+  // Track timeouts to clear them if needed
+  let triggerTimeout: number | null = null;
+  let dropdownTimeout: number | null = null;
+
   /**
    * Transition duration in milliseconds
    * @constant {number}
@@ -73,8 +77,14 @@
   function handleTriggerMouseLeave(): void {
     isMouseOverTrigger = false;
 
+    // Clear any existing timeout
+    if (triggerTimeout !== null) {
+      clearTimeout(triggerTimeout);
+    }
+
     // setTimeout to allow the mouse to move to the dropdown
-    setTimeout(updateDropdownState, 350);
+    // Type assertion to ensure setTimeout ID is treated as number across all environments
+    triggerTimeout = setTimeout(updateDropdownState, 350) as unknown as number;
   }
 
   /**
@@ -104,19 +114,14 @@
   function handleDropdownMouseLeave(): void {
     isMouseOverDropdown = false;
 
-    // setTimeout to provide slight delay before closing the dropdown
-    setTimeout(updateDropdownState, 50);
-  }
+    // Clear any existing timeout
+    if (dropdownTimeout !== null) {
+      clearTimeout(dropdownTimeout);
+    }
 
-  /**
-   * Updates the dropdown visibility based on mouse position
-   *
-   * @function updateDropdownState
-   * @description Determines if the dropdown should be visible based on
-   * whether the mouse is over the trigger or the dropdown itself
-   */
-  function updateDropdownState(): void {
-    isDropdownOpen = isMouseOverTrigger || isMouseOverDropdown;
+    // setTimeout to provide slight delay before closing the dropdown
+    // Type assertion to ensure setTimeout ID is treated as number across all environments
+    dropdownTimeout = setTimeout(updateDropdownState, 50) as unknown as number;
   }
 
   /**
