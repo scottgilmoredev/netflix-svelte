@@ -13,7 +13,7 @@
    */
 
   // Components
-  import NavDropdown from './NavSubMenu.svelte';
+  import NavSubMenu from './NavSubMenu.svelte';
   import { fade } from 'svelte/transition';
 
   // Types
@@ -161,7 +161,7 @@
         on:mouseleave={handleDropdownMouseLeave}
         transition:fade={{ duration: TRANSITION_DURATION }}
       >
-        <NavDropdown {items} isOpen={true} />
+        <NavSubMenu {items} isOpen={true} />
       </div>
     {/if}
   </li>
