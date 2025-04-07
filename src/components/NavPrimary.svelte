@@ -144,7 +144,7 @@
     isMouseOverDropdown = false;
 
     // Clear any existing timeout
-    clearTimeouts(triggerTimeout);
+    clearTimeouts(dropdownTimeout);
 
     // setTimeout to provide slight delay before closing the dropdown
     // Type assertion to ensure setTimeout ID is treated as number across all environments
