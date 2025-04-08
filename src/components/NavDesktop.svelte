@@ -4,12 +4,12 @@
    *
    * @component
    * @description Renders the desktop navigation items, encapsulating
-   * desktop-specific layout and behavior. Uses the navStore for state management
-   * to display navigation items with their current state.
+   * desktop-specific layout and behavior. Uses the navItems derived store
+   * which automatically updates the isCurrent property based on the current
+   * navigation selection.
    *
    * @requires ./NavItem
    * @requires ../stores/navStore
-   * @requires ../types
    */
 
   // Components
@@ -19,21 +19,11 @@
   import { navItems } from '../stores/navStore';
 </script>
 
-<ul class="desktop-nav">
-  {#each $navItems as item}
-    <NavItem label={item.label} isCurrent={item.isCurrent} className="desktop-nav__item" />
-  {/each}
-</ul>
+{#each $navItems as item}
+  <NavItem className="desktop-nav__item" isCurrent={item.isCurrent} label={item.label} />
+{/each}
 
 <style>
-  /* Desktop navigation container */
-  .desktop-nav {
-    align-items: center;
-    display: flex;
-    margin: 0;
-    padding: 0;
-  }
-
   /* Individual desktop navigation item */
   :global(.desktop-nav__item) {
     color: #e5e5e5;

@@ -9,49 +9,26 @@
    *
    * @requires svelte
    * @requires svelte/transition
-   * @requires ./NavTrigger
+   * @requires ./NavItem
    * @requires ./NavSubMenu
+   * @requires ./NavTrigger
    * @requires ../constants
    * @requires ../stores/navStore
-   * @requires ../types
    */
 
   import { onDestroy } from 'svelte';
   import { fade } from 'svelte/transition';
 
   // Components
-  import NavTrigger from './NavTrigger.svelte';
+  import NavItem from './NavItem.svelte';
   import NavSubMenu from './NavSubMenu.svelte';
+  import NavTrigger from './NavTrigger.svelte';
 
   // Constants
   import { TRANSITION_DURATION } from '../constants';
 
   // Stores
   import { navStore, navItems } from '../stores/navStore';
-
-  /**
-   * Handles keyboard trigger events
-   *
-   * @function handleTriggerKeyPress
-   * @description Toggles the dropdown visibility when the trigger is activated via keyboard
-   *
-   * @returns {void}
-   */
-  function handleTriggerKeyPress(): void {
-    navStore.toggleDropdown();
-  }
-
-  /**
-   * Handles escape key press
-   *
-   * @function handleTriggerEscape
-   * @description Closes the dropdown when the escape key is pressed
-   *
-   * @returns {void}
-   */
-  function handleTriggerEscape(): void {
-    navStore.closeDropdown();
-  }
 
   /**
    * Cleanup function that runs when component is destroyed
@@ -69,26 +46,30 @@
 
 <li class="mobile-nav">
   <!-- Dropdown trigger button with mouse and keyboard event handlers -->
-  <NavTrigger
-    isOpen={$navStore.isDropdownOpen}
-    onMouseEnter={() => navStore.setTriggerHover(true)}
-    onMouseLeave={() => navStore.setTriggerHover(false)}
-    on:triggerEscape={handleTriggerEscape}
-    on:triggerKeyPress={handleTriggerKeyPress}
-  />
+  <NavTrigger dropdownId="primaryNav" />
 
-  {#if $navStore.isDropdownOpen}
+  {#if $navStore.openDropdowns.primaryNav}
     <!-- Dropdown menu - conditionally rendered when dropdown is open -->
-    <div
+    <span
       role="menu"
       tabindex="0"
-      on:mouseenter={() => navStore.setDropdownHover(true)}
-      on:mouseleave={() => navStore.setDropdownHover(false)}
+      on:mouseenter={() => navStore.setDropdownHover(true, 'primaryNav')}
+      on:mouseleave={() => navStore.setDropdownHover(false, 'primaryNav')}
       transition:fade={{ duration: TRANSITION_DURATION }}
     >
-      <!-- Navigation submenu with items from the store -->
-      <NavSubMenu items={$navItems} isOpen={true} />
-    </div>
+      <!-- Navigation submenu -->
+      <NavSubMenu isOpen={true}>
+        <ul class="mobile-nav__list">
+          {#each $navItems as item}
+            <NavItem
+              className="mobile-nav__list-item"
+              isCurrent={item.isCurrent}
+              label={item.label}
+            />
+          {/each}
+        </ul>
+      </NavSubMenu>
+    </span>
   {/if}
 </li>
 
@@ -100,6 +81,32 @@
     list-style: none;
     margin-left: 18px;
     position: relative;
+  }
+
+  /* Container for the navigation items list */
+  .mobile-nav__list {
+    height: auto;
+    padding: 0;
+  }
+
+  /* Individual navigation item in the dropdown */
+  :global(.mobile-nav__list-item) {
+    display: block;
+    line-height: 24px;
+    align-items: center;
+    color: #b3b3b3;
+    display: flex;
+    height: 50px;
+    justify-content: center;
+    position: relative;
+    transition: background-color 0.4s;
+    width: 260px;
+  }
+
+  /* Hover state for non-current navigation items */
+  :global(.mobile-nav__list-item):not(.nav-item--current):hover {
+    color: #fff;
+    font-weight: 700;
   }
 
   /* Responsive behavior - hide on larger screens */

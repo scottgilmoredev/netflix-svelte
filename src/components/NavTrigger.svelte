@@ -3,47 +3,37 @@
    * NavTrigger Component
    *
    * @component
-   * @description Manages the dropdown trigger button for mobile navigation,
-   * handling mouse events and keyboard interactions. Displays a "Browse" label
-   * with a dropdown arrow that rotates when the dropdown is open.
+   * @description Manages the dropdown trigger button for navigation,
+   * handling mouse events and keyboard interactions. Displays a label
+   * (defaulting to "Browse") with a dropdown arrow that rotates when
+   * the dropdown is open. Uses the navStore to manage dropdown state.
    *
-   * @prop {boolean} isOpen - Whether the dropdown is currently open
-   * @prop {Function} onMouseEnter - Handler for mouseenter event
-   * @prop {Function} onMouseLeave - Handler for mouseleave event
+   * @prop {string} [dropdownId="primaryNav"] - Identifier for the dropdown this trigger controls
    *
-   * @requires svelte
+   * @slot default - Content to display as the trigger text (defaults to "Browse")
+   *
+   * @requires ../stores/navStore
    */
 
-  import { createEventDispatcher } from 'svelte';
+  import { navStore } from '../stores/navStore';
 
   /**
    * Props for the NavTrigger component
    *
    * @interface NavTriggerProps
-   * @property {boolean} isOpen - Whether the dropdown is currently open
-   * @property {() => void} onMouseEnter - Handler function for mouseenter event
-   * @property {() => void} onMouseLeave - Handler function for mouseleave event
+   * @property {string} dropdownId - Identifier for the dropdown this trigger controls
    */
   interface NavTriggerProps {
-    isOpen: boolean;
-    onMouseEnter: () => void;
-    onMouseLeave: () => void;
+    dropdownId: string;
   }
 
-  export let isOpen: NavTriggerProps['isOpen'];
-  export let onMouseEnter: NavTriggerProps['onMouseEnter'];
-  export let onMouseLeave: NavTriggerProps['onMouseLeave'];
+  export let dropdownId: NavTriggerProps['dropdownId'] = 'primaryNav';
 
   /**
-   * Event dispatcher for custom events
-   *
-   * @type {Function}
-   * @description Creates a typed event dispatcher for sending events to parent components
+   * Reactive variable to track if accountNav dropdown is open
+   * Used to handle trigger animation (only accountNav trigger rotates on hover)
    */
-  const dispatch: Function = createEventDispatcher<{
-    triggerKeyPress: void;
-    triggerEscape: void;
-  }>();
+  $: isOpen = $navStore.openDropdowns.accountNav;
 
   /**
    * Handles keyboard interaction with the dropdown trigger
@@ -54,21 +44,18 @@
    * - Escape: Closes the dropdown if it's open
    *
    * @param {KeyboardEvent} event - The keyboard event
+   *
    * @returns {void}
    */
   function handleKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-
-      // Dispatch a custom event for the parent to handle
-      dispatch('triggerKeyPress');
+      navStore.toggleDropdown(dropdownId);
     }
 
-    if (event.key === 'Escape' && isOpen) {
+    if (event.key === 'Escape' && $navStore.openDropdowns[dropdownId]) {
       event.preventDefault();
-
-      // Dispatch a custom event for the parent to handle
-      dispatch('triggerEscape');
+      navStore.closeDropdown(dropdownId);
     }
   }
 </script>
@@ -78,11 +65,12 @@
   aria-haspopup="true"
   aria-expanded={isOpen}
   class="nav-trigger"
+  class:nav-trigger--account={dropdownId === 'accountNav'}
   role="button"
   tabindex="0"
   on:keydown={handleKeydown}
-  on:mouseenter={onMouseEnter}
-  on:mouseleave={onMouseLeave}
+  on:mouseenter={() => navStore.setTriggerHover(true, dropdownId)}
+  on:mouseleave={() => navStore.setTriggerHover(false, dropdownId)}
 >
   <!-- Default content is "Browse", but can be customized via slots -->
   <slot>Browse</slot>
@@ -109,13 +97,27 @@
     content: '';
     height: 0;
     margin-left: 5px;
+    transition:
+      transform 0.2s ease,
+      border-width 0.2s ease,
+      border-color 0.2s ease;
     width: 0;
+  }
+
+  /* Special handling for account menu caret - hide by default on small screens */
+  .nav-trigger--account::after {
+    display: none;
+  }
+
+  /* Show account menu caret only on screens wider than 950px */
+  @media screen and (min-width: 950px) {
+    .nav-trigger--account::after {
+      display: block;
+    }
   }
 
   /* Rotate arrow when dropdown is open */
   .nav-trigger[aria-expanded='true']::after {
     transform: rotate(180deg);
-    border-color: transparent transparent #fff;
-    border-width: 0 5px 5px;
   }
 </style>
