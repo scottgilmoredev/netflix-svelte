@@ -10,7 +10,7 @@
    *
    * @requires svelte
    * @requires ./NavPrimary
-   * @requires ./NavSecondary
+   * @requires ./NavSecondaryContainer
    * @requires ../constants
    * @requires ../stores/navStore
    */
@@ -19,7 +19,7 @@
 
   // Components
   import NavPrimary from './NavPrimary.svelte';
-  import NavSecondary from './NavSecondary.svelte';
+  import NavSecondaryContainer from './NavSecondaryContainer.svelte';
 
   // Constants
   import { NAV_ITEMS, NETFLIX_LOGO_URL, AVATAR_USER_URL } from '../constants';
@@ -97,7 +97,11 @@
       <NavPrimary />
 
       <!-- Secondary navigation -->
-      <NavSecondary avatarSrc={AVATAR_USER_URL} notificationCount={5} showNotifications={true} />
+      <NavSecondaryContainer
+        avatarSrc={AVATAR_USER_URL}
+        notificationCount={5}
+        showNotifications={true}
+      />
     </div>
   </div>
 </nav>
