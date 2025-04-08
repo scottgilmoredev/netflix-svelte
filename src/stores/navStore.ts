@@ -17,7 +17,7 @@ import { writable, derived } from 'svelte/store';
 import { DROPDOWN_TIMEOUT_DELAY, NAV_ITEMS, TRIGGER_TIMEOUT_DELAY } from '../constants';
 
 // Types
-import type { NavItem, NavState } from '../types';
+import type { HoverTarget, NavItem, NavState } from '../types';
 
 /**
  * Initial navigation state
@@ -27,11 +27,22 @@ import type { NavItem, NavState } from '../types';
  * Sets the Home item as current, dropdown closed, and no hover states.
  */
 const initialState: NavState = {
-  isDropdownOpen: false,
   currentItem: 'Home',
-  isMouseOverTrigger: false,
-  isMouseOverDropdown: false,
   items: NAV_ITEMS,
+  hoverStates: {
+    primaryNav: {
+      trigger: false,
+      dropdown: false,
+    },
+    accountNav: {
+      trigger: false,
+      dropdown: false,
+    },
+  },
+  openDropdowns: {
+    primaryNav: false,
+    accountNav: false,
+  },
 };
 
 /**
@@ -48,8 +59,10 @@ function createNavStore() {
   const { subscribe, update, set } = writable<NavState>(initialState);
 
   // Track timeouts to clear them when needed
-  let triggerTimeout: number | null = null;
-  let dropdownTimeout: number | null = null;
+  const timeouts: { [key: string]: { trigger: number | null; dropdown: number | null } } = {
+    primaryNav: { trigger: null, dropdown: null },
+    accountNav: { trigger: null, dropdown: null },
+  };
 
   /**
    * Helper to clear timeouts
@@ -65,6 +78,111 @@ function createNavStore() {
     });
   }
 
+  /**
+   * Handles mouse hover state for navigation elements
+   *
+   * @function setHoverState
+   * @description Updates hover state for the specified target and manages visibility
+   * with a timeout when the mouse leaves. Used internally by setDropdownHover and setTriggerHover.
+   *
+   * @param {boolean} isHovering - Whether the mouse is currently over the element
+   * @param {HoverTarget} target - Which part of the navigation is being hovered ('trigger' or 'dropdown')
+   * @param {string} [dropdownId='main'] - Identifier for the dropdown
+   */
+  function setHoverState(
+    isHovering: boolean,
+    target: HoverTarget,
+    dropdownId: string = 'primaryNav'
+  ) {
+    // Determine the opposite target (if we're hovering trigger, the opposite is dropdown and vice versa)
+    const oppositeTarget = target === 'trigger' ? 'dropdown' : 'trigger';
+
+    // Get the appropriate timeout delay based on the target
+    const timeoutDelay = target === 'trigger' ? TRIGGER_TIMEOUT_DELAY : DROPDOWN_TIMEOUT_DELAY;
+
+    // Clear the existing timeout for this target
+    clearTimeouts(timeouts[dropdownId][target]);
+
+    if (isHovering) {
+      // Mouse entered: Update state immediately
+      updateHoverStateEnter(target, dropdownId);
+      return;
+    }
+
+    // Mouse left: Set timeout to update state
+    timeouts[dropdownId][target] = window.setTimeout(() => {
+      update((state) => {
+        const isOppositeTargetHovered = !!state.hoverStates[dropdownId]?.[oppositeTarget];
+
+        if (isOppositeTargetHovered) {
+          // If opposite target is hovered, only update hover state
+          return updateTargetHoverState(state, target, dropdownId, false);
+        }
+
+        // If nothing else is hovered, update hover state and close dropdown
+        return {
+          ...updateTargetHoverState(state, target, dropdownId, false),
+          openDropdowns: {
+            ...state.openDropdowns,
+            [dropdownId]: false,
+          },
+        };
+      });
+    }, timeoutDelay) as unknown as number;
+  }
+
+  /**
+   * Updates the hover state when mouse enters a target
+   *
+   * @function updateHoverStateEnter
+   * @param {HoverTarget} target - The target being hovered
+   * @param {string} dropdownId - Identifier for the dropdown
+   */
+  function updateHoverStateEnter(target: HoverTarget, dropdownId: string): void {
+    update((state) => ({
+      ...state,
+      hoverStates: {
+        ...state.hoverStates,
+        [dropdownId]: {
+          ...state.hoverStates[dropdownId],
+          [target]: true,
+        },
+      },
+      openDropdowns: {
+        ...state.openDropdowns,
+        [dropdownId]: true,
+      },
+    }));
+  }
+
+  /**
+   * Creates a new state object with updated hover state for a target
+   *
+   * @function updateTargetHoverState
+   * @param {NavState} state - Current navigation state
+   * @param {HoverTarget} target - The target to update
+   * @param {string} dropdownId - Identifier for the dropdown
+   * @param {boolean} isHovering - New hover state
+   * @returns {NavState} Updated state object
+   */
+  function updateTargetHoverState(
+    state: NavState,
+    target: HoverTarget,
+    dropdownId: string,
+    isHovering: boolean
+  ): NavState {
+    return {
+      ...state,
+      hoverStates: {
+        ...state.hoverStates,
+        [dropdownId]: {
+          ...state.hoverStates[dropdownId],
+          [target]: isHovering,
+        },
+      },
+    };
+  }
+
   return {
     subscribe,
 
@@ -76,7 +194,9 @@ function createNavStore() {
      * when components using the store are destroyed
      */
     cleanup: () => {
-      clearTimeouts(triggerTimeout, dropdownTimeout);
+      Object.values(timeouts).forEach((item) => {
+        clearTimeouts(item.trigger, item.dropdown);
+      });
     },
 
     /**
@@ -85,7 +205,14 @@ function createNavStore() {
      * @function closeDropdown
      * @description Sets isDropdownOpen to false
      */
-    closeDropdown: () => update((state) => ({ ...state, isDropdownOpen: false })),
+    closeDropdown: (dropdownId: string = 'main') =>
+      update((state) => ({
+        ...state,
+        openDropdowns: {
+          ...state.openDropdowns,
+          [dropdownId]: false,
+        },
+      })),
 
     /**
      * Opens the dropdown menu
@@ -93,7 +220,14 @@ function createNavStore() {
      * @function openDropdown
      * @description Sets isDropdownOpen to true
      */
-    openDropdown: () => update((state) => ({ ...state, isDropdownOpen: true })),
+    openDropdown: (dropdownId: string = 'main') =>
+      update((state) => ({
+        ...state,
+        openDropdowns: {
+          ...state.openDropdowns,
+          [dropdownId]: true,
+        },
+      })),
 
     /**
      * Resets the navigation state to its initial values
@@ -102,7 +236,9 @@ function createNavStore() {
      * @description Clears timeouts and resets the store to initialState
      */
     reset: () => {
-      clearTimeouts(triggerTimeout, dropdownTimeout);
+      Object.values(timeouts).forEach((item) => {
+        clearTimeouts(item.trigger, item.dropdown);
+      });
       set(initialState);
     },
 
@@ -124,29 +260,10 @@ function createNavStore() {
      * with a timeout when the mouse leaves
      *
      * @param {boolean} isHovering - Whether the mouse is currently over the dropdown
+     * @param {string} [dropdownId='main'] - Identifier for the dropdown
      */
-    setDropdownHover: (isHovering: boolean) => {
-      clearTimeouts(dropdownTimeout);
-
-      if (!isHovering) {
-        dropdownTimeout = window.setTimeout(() => {
-          update((state) => {
-            // Only close if mouse is not over trigger
-            if (!state.isMouseOverTrigger) {
-              return { ...state, isMouseOverDropdown: false, isDropdownOpen: false };
-            }
-
-            // If mouse is over trigger, just update the state
-            return { ...state, isMouseOverDropdown: false };
-          });
-        }, DROPDOWN_TIMEOUT_DELAY) as unknown as number;
-      } else {
-        update((state) => ({
-          ...state,
-          isMouseOverDropdown: true,
-          isDropdownOpen: true,
-        }));
-      }
+    setDropdownHover: (isHovering: boolean, dropdownId: string = 'main') => {
+      setHoverState(isHovering, 'dropdown', dropdownId);
     },
 
     /**
@@ -157,29 +274,10 @@ function createNavStore() {
      * with a timeout when the mouse leaves
      *
      * @param {boolean} isHovering - Whether the mouse is currently over the trigger
+     * @param {string} [dropdownId='main'] - Identifier for the dropdown
      */
-    setTriggerHover: (isHovering: boolean) => {
-      clearTimeouts(triggerTimeout);
-
-      if (!isHovering) {
-        triggerTimeout = window.setTimeout(() => {
-          update((state) => {
-            // Only close if mouse is not over dropdown
-            if (!state.isMouseOverDropdown) {
-              return { ...state, isMouseOverTrigger: false, isDropdownOpen: false };
-            }
-
-            // If mouse is over dropdown, just update the state
-            return { ...state, isMouseOverTrigger: false };
-          });
-        }, TRIGGER_TIMEOUT_DELAY) as unknown as number;
-      } else {
-        update((state) => ({
-          ...state,
-          isMouseOverTrigger: true,
-          isDropdownOpen: true,
-        }));
-      }
+    setTriggerHover: (isHovering: boolean, dropdownId: string = 'main') => {
+      setHoverState(isHovering, 'trigger', dropdownId);
     },
 
     /**
@@ -188,7 +286,14 @@ function createNavStore() {
      * @function toggleDropdown
      * @description Inverts the current isDropdownOpen state
      */
-    toggleDropdown: () => update((state) => ({ ...state, isDropdownOpen: !state.isDropdownOpen })),
+    toggleDropdown: (dropdownId: string = 'main') =>
+      update((state) => ({
+        ...state,
+        openDropdowns: {
+          ...state.openDropdowns,
+          [dropdownId]: !state.openDropdowns[dropdownId],
+        },
+      })),
 
     /**
      * Updates the navigation items array

@@ -7,22 +7,46 @@
  */
 
 /**
+ * Type representing the possible hover targets in the navigation
+ *
+ * @typedef {'trigger'|'dropdown'} HoverTarget
+ * @description Identifies which part of the navigation is being hovered
+ */
+export type HoverTarget = 'trigger' | 'dropdown';
+
+/**
+ * IconName Type
+ *
+ * @typedef {string} IconName
+ * @description Represents the available icon names that can be used throughout the application.
+ * These values correspond to specific icon assets or components that will be rendered.
+ *
+ * @property {'help'} help - Help/question mark icon
+ * @property {'pencil'} pencil - Pencil/edit icon
+ * @property {'transfer'} transfer - Transfer/move icon
+ * @property {'user'} user - User/profile icon
+ */
+export type IconName = 'help' | 'pencil' | 'transfer' | 'user';
+
+/**
  * Navigation item interface
  *
  * @interface NavItem
  * @description Defines the structure of a navigation menu item.
  * Used throughout the application to represent items in the navigation bar.
  *
- * @property {string} label - Display text for the navigation item
  * @property {boolean} [isCurrent=false] - Whether this is the current/active item
+ * @property {string} label - Display text for the navigation item
  *
  * @example
  * // Creating a navigation item
  * const homeItem: NavItem = { label: 'Home', isCurrent: true };
  */
 export interface NavItem {
-  label: string;
+  avatarSrc?: string;
+  icon?: IconName;
   isCurrent?: boolean;
+  label: string;
 }
 
 /**
@@ -50,9 +74,15 @@ export interface NavItem {
  * };
  */
 export interface NavState {
-  isDropdownOpen: boolean;
   currentItem: string;
-  isMouseOverTrigger: boolean;
-  isMouseOverDropdown: boolean;
   items: NavItem[];
+  hoverStates: {
+    [key: string]: {
+      trigger: boolean;
+      dropdown: boolean;
+    };
+  };
+  openDropdowns: {
+    [key: string]: boolean;
+  };
 }

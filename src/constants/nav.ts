@@ -13,6 +13,62 @@
 import type { NavItem } from '../types';
 
 /**
+ * URL for the kids user avatar image
+ *
+ * @constant {string}
+ * @description User avatar image for the kids profile from Netflix CDN.
+ * Used in the account submenu to represent the kids user profile.
+ *
+ * @example
+ * // Using the avatar URL in a component
+ * <UserAvatar src={AVATAR_KIDS_URL} alt="Kids User Avatar" />
+ */
+export const AVATAR_KIDS_URL: string =
+  'https://occ-0-6-7.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABebkcO417lVuILWpoX8Pu7U4OsmXF-KtFL-xTG8OS5OSwMWnOhHaRDsFyDvWgUv45-O-fRUMd1Ay-FH99lt2XfeGUx9MSQ0.png?r=f55';
+
+/**
+ * URL for the user avatar image
+ *
+ * @constant {string}
+ * @description Default user avatar image from Behance CDN.
+ * Used in the navigation bar to represent the current user.
+ *
+ * @example
+ * // Using the avatar URL in a component
+ * <UserAvatar src={AVATAR_USER_URL} alt="User Avatar" />
+ */
+export const AVATAR_USER_URL: string =
+  'https://mir-s3-cdn-cf.behance.net/project_modules/disp/366be133850498.56ba69ac36858.png';
+
+/**
+ * User profiles for the account menu
+ *
+ * @constant {Array<NavItem>}
+ * @description Defines the user profiles displayed in the account menu.
+ * Each profile has a label and an avatar source URL.
+ */
+export const ACCOUNT_PROFILES: NavItem[] = [
+  {
+    avatarSrc: AVATAR_KIDS_URL,
+    label: 'Kids',
+  },
+];
+
+/**
+ * Account menu items for account management
+ *
+ * @constant {Array<NavItem>}
+ * @description Defines the account management options displayed in the account menu.
+ * Each item has a label and an icon identifier.
+ */
+export const ACCOUNT_MENU_ITEMS: NavItem[] = [
+  { label: 'Manage Profiles', icon: 'pencil' },
+  { label: 'Transfer Profile', icon: 'transfer' },
+  { label: 'Account', icon: 'user' },
+  { label: 'Help Center', icon: 'help' },
+];
+
+/**
  * Primary navigation items for the navigation bar
  *
  * @constant {Array<NavItem>}
@@ -87,17 +143,3 @@ export const DROPDOWN_TIMEOUT_DELAY = 50;
  * setTimeout(updateDropdownState, TRIGGER_TIMEOUT_DELAY);
  */
 export const TRIGGER_TIMEOUT_DELAY = 350;
-
-/**
- * URL for the user avatar image
- *
- * @constant {string}
- * @description Default user avatar image from Behance CDN.
- * Used in the navigation bar to represent the current user.
- *
- * @example
- * // Using the avatar URL in a component
- * <UserAvatar src={USER_AVATAR_URL} alt="User Avatar" />
- */
-export const USER_AVATAR_URL: string =
-  'https://mir-s3-cdn-cf.behance.net/project_modules/disp/366be133850498.56ba69ac36858.png';
