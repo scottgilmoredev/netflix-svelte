@@ -61,7 +61,7 @@
   .nav__search-icon {
     background: transparent;
     border: none;
-    cursor: pointer;
+    /* cursor: pointer; */
     display: inline-block;
   }
 </style>
