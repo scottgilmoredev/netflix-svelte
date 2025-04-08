@@ -3,52 +3,41 @@
    * NavSubMenu Component
    *
    * @component
-   * @description Dropdown menu that appears when hovering over the "Browse" option
-   * in the condensed navigation. Displays a list of navigation options in a floating
-   * panel with a dark, semi-transparent background.
+   * @description Dropdown menu that appears when hovering over navigation items.
+   * Displays content in a floating panel with a dark, semi-transparent background.
+   * Supports both standard navigation dropdowns and account menus through CSS classes.
    *
+   * @prop {string} [className=""] - Additional CSS class to apply to the menu
    * @prop {boolean} [isOpen=false] - Whether the dropdown menu is currently open
-   * @prop {NavItem[]} [items=[]] - Array of navigation items to display in the dropdown
    *
-   * @requires ./NavItem
-   * @requires ../types
+   * @slot default - Content to display inside the dropdown menu
    */
-
-  // Components
-  import NavItem from './NavItem.svelte';
-
-  // Types
-  import type { NavItem as NavItemType } from '../types';
 
   /**
    * Props for the NavSubMenu component
    *
-   * @typedef {Object} NavSubMenuProps
+   * @interface NavSubMenuProps
+   * @property {string} [className] - Additional CSS class to apply to the menu
    * @property {boolean} isOpen - Whether the dropdown menu is currently open
-   * @property {NavItemType[]} items - Array of navigation items to display
    */
   interface NavSubMenuProps {
+    className?: string;
     isOpen: boolean;
-    items: NavItemType[];
   }
 
+  export let className: NavSubMenuProps['className'] = '';
   export let isOpen: NavSubMenuProps['isOpen'] = false;
-  export let items: NavSubMenuProps['items'] = [];
 </script>
 
-<div class="nav__sub-menu" class:nav__sub-menu--open={isOpen}>
+<div class={`nav__sub-menu ${className}`} class:nav__sub-menu--open={isOpen}>
   <!-- The arrow pointing to the trigger -->
   <div class="callout-arrow" />
 
   <!-- The top bar of the dropdown -->
   <div class="topbar" />
 
-  <!-- The list of navigation items -->
-  <ul class="sub-menu__list">
-    {#each items as item}
-      <NavItem label={item.label} isCurrent={item.isCurrent} className="sub-menu__list-item" />
-    {/each}
-  </ul>
+  <!-- Custom content via slot -->
+  <slot></slot>
 </div>
 
 <style>
@@ -67,6 +56,13 @@
     margin-left: -90px;
   }
 
+  /* Special positioning for account menu variant */
+  .nav__sub-menu:global(.account-menu) {
+    margin-left: 0;
+    right: 0;
+    top: 4rem;
+  }
+
   /* Triangle indicator pointing to the trigger element */
   .callout-arrow {
     border: 7px solid transparent;
@@ -79,6 +75,12 @@
     width: 0;
   }
 
+  /* Adjust callout arrow position for account menu */
+  :global(.account-menu) > .callout-arrow {
+    left: auto;
+    right: 5%;
+  }
+
   /* Horizontal accent line at the top of the dropdown */
   .topbar {
     background: #e5e5e5;
@@ -89,35 +91,14 @@
     top: -2px;
   }
 
+  /* Hide topbar for account menu */
+  :global(.account-menu) > .topbar {
+    display: none;
+  }
+
   /* Visible state for the dropdown */
   .nav__sub-menu--open {
     opacity: 1;
     visibility: visible;
-  }
-
-  /* Container for the navigation items list */
-  .sub-menu__list {
-    height: auto;
-    padding: 0;
-  }
-
-  /* Individual navigation item in the dropdown */
-  :global(.sub-menu__list-item) {
-    display: block;
-    line-height: 24px;
-    align-items: center;
-    color: #b3b3b3;
-    display: flex;
-    height: 50px;
-    justify-content: center;
-    position: relative;
-    transition: background-color 0.4s;
-    width: 260px;
-  }
-
-  /* Hover state for non-current navigation items */
-  :global(.sub-menu__list-item):not(.nav-item--current):hover {
-    color: #fff;
-    font-weight: 700;
   }
 </style>

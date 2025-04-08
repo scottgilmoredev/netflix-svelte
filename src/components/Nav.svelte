@@ -5,7 +5,8 @@
    * @component
    * @description A fixed navigation bar that appears at the top of the page.
    * The background becomes visible when the user scrolls down the page.
-   * Contains the Netflix logo and user avatar.
+   * Contains the Netflix logo, primary navigation items, and secondary navigation
+   * elements like search, notifications, and user profile.
    *
    * @requires svelte
    * @requires ./NavPrimary
@@ -21,7 +22,7 @@
   import NavSecondary from './NavSecondary.svelte';
 
   // Constants
-  import { NAV_ITEMS, NETFLIX_LOGO_URL, USER_AVATAR_URL } from '../constants';
+  import { NAV_ITEMS, NETFLIX_LOGO_URL, AVATAR_USER_URL } from '../constants';
 
   // Stores
   import { navStore } from '../stores/navStore';
@@ -37,10 +38,23 @@
   /**
    * Handles the scroll event to show/hide the navigation background
    *
-   * @function
+   * @function handleScroll
    * @description Sets the 'show' state to true when the user scrolls more than 10px
    * down the page, and false otherwise. This controls the visibility of the
    * navigation background.
+   *
+   * @returns {void}
+   */
+  function handleScroll(): void {
+    show = window.scrollY > 10;
+  }
+
+  /**
+   * Lifecycle hook that runs when the component is mounted to the DOM
+   *
+   * @function
+   * @description Sets up the navigation store and adds the scroll event listener
+   * to handle the navigation background visibility.
    *
    * @returns {void}
    */
@@ -50,21 +64,10 @@
 
     // Add scroll event listener
     window.addEventListener('scroll', handleScroll);
-  });
 
-  /**
-   * Handles the scroll event to show/hide the navigation background
-   *
-   * @function
-   * @description Sets the 'show' state to true when the user scrolls more than 100px
-   * down the page, and false otherwise. This controls the visibility of the
-   * navigation background.
-   *
-   * @returns {void}
-   */
-  function handleScroll(): void {
-    show = window.scrollY > 10;
-  }
+    // Check initial scroll position
+    handleScroll();
+  });
 
   /**
    * Lifecycle hook that runs when the component is destroyed
@@ -88,13 +91,13 @@
   <div class="nav__container">
     <div class={show ? 'nav__main nav__main--black' : 'nav__main'}>
       <!-- Netflix Logo -->
-      <img alt="Netflix Logo" class="nav__logo" src={NETFLIX_LOGO_URL} />
+      <img alt="Netflix Logo" class="nav__logo" src={NETFLIX_LOGO_URL || '/placeholder.svg'} />
 
       <!-- Primary navigation -->
       <NavPrimary />
 
       <!-- Secondary navigation -->
-      <NavSecondary avatarSrc={USER_AVATAR_URL} showNotifications={true} notificationCount={5} />
+      <NavSecondary avatarSrc={AVATAR_USER_URL} notificationCount={5} showNotifications={true} />
     </div>
   </div>
 </nav>
