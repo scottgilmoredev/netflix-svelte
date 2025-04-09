@@ -11,11 +11,11 @@
  *
  * @example
  * // Instead of multiple imports:
- * // import type { Movie } from '../types/media';
- * // import type { Breakpoint } from '../types/responsive';
+ * // import type { Movie } from '@types/media';
+ * // import type { Breakpoint } from '@types/responsive';
  *
  * // Use a single import:
- * import type { Movie, Breakpoint } from '../types';
+ * import type { Movie, Breakpoint } from '@types';
  */
 
 export * from './api';

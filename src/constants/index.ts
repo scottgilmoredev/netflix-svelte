@@ -8,11 +8,11 @@
  *
  * @example
  * // Instead of multiple imports:
- * // import { IMAGE_BASE_URL } from '../constants/tmdb';
- * // import { DEFAULT_BREAKPOINTS } from '../constants/responsive';
+ * // import { IMAGE_BASE_URL } from '@constants/tmdb';
+ * // import { DEFAULT_BREAKPOINTS } from '@constants/responsive';
  *
  * // Use a single import:
- * import { IMAGE_BASE_URL, DEFAULT_BREAKPOINTS } from '../constants';
+ * import { IMAGE_BASE_URL, DEFAULT_BREAKPOINTS } from '@constants';
  */
 
 export * from './media';
