@@ -8,8 +8,8 @@
    * billboard, and media rows, handling any potential errors during data fetching.
    *
    * @requires svelte
-   * @requires ./components/billboard.svelte
-   * @requires ./components/GlobalModal.svelte
+   * @requires ./components/ui/billboard.svelte
+   * @requires ./components/ui/GlobalModal.svelte
    * @requires ./components/Nav.svelte
    * @requires ./components/Row.svelte
    * @requires module:@stores
@@ -19,8 +19,8 @@
   import { onMount } from 'svelte';
 
   // Components
-  import Billboard from '@components/Billboard.svelte';
-  import GlobalModal from '@components/GlobalModal.svelte';
+  import Billboard from '@/components/ui/Billboard.svelte';
+  import GlobalModal from '@components/ui/GlobalModal.svelte';
   import Nav from '@components/nav/Nav.svelte';
   import Row from '@components/slider/Row.svelte';
 

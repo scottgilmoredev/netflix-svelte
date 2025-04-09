@@ -18,7 +18,7 @@
   import { type Readable } from 'svelte/store';
 
   // Components
-  import IconInfo from './icons/IconInfo.svelte';
+  import IconInfo from '../icons/IconInfo.svelte';
 
   // Constants
   import { IMAGE_BASE_URL } from '@constants';

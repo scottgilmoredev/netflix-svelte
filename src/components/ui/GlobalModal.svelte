@@ -11,7 +11,7 @@
    * @requires svelte/store
    * @requires svelte/transition
    * @requires ../actions/portal
-   * @requires ./media/MediaItemBase.svelte
+   * @requires ../media/MediaItemBase.svelte
    * @requires module:@stores
    * @requires module:@types
    */
@@ -24,7 +24,7 @@
   import { portal } from '@actions/portal';
 
   // Components
-  import MediaItemBase from './media/MediaItemBase.svelte';
+  import MediaItemBase from '../media/MediaItemBase.svelte';
 
   // Stores
   import { modalStore, closeModal } from '@stores';
