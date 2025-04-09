@@ -8,23 +8,24 @@
    * billboard, and media rows, handling any potential errors during data fetching.
    *
    * @requires svelte
-   * @requires ./components/billboard.svelte
+   * @requires ./components/ui/billboard.svelte
+   * @requires ./components/ui/GlobalModal.svelte
    * @requires ./components/Nav.svelte
    * @requires ./components/Row.svelte
+   * @requires module:@stores
    * @requires ./stores/mediaStore
    */
 
   import { onMount } from 'svelte';
 
   // Components
-  import Billboard from './components/Billboard.svelte';
-  import GlobalModal from './components/GlobalModal.svelte';
-  import Nav from './components/Nav.svelte';
-  import Row from './components/Row.svelte';
+  import Billboard from '@/components/ui/Billboard.svelte';
+  import GlobalModal from '@components/ui/GlobalModal.svelte';
+  import Nav from '@components/nav/Nav.svelte';
+  import Row from '@components/slider/Row.svelte';
 
   // Stores
-  import { continueWatching } from './stores/continueWatchingStore';
-  import { initializeMedia, error } from './stores/mediaStore';
+  import { continueWatching, error, initializeMedia } from '@stores';
   import {
     actionMovies,
     comedyMovies,
@@ -34,7 +35,7 @@
     romanceMovies,
     topRated,
     trending,
-  } from './stores/mediaStore';
+  } from '@stores/mediaStore';
 
   /**
    * Lifecycle hook that runs when the component is mounted to the DOM

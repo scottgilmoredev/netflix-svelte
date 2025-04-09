@@ -8,8 +8,6 @@
    *
    * @prop {number} percentage - The percentage of progress (0-100)
    * @prop {string} className - Additional CSS class names to apply to the component
-   *
-   * @requires ../types
    */
 
   export let className = '';

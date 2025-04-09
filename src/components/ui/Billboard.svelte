@@ -8,29 +8,29 @@
    * automatically selects a random Netflix original from the store.
    *
    * @requires svelte
-   * @requires ../constants/tmdb
-   * @requires ../components/IconInfo
-   * @requires ../stores/mediaStore
-   * @requires ../types
-   * @requires ../utils/helperUtils
+   * @requires module:@constants
+   * @requires ./icons/IconInfo
+   * @requires module:@stores
+   * @requires module:@types
+   * @requires module:@utils
    */
 
   import { type Readable } from 'svelte/store';
 
   // Components
-  import IconInfo from './IconInfo.svelte';
+  import IconInfo from '../icons/IconInfo.svelte';
 
   // Constants
-  import { IMAGE_BASE_URL } from '../constants/tmdb';
+  import { IMAGE_BASE_URL } from '@constants';
 
   // Stores
-  import { billboardMedia } from '../stores/mediaStore';
+  import { billboardMedia } from '@stores';
 
   // Types
-  import type { AnyMedia } from '../types';
+  import type { AnyMedia } from '@types';
 
   // Utils
-  import { truncate } from '../utils/helperUtils';
+  import { truncate } from '@utils';
 
   let billboardTitle: string;
   let billboardDescription: string;

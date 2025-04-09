@@ -11,9 +11,9 @@
    * @requires svelte/store
    * @requires svelte/transition
    * @requires ../actions/portal
-   * @requires ./MediaItemBase.svelte
-   * @requires ../stores/modalStore
-   * @requires ../types
+   * @requires ../media/MediaItemBase.svelte
+   * @requires module:@stores
+   * @requires module:@types
    */
 
   import { onDestroy } from 'svelte';
@@ -21,16 +21,16 @@
   import { fade, scale } from 'svelte/transition';
 
   // Actions
-  import { portal } from '../actions/portal';
+  import { portal } from '@actions/portal';
 
   // Components
-  import MediaItemBase from './MediaItemBase.svelte';
+  import MediaItemBase from '../media/MediaItemBase.svelte';
 
   // Stores
-  import { modalStore, closeModal } from '../stores/modalStore';
+  import { modalStore, closeModal } from '@stores';
 
   // Types
-  import type { AnyMedia, MediaStore } from '../types';
+  import type { AnyMedia, MediaStore } from '@types';
 
   // Local state
   let media: AnyMedia[] = [];

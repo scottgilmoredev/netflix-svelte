@@ -1,10 +1,10 @@
 import { get } from 'svelte/store';
 
 // Stores
-import { createSliderStore } from '../stores/sliderStore';
+import { createSliderStore } from '@stores';
 
 // Types
-import type { MediaStore, ResponsiveItemsStore, SliderStore } from '../types';
+import type { MediaStore, ResponsiveItemsStore, SliderStore } from '@types';
 
 /**
  * Sets up all stores needed for a row component

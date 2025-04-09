@@ -8,10 +8,10 @@
    *
    * @prop {string} [className=''] - Additional CSS class to apply to the component
    *
-   * @requires ./IconSearch
+   * @requires ../icons/IconSearch
    */
 
-  import IconSearch from './IconSearch.svelte';
+  import IconSearch from '../icons/IconSearch.svelte';
 
   /**
    * Props for the ButtonSearch component

@@ -21,9 +21,8 @@
    * @requires svelte
    * @requires ./SliderControl.svelte
    * @requires ./SliderPagination.svelte
-   * @requires ../types
-   * @requires ../utils/sliderUtils
-   * @requires ../utils/touchUtils
+   * @requires module:@types
+   * @requires module:@utils
    *
    * @example
    * <Slider
@@ -47,16 +46,16 @@
   import SliderPaginationIndicators from './SliderPaginationIndicators.svelte';
 
   // Types
-  import type { SliderDerived, SliderState } from '../types';
+  import type { SliderDerived, SliderState } from '@types';
 
   // Utils
   import {
     calculateContentRatio,
     calculateStyleString,
+    createTouchHandlers,
     getPaddingOffset,
     isOnlyOnePage,
-  } from '../utils/sliderUtils';
-  import { createTouchHandlers } from '../utils/touchUtils';
+  } from '@utils';
 
   /**
    * Props for the Slider component

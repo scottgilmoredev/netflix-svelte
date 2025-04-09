@@ -5,16 +5,15 @@
  * @description Provides a registry for media components and utility functions
  * for selecting the appropriate component based on row properties.
  *
- * @requires ../components/MediaItemBase.svelte
- * @requires ../components/MediaItemRanked.svelte
- * @requires ../components/MediaItemWithProgress.svelte
- * @requires ../types
+ * @requires ../MediaItemBase.svelte
+ * @requires ../MediaItemRanked.svelte
+ * @requires ../MediaItemWithProgress.svelte
  */
 
 // Components
 import MediaItemBase from '../MediaItemBase.svelte';
-import MediaItemRanked from '../../components/MediaItemRanked.svelte';
-import MediaItemWithProgress from '../../components/MediaItemWithProgress.svelte';
+import MediaItemRanked from '../MediaItemRanked.svelte';
+import MediaItemWithProgress from '../MediaItemWithProgress.svelte';
 
 /**
  * Gets the appropriate component based on row properties

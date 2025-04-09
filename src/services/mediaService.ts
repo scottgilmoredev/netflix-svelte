@@ -5,21 +5,21 @@
  * @description Provides functions for fetching and manipulating media data from the TMDB API.
  * Handles API requests, error handling, and data transformation for media-related operations.
  *
- * @requires ../constants/tmdb
+ * @requires module:@constants
  * @requires ./apiService
- * @requires ../stores/mediaStore
- * @requires ../types
- * @requires ../utils/helperUtils
+ * @requires module:@stores
+ * @requires module:@types
+ * @requires module:@utils
  */
 
 // Constants
-import { ENDPOINTS } from '../constants/tmdb';
+import { ENDPOINTS } from '@constants';
 
 // Services
 import api from './apiService';
 
 // Stores
-import { error } from '../stores/mediaStore';
+import { error } from '@stores';
 
 // Types
 import type {
@@ -30,11 +30,10 @@ import type {
   MediaType,
   TMDBAPIResponse,
   TMDBMediaResponse,
-} from '../types';
+} from '@types';
 
 // Utils
-import { filterDataWithBackdrops } from '../utils/helperUtils';
-import { createMedia } from '../utils/typeGuards';
+import { createMedia, filterDataWithBackdrops } from '@utils';
 
 /**
  * Fetches media by category

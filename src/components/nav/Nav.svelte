@@ -11,8 +11,8 @@
    * @requires svelte
    * @requires ./NavPrimary
    * @requires ./NavSecondaryContainer
-   * @requires ../constants
-   * @requires ../stores/navStore
+   * @requires module:@constants
+   * @requires module:@stores
    */
 
   import { onMount, onDestroy } from 'svelte';
@@ -22,10 +22,10 @@
   import NavSecondaryContainer from './NavSecondaryContainer.svelte';
 
   // Constants
-  import { NAV_ITEMS, NETFLIX_LOGO_URL, AVATAR_USER_URL } from '../constants';
+  import { NAV_ITEMS, NETFLIX_LOGO_URL, AVATAR_USER_URL } from '@constants';
 
   // Stores
-  import { navStore } from '../stores/navStore';
+  import { navStore } from '@stores';
 
   /**
    * State variable to control the visibility of the navigation background

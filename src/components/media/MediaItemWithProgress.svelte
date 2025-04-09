@@ -13,18 +13,19 @@
    *
    * @requires ./MediaItemBase.svelte
    * @requires ./ProgressBar.svelte
-   * @requires ../types
+   * @requires module:@constants
+   * @requires module:@types
    */
 
   // Constants
-  import { MEDIA_ITEM_DEFAULTS } from '../constants';
+  import { MEDIA_ITEM_DEFAULTS } from '@constants';
 
   // Components
   import MediaItemBase from './MediaItemBase.svelte';
   import ProgressBar from './ProgressBar.svelte';
 
   // Types
-  import type { BaseMediaItemProps } from '../types';
+  import type { BaseMediaItemProps } from '@types';
 
   export let className: BaseMediaItemProps['className'] = MEDIA_ITEM_DEFAULTS.className;
   export let data: BaseMediaItemProps['data'] = MEDIA_ITEM_DEFAULTS.data;

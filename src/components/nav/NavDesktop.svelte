@@ -9,14 +9,14 @@
    * navigation selection.
    *
    * @requires ./NavItem
-   * @requires ../stores/navStore
+   * @requires module:@stores
    */
 
   // Components
   import NavItem from './NavItem.svelte';
 
   // Stores
-  import { navItems } from '../stores/navStore';
+  import { navItems } from '@stores';
 </script>
 
 {#each $navItems as item}

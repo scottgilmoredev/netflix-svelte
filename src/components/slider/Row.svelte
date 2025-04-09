@@ -16,27 +16,26 @@
    *
    * @requires svelte
    * @requires svelte/store
-   * @requires ./registry/mediaComponentRegistry
+   * @requires .media/registry/mediaComponentRegistry
    * @requires ./RowHeader.svelte
    * @requires ./Slider.svelte
-   * @requires ../contexts/rowContext
-   * @requires ../stores/responsiveStore
-   * @requires ../types
-   * @requires ../utils
+   * @requires module:@stores
+   * @requires module:@types
+   * @requires module:@utils
    */
 
   import { onDestroy } from 'svelte';
   import type { Unsubscriber } from 'svelte/store';
 
   // Component Registry
-  import { getComponentForRow } from './registry/mediaComponentRegistry';
+  import { getComponentForRow } from '../media/registry/mediaComponentRegistry';
 
   // Components
   import RowHeader from './RowHeader.svelte';
   import Slider from './Slider.svelte';
 
   // Stores
-  import { createResponsiveItems } from '../stores/responsiveStore';
+  import { createResponsiveItems } from '@stores';
 
   // Types
   import type {
@@ -45,10 +44,10 @@
     ResponsiveItemsStore,
     SliderDerived,
     SliderState,
-  } from '../types';
+  } from '@types';
 
   // Utils
-  import { setupRowStores } from '../utils';
+  import { setupRowStores } from '../../utils';
 
   // Component props
   export let mediaStore: MediaStore;
