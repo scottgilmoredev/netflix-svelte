@@ -9,11 +9,11 @@
    *
    * @requires svelte
    * @requires module:@constants
-   * @requires ../IconCircleQuestionMark
-   * @requires ../IconPencil
-   * @requires ../IconProfileArrow
-   * @requires ../IconUser
-   * @requires ../NavItem
+   * @requires ../icons/IconCircleQuestionMark
+   * @requires ../icons/IconPencil
+   * @requires ../icons/IconProfileArrow
+   * @requires ../icons/IconUser
+   * @requires ../icons/NavItem
    * @requires module:@types
    */
 
@@ -23,10 +23,10 @@
   import { ACCOUNT_MENU_ITEMS } from '@constants';
 
   // Components
-  import IconCircleQuestionMark from '../IconCircleQuestionMark.svelte';
-  import IconPencil from '../IconPencil.svelte';
-  import IconProfileArrow from '../IconProfileArrow.svelte';
-  import IconUser from '../IconUser.svelte';
+  import IconCircleQuestionMark from '../icons/IconCircleQuestionMark.svelte';
+  import IconPencil from '../icons/IconPencil.svelte';
+  import IconProfileArrow from '../icons/IconProfileArrow.svelte';
+  import IconUser from '../icons/IconUser.svelte';
   import NavItem from './NavItem.svelte';
 
   // Types

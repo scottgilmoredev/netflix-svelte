@@ -10,13 +10,13 @@
    * @prop {string} [exploreUrl="/"] - URL to navigate to when "Explore All" is clicked
    * @prop {string} title - The title text to display
    *
-   * @requires ../IconChevron.svelte
+   * @requires ../icons/IconChevron.svelte
    * @requires module:@stores
    * @requires module:@types
    */
 
   // Components
-  import IconChevron from '../IconChevron.svelte';
+  import IconChevron from '../icons/IconChevron.svelte';
 
   // Stores
   import { openModal } from '@stores';

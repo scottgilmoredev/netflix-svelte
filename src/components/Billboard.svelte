@@ -9,7 +9,7 @@
    *
    * @requires svelte
    * @requires module:@constants
-   * @requires ./IconInfo
+   * @requires ./icons/IconInfo
    * @requires module:@stores
    * @requires module:@types
    * @requires module:@utils
@@ -18,7 +18,7 @@
   import { type Readable } from 'svelte/store';
 
   // Components
-  import IconInfo from './IconInfo.svelte';
+  import IconInfo from './icons/IconInfo.svelte';
 
   // Constants
   import { IMAGE_BASE_URL } from '@constants';

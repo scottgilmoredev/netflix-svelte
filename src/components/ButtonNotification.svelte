@@ -10,10 +10,10 @@
    * @prop {number} [notificationCount=0] - Number of notifications to display in the badge
    * @prop {boolean} [showBadge=false] - Whether to show the notification badge
    *
-   * @requires ./IconNotification
+   * @requires ./icons/IconNotification
    */
 
-  import IconNotification from './IconNotification.svelte';
+  import IconNotification from './icons/IconNotification.svelte';
 
   /**
    * Props for the ButtonNotification component

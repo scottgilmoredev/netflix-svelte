@@ -11,11 +11,11 @@
    * @prop {('prev'|'next')} direction - The direction of the control button, either 'prev' or 'next'
    * @prop {Function} onClick - Callback function to execute when the button is clicked
    *
-   * @requires ../IconChevron.svelte
+   * @requires ../icons/IconChevron.svelte
    */
 
   // Components
-  import IconChevron from '../IconChevron.svelte';
+  import IconChevron from '../icons/IconChevron.svelte';
 
   /**
    * Props for the SliderControl component
