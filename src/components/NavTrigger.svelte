@@ -12,10 +12,10 @@
    *
    * @slot default - Content to display as the trigger text (defaults to "Browse")
    *
-   * @requires ../stores/navStore
+   * @requires module:@stores
    */
 
-  import { navStore } from '../stores/navStore';
+  import { navStore } from '@stores';
 
   /**
    * Props for the NavTrigger component

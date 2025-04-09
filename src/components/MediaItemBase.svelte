@@ -12,19 +12,19 @@
    * @prop {number} width - The width of the component as a percentage
    * @prop {string} imageType - Type of image to display ('backdrop' or 'poster')
    *
-   * @requires ../constants
-   * @requires ../types
-   * @requires ../utils/errorUtils
+   * @requires module:@constants
+   * @requires module:@types
+   * @requires module:@utils
    */
 
   // Constants
-  import { IMAGE_BASE_URL, MEDIA_ITEM_DEFAULTS, PLACEHOLDER_URL } from '../constants';
+  import { IMAGE_BASE_URL, MEDIA_ITEM_DEFAULTS, PLACEHOLDER_URL } from '@constants';
 
   // Types
-  import type { BaseMediaItemProps } from '../types';
+  import type { BaseMediaItemProps } from '@types';
 
   // Utils
-  import { handleImageError } from '../utils/errorUtils';
+  import { handleImageError } from '@utils';
 
   export let className: BaseMediaItemProps['className'] = MEDIA_ITEM_DEFAULTS.className;
   export let data: BaseMediaItemProps['data'] = MEDIA_ITEM_DEFAULTS.data;

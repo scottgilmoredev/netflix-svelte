@@ -11,18 +11,18 @@
    * @prop {string} title - The title text to display
    *
    * @requires ./IconChevron.svelte
-   * @requires ../stores/modalStore
-   * @requires ../types
+   * @requires module:@stores
+   * @requires module:@types
    */
 
   // Components
   import IconChevron from './IconChevron.svelte';
 
   // Stores
-  import { openModal } from '../stores/modalStore';
+  import { openModal } from '@stores';
 
   // Types
-  import type { MediaStore } from '../types';
+  import type { MediaStore } from '@types';
 
   /**
    * Props for the RowHeader component

@@ -19,10 +19,9 @@
    * @requires ./registry/mediaComponentRegistry
    * @requires ./RowHeader.svelte
    * @requires ./Slider.svelte
-   * @requires ../contexts/rowContext
-   * @requires ../stores/responsiveStore
-   * @requires ../types
-   * @requires ../utils
+   * @requires module:@stores
+   * @requires module:@types
+   * @requires module:@utils
    */
 
   import { onDestroy } from 'svelte';
@@ -36,7 +35,7 @@
   import Slider from './Slider.svelte';
 
   // Stores
-  import { createResponsiveItems } from '../stores/responsiveStore';
+  import { createResponsiveItems } from '@stores';
 
   // Types
   import type {
@@ -45,7 +44,7 @@
     ResponsiveItemsStore,
     SliderDerived,
     SliderState,
-  } from '../types';
+  } from '@types';
 
   // Utils
   import { setupRowStores } from '../utils';

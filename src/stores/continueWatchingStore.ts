@@ -6,17 +6,17 @@
  * Creates a store that contains data the user has partially watched with their progress.
  *
  * @requires svelte/store
- * @requires ../types
- * @requires ../utils/typeGuards
+ * @requires module:@types
+ * @requires module:@utils
  */
 
 import { writable } from 'svelte/store';
 
 // Types
-import type { AnyMedia, MediaStore, MediaWatched } from '../types';
+import type { AnyMedia, MediaStore, MediaWatched } from '@types';
 
 // Utils
-import { createMedia } from '../utils/typeGuards';
+import { createMedia } from '@utils';
 
 /**
  * Continue Watching Store

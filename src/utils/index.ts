@@ -12,17 +12,17 @@
  *
  * @example
  * // Instead of multiple imports:
- * // import { handleError } from '@utils/errorUtils';
- * // import { formatDate } from '@utils/helperUtils';
- * // import { calculateStyleString } from '@utils/sliderUtils';
+ * // import { handleError } from '@utils/error';
+ * // import { truncate } from '@utils/helper';
+ * // import { calculateStyleString } from '@utils/slider';
  *
  * // Use a single import:
- * import { handleError, formatDate, calculateStyleString } from '@utils';
+ * import { handleError, truncate, calculateStyleString } from '@utils';
  */
 
-export * from './errorUtils';
-export * from './helperUtils';
-export * from './rowUtils';
-export * from './sliderUtils';
-export * from './touchUtils';
+export * from './error';
+export * from './helper';
+export * from './row';
+export * from './slider';
+export * from './touch';
 export * from './typeGuards';

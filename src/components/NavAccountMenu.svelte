@@ -15,8 +15,8 @@
    * @requires ./Divider
    * @requires ./NavItem
    * @requires ./NavSubMenu
-   * @requires ../constants
-   * @requires ../stores/navStore
+   * @requires module:@constants
+   * @requires module:@stores
    */
   import { onDestroy } from 'svelte';
   import { fade } from 'svelte/transition';
@@ -29,10 +29,10 @@
   import NavSubMenu from './NavSubMenu.svelte';
 
   // Constants
-  import { TRANSITION_DURATION } from '../constants';
+  import { TRANSITION_DURATION } from '@constants';
 
   // Stores
-  import { navStore } from '../stores/navStore';
+  import { navStore } from '@stores';
 
   /**
    * Cleanup function that runs when component is destroyed

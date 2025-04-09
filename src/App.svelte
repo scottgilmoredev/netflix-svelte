@@ -9,8 +9,10 @@
    *
    * @requires svelte
    * @requires ./components/billboard.svelte
+   * @requires ./components/GlobalModal.svelte
    * @requires ./components/Nav.svelte
    * @requires ./components/Row.svelte
+   * @requires module:@stores
    * @requires ./stores/mediaStore
    */
 
@@ -23,8 +25,7 @@
   import Row from './components/Row.svelte';
 
   // Stores
-  import { continueWatching } from './stores/continueWatchingStore';
-  import { initializeMedia, error } from './stores/mediaStore';
+  import { continueWatching, error, initializeMedia } from '@stores';
   import {
     actionMovies,
     comedyMovies,
@@ -34,7 +35,7 @@
     romanceMovies,
     topRated,
     trending,
-  } from './stores/mediaStore';
+  } from '@stores/mediaStore';
 
   /**
    * Lifecycle hook that runs when the component is mounted to the DOM

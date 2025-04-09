@@ -6,18 +6,18 @@
  * Handles base configuration, interceptors, and error handling for all API requests.
  *
  * @requires axios
- * @requires ../constants/tmdb
- * @requires ../types
+ * @requires module:@constants
+ * @requires module:@types
  */
 
 import axios from 'axios';
 import type { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
 // Constants
-import { API_BASE_URL } from '../constants/tmdb';
+import { API_BASE_URL } from '@constants';
 
 // Types
-import type { TMDBConfig } from '../types';
+import type { TMDBConfig } from '@types';
 
 /**
  * @type {TMDBConfig}
