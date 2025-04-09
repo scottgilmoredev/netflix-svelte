@@ -8,12 +8,12 @@
    * switch between different profiles. The profiles are defined in the
    * ACCOUNT_PROFILES constant.
    *
-   * @requires ../constants
+   * @requires module:@constants
    * @requires ./NavItem
    */
 
   // Constants
-  import { ACCOUNT_PROFILES } from '../constants';
+  import { ACCOUNT_PROFILES } from '@constants';
 
   // Components
   import NavItem from './NavItem.svelte';

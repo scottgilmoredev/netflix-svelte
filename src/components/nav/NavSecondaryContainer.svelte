@@ -13,21 +13,21 @@
    * - center: Notification button with optional badge and count
    * - right: Account menu trigger with user avatar and dropdown menu
    *
-   * @requires ./ButtonNotification
-   * @requires ./ButtonSearch
+   * @requires ../ButtonNotification
+   * @requires ../ButtonSearch
    * @requires ./NavAccountMenu
    * @requires ./NavSecondary
    * @requires ./NavTrigger
-   * @requires ./UserAvatar
+   * @requires ../UserAvatar
    */
 
   // Components
-  import ButtonNotification from './ButtonNotification.svelte';
-  import ButtonSearch from './ButtonSearch.svelte';
+  import ButtonNotification from '../ButtonNotification.svelte';
+  import ButtonSearch from '../ButtonSearch.svelte';
   import NavAccountMenu from './NavAccountMenu.svelte';
   import NavSecondary from './NavSecondary.svelte';
   import NavTrigger from './NavTrigger.svelte';
-  import UserAvatar from './UserAvatar.svelte';
+  import UserAvatar from '../UserAvatar.svelte';
 
   /**
    * Props for the NavSecondaryContainer component

@@ -21,7 +21,7 @@
   // Components
   import Billboard from './components/Billboard.svelte';
   import GlobalModal from './components/GlobalModal.svelte';
-  import Nav from './components/Nav.svelte';
+  import Nav from './components/nav/Nav.svelte';
   import Row from './components/Row.svelte';
 
   // Stores

@@ -12,7 +12,7 @@
    * @requires svelte/transition
    * @requires ./NavAccountLinks
    * @requires ./NavAccountProfiles
-   * @requires ./Divider
+   * @requires ../Divider
    * @requires ./NavItem
    * @requires ./NavSubMenu
    * @requires module:@constants
@@ -24,7 +24,7 @@
   // Components
   import NavAccountLinks from './NavAccountLinks.svelte';
   import NavAccountProfiles from './NavAccountProfiles.svelte';
-  import Divider from './Divider.svelte';
+  import Divider from '../Divider.svelte';
   import NavItem from './NavItem.svelte';
   import NavSubMenu from './NavSubMenu.svelte';
 

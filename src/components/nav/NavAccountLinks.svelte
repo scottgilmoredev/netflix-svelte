@@ -8,29 +8,29 @@
    * "Account", "Help Center", etc. Each item is rendered with its corresponding icon.
    *
    * @requires svelte
-   * @requires ../constants
-   * @requires ./IconCircleQuestionMark
-   * @requires ./IconPencil
-   * @requires ./IconProfileArrow
-   * @requires ./IconUser
-   * @requires ./NavItem
-   * @requires ../types
+   * @requires module:@constants
+   * @requires ../IconCircleQuestionMark
+   * @requires ../IconPencil
+   * @requires ../IconProfileArrow
+   * @requires ../IconUser
+   * @requires ../NavItem
+   * @requires module:@types
    */
 
   import type { ComponentType, SvelteComponent } from 'svelte';
 
   // Constants
-  import { ACCOUNT_MENU_ITEMS } from '../constants';
+  import { ACCOUNT_MENU_ITEMS } from '@constants';
 
   // Components
-  import IconCircleQuestionMark from './IconCircleQuestionMark.svelte';
-  import IconPencil from './IconPencil.svelte';
-  import IconProfileArrow from './IconProfileArrow.svelte';
-  import IconUser from './IconUser.svelte';
+  import IconCircleQuestionMark from '../IconCircleQuestionMark.svelte';
+  import IconPencil from '../IconPencil.svelte';
+  import IconProfileArrow from '../IconProfileArrow.svelte';
+  import IconUser from '../IconUser.svelte';
   import NavItem from './NavItem.svelte';
 
   // Types
-  import type { IconName } from '../types';
+  import type { IconName } from '@types';
 
   /**
    * Mapping of icon names to their component implementations
