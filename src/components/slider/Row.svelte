@@ -28,7 +28,7 @@
   import type { Unsubscriber } from 'svelte/store';
 
   // Component Registry
-  import { getComponentForRow } from './media/registry/mediaComponentRegistry';
+  import { getComponentForRow } from '../media/registry/mediaComponentRegistry';
 
   // Components
   import RowHeader from './RowHeader.svelte';
@@ -47,7 +47,7 @@
   } from '@types';
 
   // Utils
-  import { setupRowStores } from '../utils';
+  import { setupRowStores } from '../../utils';
 
   // Component props
   export let mediaStore: MediaStore;
