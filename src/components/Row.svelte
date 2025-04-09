@@ -16,7 +16,7 @@
    *
    * @requires svelte
    * @requires svelte/store
-   * @requires ./registry/mediaComponentRegistry
+   * @requires .media/registry/mediaComponentRegistry
    * @requires ./RowHeader.svelte
    * @requires ./Slider.svelte
    * @requires module:@stores
@@ -28,7 +28,7 @@
   import type { Unsubscriber } from 'svelte/store';
 
   // Component Registry
-  import { getComponentForRow } from './registry/mediaComponentRegistry';
+  import { getComponentForRow } from './media/registry/mediaComponentRegistry';
 
   // Components
   import RowHeader from './RowHeader.svelte';

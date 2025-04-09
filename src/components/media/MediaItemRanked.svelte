@@ -13,7 +13,8 @@
    *
    * @requires ./MediaItemBase.svelte
    * @requires ./MediaItemRankNumber.svelte
-   * @requires ../types
+   * @requires module:@constants
+   * @requires module:@types
    */
 
   // Components
@@ -21,10 +22,10 @@
   import MediaItemRankNumber from './MediaItemRankNumber.svelte';
 
   // Constants
-  import { MEDIA_ITEM_DEFAULTS } from '../constants';
+  import { MEDIA_ITEM_DEFAULTS } from '@constants';
 
   // Types
-  import type { BaseMediaItemProps } from '../types';
+  import type { BaseMediaItemProps } from '@types';
 
   export let className: BaseMediaItemProps['className'] = MEDIA_ITEM_DEFAULTS.className;
   export let data: BaseMediaItemProps['data'] = MEDIA_ITEM_DEFAULTS.data;

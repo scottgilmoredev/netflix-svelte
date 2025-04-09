@@ -13,8 +13,8 @@
    * @prop {RankSvgNumber} rank - The rank number to display (1-10)
    * @prop {number} strokeWidth - The stroke width for the SVG path
    *
-   * @requires ../constants
-   * @requires ../types
+   * @requires module:@constants
+   * @requires module:@types
    */
 
   // Constants
@@ -24,10 +24,10 @@
     RANK_SVG_STROKE_WIDTH,
     RANK_MAX,
     RANK_MIN,
-  } from '../constants';
+  } from '@constants';
 
   // Types
-  import type { RankSvgData, RankSvgNumber } from '../types';
+  import type { RankSvgData, RankSvgNumber } from '@types';
 
   export let className: string = '';
   export let color: string = RANK_SVG_COLOR;
