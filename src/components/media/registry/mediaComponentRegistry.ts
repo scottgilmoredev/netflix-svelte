@@ -12,7 +12,7 @@
 
 // Components
 import MediaItemBase from '../MediaItemBase.svelte';
-import MediaItemRanked from '../MediaItemBase.svelte';
+import MediaItemRanked from '../MediaItemRanked.svelte';
 import MediaItemWithProgress from '../MediaItemWithProgress.svelte';
 
 /**
