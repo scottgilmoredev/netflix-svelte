@@ -17,7 +17,13 @@
       "@services/*": ["src/services/*"],
       "@stores/*": ["src/stores/*"],
       "@types/*": ["src/types/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+
+      // Non-wildcard paths for barrel file imports
+      "@constants": ["src/constants"],
+      "@stores": ["src/stores"],
+      "@types": ["src/types"],
+      "@utils": ["src/utils"]
     }
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
