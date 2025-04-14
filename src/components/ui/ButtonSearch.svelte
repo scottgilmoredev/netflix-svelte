@@ -8,10 +8,10 @@
    *
    * @prop {string} [className=''] - Additional CSS class to apply to the component
    *
-   * @requires ../icons/IconSearch
+   * @requires ../icons/Icon
    */
 
-  import IconSearch from '../icons/IconSearch.svelte';
+  import Icon from '@components/icons/Icon.svelte';
 
   /**
    * Props for the ButtonSearch component
@@ -27,6 +27,12 @@
   export let className: ButtonSearchProps['className'] = '';
 </script>
 
-<div class={`nav__search ${className}`}>
-  <IconSearch className="nav__search-icon" />
+<div class={`${className}`}>
+  <Icon className="nav__search-icon" name="search" />
 </div>
+
+<style>
+  /* :global(.nav__search-icon) {
+    cursor: pointer;
+  } */
+</style>

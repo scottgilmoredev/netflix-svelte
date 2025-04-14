@@ -19,6 +19,7 @@
  */
 
 export * from './api';
+export * from './icons';
 export * from './media';
 export * from './nav';
 export * from './responsive';

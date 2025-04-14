@@ -10,13 +10,13 @@
    * @prop {string} [exploreUrl="/"] - URL to navigate to when "Explore All" is clicked
    * @prop {string} title - The title text to display
    *
-   * @requires ../icons/IconChevron.svelte
+   * @requires ../icons/Icon.svelte
    * @requires module:@stores
    * @requires module:@types
    */
 
   // Components
-  import IconChevron from '../icons/IconChevron.svelte';
+  import Icon from '@components/icons/Icon.svelte';
 
   // Stores
   import { openModal } from '@stores';
@@ -79,7 +79,7 @@
 
         <!-- Displays on row:hover -->
         <div class="row__explore-chevron">
-          <IconChevron direction="right" variant="small" />
+          <Icon direction="right" name="chevron" variant="small" />
         </div>
       </div>
     </button>

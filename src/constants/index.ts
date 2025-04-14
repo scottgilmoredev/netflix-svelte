@@ -15,6 +15,7 @@
  * import { IMAGE_BASE_URL, DEFAULT_BREAKPOINTS } from '@constants';
  */
 
+export * from './icons';
 export * from './media';
 export * from './nav';
 export * from './responsive';
