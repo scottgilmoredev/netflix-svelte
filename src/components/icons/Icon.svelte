@@ -56,9 +56,6 @@
    * @description Prepares the props to pass to the selected icon component.
    * Currently, we pass the name to all components, but this could be modified
    * to conditionally pass props based on component type.
-   *
-   * Note: The conditional logic using isSpecialIcon is commented out as we're
-   * currently using a simpler approach of passing name to all components.
    */
   $: componentProps = isSpecialIcon(name) ? restProps : { name, ...restProps };
 </script>
