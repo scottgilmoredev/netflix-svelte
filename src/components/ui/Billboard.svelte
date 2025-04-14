@@ -9,7 +9,7 @@
    *
    * @requires svelte
    * @requires module:@constants
-   * @requires ./icons/IconInfo
+   * @requires ./icons/Icon
    * @requires module:@stores
    * @requires module:@types
    * @requires module:@utils
@@ -18,7 +18,7 @@
   import { type Readable } from 'svelte/store';
 
   // Components
-  import IconInfo from '../icons/IconInfo.svelte';
+  import Icon from '@components/icons/Icon.svelte';
 
   // Constants
   import { IMAGE_BASE_URL } from '@constants';
@@ -108,7 +108,7 @@
           <!-- More info button -->
           <button class="billboard__button billboard__button--secondary">
             <!-- Info icon -->
-            <IconInfo />
+            <Icon name="info" />
 
             <!-- Spacer -->
             <span class="billboard__button-spacer" />

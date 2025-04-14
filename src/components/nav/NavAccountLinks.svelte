@@ -7,53 +7,17 @@
    * Used within the account dropdown menu to display options like "Manage Profiles",
    * "Account", "Help Center", etc. Each item is rendered with its corresponding icon.
    *
-   * @requires svelte
    * @requires module:@constants
-   * @requires ../icons/IconCircleQuestionMark
-   * @requires ../icons/IconPencil
-   * @requires ../icons/IconProfileArrow
-   * @requires ../icons/IconUser
-   * @requires ../icons/NavItem
-   * @requires module:@types
+   * @requires ../icons/Icon
+   * @requires ./NavItem
    */
-
-  import type { ComponentType, SvelteComponent } from 'svelte';
 
   // Constants
   import { ACCOUNT_MENU_ITEMS } from '@constants';
 
   // Components
-  import IconCircleQuestionMark from '../icons/IconCircleQuestionMark.svelte';
-  import IconPencil from '../icons/IconPencil.svelte';
-  import IconProfileArrow from '../icons/IconProfileArrow.svelte';
-  import IconUser from '../icons/IconUser.svelte';
+  import Icon from '@components/icons/Icon.svelte';
   import NavItem from './NavItem.svelte';
-
-  // Types
-  import type { IconName } from '@types';
-
-  /**
-   * Mapping of icon names to their component implementations
-   *
-   * @type {Record<IconName, ComponentType<SvelteComponent>>}
-   */
-  const iconComponents: Record<IconName, ComponentType<SvelteComponent>> = {
-    pencil: IconPencil,
-    transfer: IconProfileArrow,
-    user: IconUser,
-    help: IconCircleQuestionMark,
-  };
-
-  /**
-   * Gets the corresponding icon component for a given icon name
-   *
-   * @function getIconComponent
-   * @param {IconName} iconName - The name of the icon to retrieve
-   * @returns {ComponentType<SvelteComponent>} The Svelte component for the icon
-   */
-  function getIconComponent(iconName: IconName): ComponentType<SvelteComponent> {
-    return iconComponents[iconName];
-  }
 </script>
 
 <!-- Main container for account menu links - renders as an unordered list -->
@@ -66,7 +30,7 @@
         <div class="account-menu__icon">
           {#if item.icon}
             <!-- Dynamically render the appropriate icon component based on the icon name -->
-            <svelte:component this={getIconComponent(item.icon)} />
+            <Icon name={item.icon} />
           {/if}
         </div>
       </svelte:fragment>
