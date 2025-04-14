@@ -1,33 +1,33 @@
 <script lang="ts">
   /**
-   * IconChevron Component
+   * ChevronIcon Component
    *
    * @component
    * @description A responsive chevron icon used throughout the application.
    * Can be rendered as either left-pointing or right-pointing and in different sizes.
    *
-   * @prop {('left'|'right')} direction - The direction the chevron should point
    * @prop {string} [className=""] - Additional CSS classes to apply to the SVG
+   * @prop {('left'|'right')} direction - The direction the chevron should point
    * @prop {('default'|'small')} [variant="default"] - Size variant of the chevron
    */
 
   /**
-   * Props for the IconChevron component
+   * Props for the ChevronIcon component
    *
-   * @typedef {Object} IconChevronProps
-   * @property {'left'|'right'} direction - The direction the chevron should point
+   * @typedef {Object} ChevronIconProps
    * @property {string} [className=""] - Additional CSS classes to apply to the SVG
+   * @property {'left'|'right'} direction - The direction the chevron should point
    * @property {'default'|'small'} [variant="default"] - Size variant of the chevron
    */
-  interface IconChevronProps {
-    direction: 'left' | 'right';
+  interface ChevronIconProps {
     className?: string;
+    direction: 'left' | 'right';
     variant?: 'default' | 'small';
   }
 
-  export let direction: IconChevronProps['direction'];
-  export let className: IconChevronProps['className'] = '';
-  export let variant: IconChevronProps['variant'] = 'default';
+  export let className: ChevronIconProps['className'] = '';
+  export let direction: ChevronIconProps['direction'];
+  export let variant: ChevronIconProps['variant'] = 'default';
 </script>
 
 <svg
