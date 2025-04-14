@@ -97,11 +97,7 @@
       <NavPrimary />
 
       <!-- Secondary navigation -->
-      <NavSecondaryContainer
-        avatarSrc={AVATAR_USER_URL}
-        notificationCount={5}
-        showNotifications={true}
-      />
+      <NavSecondaryContainer avatarSrc={AVATAR_USER_URL} />
     </div>
   </div>
 </nav>

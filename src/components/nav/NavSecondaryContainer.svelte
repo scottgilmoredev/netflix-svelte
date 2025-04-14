@@ -35,20 +35,14 @@
    * @interface NavSecondaryProps
    * @property {string} avatarSrc - Source URL for the user avatar image
    * @property {string} [avatarAlt="Netflix user avatar"] - Alt text for the avatar image
-   * @property {number} [notificationCount=0] - Number of notifications to display
-   * @property {boolean} [showNotifications=false] - Whether to show the notification badge
    */
   interface NavSecondaryProps {
     avatarAlt?: string;
     avatarSrc: string;
-    notificationCount?: number;
-    showNotifications?: boolean;
   }
 
   export let avatarAlt: NavSecondaryProps['avatarAlt'] = 'Netflix user avatar';
   export let avatarSrc: NavSecondaryProps['avatarSrc'];
-  export let notificationCount: NavSecondaryProps['notificationCount'] = 0;
-  export let showNotifications: NavSecondaryProps['showNotifications'] = false;
 </script>
 
 <!-- NavSecondary component with slots populated with specific navigation elements -->
@@ -60,11 +54,7 @@
 
   <!-- Notification - Placed in the center slot -->
   <svelte:fragment slot="center">
-    <ButtonNotification
-      className="nav__secondary--element"
-      {notificationCount}
-      showBadge={showNotifications}
-    />
+    <ButtonNotification className="nav__secondary--element" />
   </svelte:fragment>
 
   <!-- Account Menu - Placed in the right slot -->
