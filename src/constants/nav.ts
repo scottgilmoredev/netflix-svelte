@@ -63,9 +63,9 @@ export const ACCOUNT_PROFILES: NavItem[] = [
  */
 export const ACCOUNT_MENU_ITEMS: NavItem[] = [
   { label: 'Manage Profiles', icon: 'pencil' },
-  { label: 'Transfer Profile', icon: 'transfer' },
+  { label: 'Transfer Profile', icon: 'profileArrow' },
   { label: 'Account', icon: 'user' },
-  { label: 'Help Center', icon: 'help' },
+  { label: 'Help Center', icon: 'circleQuestionMark' },
 ];
 
 /**

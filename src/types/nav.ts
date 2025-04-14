@@ -6,6 +6,8 @@
  * Provides interfaces for navigation items and navigation state management.
  */
 
+import type { IconName } from './icons';
+
 /**
  * Type representing the possible hover targets in the navigation
  *
@@ -13,20 +15,6 @@
  * @description Identifies which part of the navigation is being hovered
  */
 export type HoverTarget = 'trigger' | 'dropdown';
-
-/**
- * IconName Type
- *
- * @typedef {string} IconName
- * @description Represents the available icon names that can be used throughout the application.
- * These values correspond to specific icon assets or components that will be rendered.
- *
- * @property {'help'} help - Help/question mark icon
- * @property {'pencil'} pencil - Pencil/edit icon
- * @property {'transfer'} transfer - Transfer/move icon
- * @property {'user'} user - User/profile icon
- */
-export type IconName = 'help' | 'pencil' | 'transfer' | 'user';
 
 /**
  * Navigation item interface
