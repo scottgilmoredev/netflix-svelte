@@ -18,5 +18,6 @@
 export * from './icons';
 export * from './media';
 export * from './nav';
+export * from './positioning';
 export * from './responsive';
 export * from './tmdb';
