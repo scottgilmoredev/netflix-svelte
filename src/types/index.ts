@@ -19,9 +19,12 @@
  */
 
 export * from './api';
+export * from './coordinates';
 export * from './icons';
 export * from './media';
 export * from './nav';
+export * from './portal';
+export * from './positioning';
 export * from './responsive';
 export * from './slider';
 export * from './touch';
