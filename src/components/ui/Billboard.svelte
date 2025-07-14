@@ -19,6 +19,7 @@
 
   // Components
   import Icon from '@components/icons/Icon.svelte';
+  import Image from '@components/ui/Image.svelte';
 
   // Constants
   import { IMAGE_BASE_URL } from '@constants';
@@ -41,32 +42,10 @@
    */
   const billboardMediaStore: Readable<AnyMedia | null> = billboardMedia;
 
-  /**
-   * Reactive declaration for the billboard background style
-   *
-   * @description Dynamically computes the CSS background-image style based on the
-   * current billboard media. If no backdrop path is available, an empty string is used.
-   */
   $: billboardImage = $billboardMediaStore?.backdrop_path
     ? `${IMAGE_BASE_URL}${$billboardMediaStore.backdrop_path}`
     : '';
-
-  /**
-   * Computes the title to display for the billboard
-   *
-   * @description Returns the title of the media, falling back to original_title if title is not available.
-   *
-   * @type {string}
-   */
   $: billboardTitle = $billboardMediaStore?.name || $billboardMediaStore?.original_name || '';
-
-  /**
-   * Truncates and prepares the overview text for display
-   *
-   * @description Truncates the overview to 150 characters using the truncate helper function.
-   *
-   * @type {string}
-   */
   $: billboardDescription = truncate($billboardMediaStore?.overview || '', 150);
 </script>
 
@@ -77,10 +56,11 @@
     <div class="billboard__pane">
       <!-- Billboard hero image -->
       <div class="billboard__image-wrapper">
-        <img
-          class="billboard__image"
-          src={billboardImage}
+        <Image
           alt={billboardTitle || 'Billboard image'}
+          className="billboard__image"
+          responsive
+          src={billboardImage}
         />
 
         <!-- Gradient fade effect at the bottom of the billboard -->
@@ -156,18 +136,16 @@
   }
 
   /* The actual billboard image that fills the container */
-  .billboard__image {
+  :global(.billboard__image) {
     background-position: 50%;
     background-size: cover;
     bottom: 0;
-    height: 100%;
     left: 0;
     opacity: 1;
     position: absolute;
     right: 0;
     top: 0;
     transition: opacity 0.4s cubic-bezier(0.665, 0.235, 0.265, 0.8) 0s;
-    width: 100%;
   }
 
   /* Gradient overlay that fades the bottom of the image for better text readability */

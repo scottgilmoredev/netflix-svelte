@@ -18,36 +18,17 @@
   import { onMount, onDestroy } from 'svelte';
 
   // Components
+  import Image from '@components/ui/Image.svelte';
   import NavPrimary from './NavPrimary.svelte';
   import NavSecondaryContainer from './NavSecondaryContainer.svelte';
 
   // Constants
-  import { NAV_ITEMS, NETFLIX_LOGO_URL, AVATAR_USER_URL } from '@constants';
+  import { AVATAR_USER_URL, NAV_ITEMS, NETFLIX_LOGO_URL } from '@constants';
 
   // Stores
   import { navStore } from '@stores';
 
-  /**
-   * State variable to control the visibility of the navigation background
-   *
-   * @type {boolean}
-   * @default false
-   */
   let show: boolean = false;
-
-  /**
-   * Handles the scroll event to show/hide the navigation background
-   *
-   * @function handleScroll
-   * @description Sets the 'show' state to true when the user scrolls more than 10px
-   * down the page, and false otherwise. This controls the visibility of the
-   * navigation background.
-   *
-   * @returns {void}
-   */
-  function handleScroll(): void {
-    show = window.scrollY > 10;
-  }
 
   /**
    * Lifecycle hook that runs when the component is mounted to the DOM
@@ -68,6 +49,20 @@
     // Check initial scroll position
     handleScroll();
   });
+
+  /**
+   * Handles the scroll event to show/hide the navigation background
+   *
+   * @function handleScroll
+   * @description Sets the 'show' state to true when the user scrolls more than 10px
+   * down the page, and false otherwise. This controls the visibility of the
+   * navigation background.
+   *
+   * @returns {void}
+   */
+  function handleScroll(): void {
+    show = window.scrollY > 10;
+  }
 
   /**
    * Lifecycle hook that runs when the component is destroyed
@@ -91,7 +86,7 @@
   <div class="nav__container">
     <div class={show ? 'nav__main nav__main--black' : 'nav__main'}>
       <!-- Netflix Logo -->
-      <img alt="Netflix Logo" class="nav__logo" src={NETFLIX_LOGO_URL || '/placeholder.svg'} />
+      <Image alt="Netflix Logo" className="nav__logo" src={NETFLIX_LOGO_URL} />
 
       <!-- Primary navigation -->
       <NavPrimary />
@@ -141,7 +136,7 @@
   }
 
   /* Netflix logo styling - maintains aspect ratio with object-fit */
-  .nav__logo {
+  :global(.nav__logo) {
     margin-right: 5px;
     object-fit: contain;
     width: 80px;
