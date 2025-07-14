@@ -20,11 +20,13 @@
  * import { handleError, truncate, calculateStyleString } from '@utils';
  */
 
+export * from './animations';
 export * from './coordinates';
 export * from './error';
 export * from './helper';
 export * from './positioning';
 export * from './row';
 export * from './slider';
+export * from './timeout';
 export * from './touch';
 export * from './typeGuards';
