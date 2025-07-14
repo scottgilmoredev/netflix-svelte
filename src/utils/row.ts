@@ -1,4 +1,5 @@
 import { get } from 'svelte/store';
+import type { Unsubscriber } from 'svelte/store';
 
 // Stores
 import { createSliderStore } from '@stores';
@@ -27,7 +28,7 @@ export function setupRowStores(
   const sliderStore = createSliderStore([], initialCount);
 
   // Update slider store when media store changes
-  const mediaStoreUnsubscribe = mediaStore.subscribe((media) => {
+  const mediaStoreUnsubscribe: Unsubscriber = mediaStore.subscribe((media) => {
     sliderStore.state.update((s) => ({
       ...s,
       media,
@@ -35,7 +36,7 @@ export function setupRowStores(
   });
 
   // Update slider store when responsive items change
-  const itemsUnsubscribe = itemsToDisplay.subscribe((count) => {
+  const itemsUnsubscribe: Unsubscriber = itemsToDisplay.subscribe((count) => {
     sliderStore.state.update((s) => ({
       ...s,
       itemsToDisplayInRow: count,
