@@ -21,6 +21,7 @@
 
       // Non-wildcard paths for barrel file imports
       "@constants": ["src/constants"],
+      "@services": ["src/services"],
       "@stores": ["src/stores"],
       "@types": ["src/types"],
       "@utils": ["src/utils"]
