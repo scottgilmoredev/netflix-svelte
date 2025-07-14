@@ -18,6 +18,7 @@
  * import type { Movie, Breakpoint } from '@types';
  */
 
+export * from './animations';
 export * from './api';
 export * from './coordinates';
 export * from './icons';
@@ -27,4 +28,5 @@ export * from './portal';
 export * from './positioning';
 export * from './responsive';
 export * from './slider';
+export * from './timeout';
 export * from './touch';
