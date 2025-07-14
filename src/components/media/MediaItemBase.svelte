@@ -17,8 +17,11 @@
    * @requires module:@utils
    */
 
+  // Components
+  import Image from '@components/ui/Image.svelte';
+
   // Constants
-  import { IMAGE_BASE_URL, MEDIA_ITEM_DEFAULTS, PLACEHOLDER_URL } from '@constants';
+  import { IMAGE_BASE_URL, MEDIA_ITEM_DEFAULTS } from '@constants';
 
   // Types
   import type { BaseMediaItemProps } from '@types';
@@ -30,10 +33,11 @@
   export let data: BaseMediaItemProps['data'] = MEDIA_ITEM_DEFAULTS.data;
   export let imageType: BaseMediaItemProps['imageType'] = MEDIA_ITEM_DEFAULTS.imageType;
   export let width: BaseMediaItemProps['width'] = MEDIA_ITEM_DEFAULTS.width;
+  let imageUrl: string | null;
 
   // Determine image path based on imageType
   $: imagePath = imageType === 'backdrop' ? data?.backdrop_path : data?.poster_path;
-  $: imageUrl = imagePath ? `${IMAGE_BASE_URL}${imagePath}` : null;
+  $: imageUrl = `${IMAGE_BASE_URL}${imagePath}`;
   $: title = data?.name || data?.original_name || '';
 </script>
 
@@ -41,12 +45,8 @@
   <!-- Slot for content before the image (e.g., rank number) -->
   <slot name="before-image" />
 
-  <img
-    alt={title}
-    class="media-item__image"
-    src={imageUrl || PLACEHOLDER_URL}
-    on:error={handleImageError}
-  />
+  <!-- Main media image, either backdrop or poster based on imageType prop -->
+  <Image alt={title} className="media-item__image" responsive src={imageUrl} />
 
   <!-- Default slot for any additional content -->
   <slot />

@@ -16,6 +16,7 @@
   import { ACCOUNT_PROFILES } from '@constants';
 
   // Components
+  import Image from '@components/ui/Image.svelte';
   import NavItem from './NavItem.svelte';
 </script>
 
@@ -26,10 +27,10 @@
     <NavItem className="account-menu__item" label={profile.label}>
       <svelte:fragment slot="icon">
         <!-- Profile avatar image with fallback to placeholder if source is missing -->
-        <img
+        <Image
           alt={`${profile.label} profile avatar`}
-          class="account-menu__avatar"
-          src={profile.avatarSrc || '/placeholder.svg'}
+          className="account-menu__avatar"
+          src={profile.avatarSrc ?? ''}
         />
       </svelte:fragment>
     </NavItem>
@@ -47,7 +48,7 @@
   }
 
   /* User avatar image styling */
-  .account-menu__avatar {
+  :global(.account-menu__avatar) {
     border-radius: 4px;
     height: 32px;
     margin-right: 10px;

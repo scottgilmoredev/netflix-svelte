@@ -10,21 +10,27 @@
    * @prop {string} [height="32"] - Height of the avatar in pixels
    * @prop {string} src - Source URL for the avatar image
    * @prop {string} [width="32"] - Width of the avatar in pixels
+   *
+   * @requires @constants
    */
+
+  // Components
+  import Image from './Image.svelte';
+
+  // Constants
+  import { PLACEHOLDER_URL } from '@constants';
 
   /**
    * Props for the UserAvatar component
    *
    * @typedef {Object} UserAvatarProps
    * @property {string} [alt="User avatar"] - Alt text for the avatar image
-   * @property {string} [className=""] - Additional CSS classes to apply to the avatar
    * @property {string} [height="32"] - Height of the avatar in pixels
    * @property {string} src - Source URL for the avatar image
    * @property {string} [width="32"] - Width of the avatar in pixels
    */
   interface UserAvatarProps {
     alt?: string;
-    className?: string;
     height?: string;
     src: string;
     width?: string;
@@ -34,11 +40,10 @@
   export let alt: UserAvatarProps['alt'] = 'User avatar';
   export let width: UserAvatarProps['width'] = '32';
   export let height: UserAvatarProps['height'] = '32';
-  export let className: UserAvatarProps['className'] = '';
 </script>
 
 <div class="nav__avatar-wrapper">
-  <img src={src || '/placeholder.svg'} {alt} {width} {height} class={`nav__avatar ${className}`} />
+  <Image {alt} className="nav__avatar" {height} src={src || PLACEHOLDER_URL} {width} />
 </div>
 
 <style>
@@ -55,7 +60,7 @@
   }
 
   /* Avatar image styling with rounded corners */
-  .nav__avatar {
+  :global(.nav__avatar) {
     border-radius: 4px;
     height: 32px;
     vertical-align: middle;
