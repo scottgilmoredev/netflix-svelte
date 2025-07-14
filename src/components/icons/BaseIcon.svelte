@@ -30,12 +30,14 @@
     className?: string;
     height?: string;
     name: keyof typeof ICON_PATHS;
+    style?: string;
     width?: string;
   }
 
   export let className: BaseIconProps['className'] = '';
   export let height: BaseIconProps['height'] = '24';
   export let name: BaseIconProps['name'];
+  export let style: BaseIconProps['style'] = '';
   export let width: BaseIconProps['width'] = '24';
 
   $: path = ICON_PATHS[name]?.path || '';
@@ -43,15 +45,15 @@
 </script>
 
 <svg
-  xmlns="http://www.w3.org/2000/svg"
-  fill="none"
-  role="img"
-  {viewBox}
-  {width}
-  {height}
-  data-icon={name}
   aria-hidden="true"
   class={className}
+  data-icon={name}
+  role="img"
+  xmlns="http://www.w3.org/2000/svg"
+  {height}
+  {style}
+  {viewBox}
+  {width}
 >
   {#if path}
     <path fill-rule="evenodd" clip-rule="evenodd" d={path} fill="currentColor" />
