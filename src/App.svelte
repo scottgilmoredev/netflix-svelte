@@ -3,7 +3,7 @@
    * Main Application Component
    *
    * @component
-   * @description The root component of the Netflix clone application. Manages the overall
+   * @description The root component of the application. Manages the overall
    * layout and coordinates the initialization of media data. Renders the navigation bar,
    * billboard, and media rows, handling any potential errors during data fetching.
    *
@@ -56,28 +56,20 @@
 
   <!-- Featured content billboard -->
   <Billboard />
+        <!-- Priority rows (fetch details on load) -->
+        <Row mediaStore={continueWatching} priority showProgress />
+        <Row mediaStore={topRated} isTopMedia priority />
+        <Row mediaStore={netflixOriginals} priority />
+        <Row mediaStore={trending} priority />
 
-  <!-- Main content area with media rows -->
-  <main>
-    {#if $error}
-      <!-- Error message display if data fetching fails -->
-      <div class="error-message">
-        <p>Error: {$error}</p>
-        <button on:click={initializeMedia}>Try Again</button>
-      </div>
-    {:else}
-      <!-- Movie category rows -->
-      <Row mediaStore={continueWatching} showProgress />
-      <Row mediaStore={topRated} isTopMedia />
-      <Row mediaStore={netflixOriginals} />
-      <Row mediaStore={trending} />
-      <Row mediaStore={documentaries} />
-      <Row mediaStore={horrorMovies} />
-      <Row mediaStore={comedyMovies} />
-      <Row mediaStore={actionMovies} />
-      <Row mediaStore={romanceMovies} />
-    {/if}
-  </main>
+        <!-- Regular rows (fetch details on scroll) -->
+        <Row mediaStore={documentaries} />
+        <Row mediaStore={horrorMovies} />
+        <Row mediaStore={comedyMovies} />
+        <Row mediaStore={actionMovies} />
+        <Row mediaStore={romanceMovies} />
+      {/if}
+    </main>
 
   <!-- Global modal component -->
   <GlobalModal />

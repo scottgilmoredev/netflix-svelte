@@ -13,6 +13,9 @@
 import { writable, derived, get } from 'svelte/store';
 import type { Writable, Readable } from 'svelte/store';
 
+// Services
+import { fetchMediaDetailsBatch } from '@services';
+
 // Types
 import type {
   AnyMedia,
@@ -472,7 +475,7 @@ export function createSliderStore(
 
   // -------------------------------------------------------------------------
   // PUBLIC ACTIONS
-  // -------------------------------------------------------------------------
+  // -------------------------------------------------------------------------`
 
   // Define actions that can be performed on the slider
   const actions: SliderActions = {
@@ -484,12 +487,15 @@ export function createSliderStore(
      *
      * @example
      * // Attach to next button click
-     * <button on:click={handleNext}>Next</button>
+     * <button on:click={handleNext}>Next</button>`
      */
     moveNext: () => {
       const currentState = get(state);
       const newIndex = calculateNewIndex(currentState, 'next');
       const newMovePercentage = calculateMovePercentage(currentState, 'next', newIndex);
+
+      // Fetch media details for all items not fetched in initial batch
+      fetchMediaDetailsBatch(currentState.media);
 
       // Make sure we have cached content before starting animation
       if (get(cachedContent).length === 0) {
