@@ -9,7 +9,7 @@
    *
    * @requires svelte
    * @requires ./components/ui/billboard.svelte
-   * @requires ./components/ui/GlobalModal.svelte
+   * @requires ./components/ui/ModalGlobal.svelte
    * @requires ./components/Nav.svelte
    * @requires ./components/Row.svelte
    * @requires module:@stores
@@ -20,7 +20,7 @@
 
   // Components
   import Billboard from '@/components/ui/Billboard.svelte';
-  import GlobalModal from '@components/ui/GlobalModal.svelte';
+  import ModalGlobal from '@/components/ui/ModalGlobal.svelte';
   import Nav from '@components/nav/Nav.svelte';
   import Row from '@components/slider/Row.svelte';
 
@@ -71,8 +71,8 @@
       {/if}
     </main>
 
-  <!-- Global modal component -->
-  <GlobalModal />
+    <!-- Global UI components -->
+    <ModalGlobal />
 </div>
 
 <style>
