@@ -101,7 +101,7 @@
   }
 
   /* For parent component to control visibility on row hover */
-  :global(.row__container:hover) .slider__control {
+  :global(.media-row__container:hover) .slider__control {
     opacity: 1;
   }
 </style>

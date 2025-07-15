@@ -17,6 +17,7 @@
 
 export * from './icons';
 export * from './media';
+export * from './modal';
 export * from './nav';
 export * from './positioning';
 export * from './responsive';

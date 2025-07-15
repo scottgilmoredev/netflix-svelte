@@ -9,7 +9,7 @@
    *
    * @requires svelte
    * @requires ./components/ui/billboard.svelte
-   * @requires ./components/ui/GlobalModal.svelte
+   * @requires ./components/ui/ModalGlobal.svelte
    * @requires ./components/Nav.svelte
    * @requires ./components/Row.svelte
    * @requires module:@stores
@@ -20,7 +20,8 @@
 
   // Components
   import Billboard from '@/components/ui/Billboard.svelte';
-  import GlobalModal from '@components/ui/GlobalModal.svelte';
+  import ModalGlobal from '@/components/ui/ModalGlobal.svelte';
+  import ModalPreview from '@components/ui/ModalPreview.svelte';
   import Nav from '@components/nav/Nav.svelte';
   import Row from '@components/slider/Row.svelte';
 
@@ -37,6 +38,8 @@
     trending,
   } from '@stores/mediaStore';
 
+  let hasLoaded: boolean = false;
+
   /**
    * Lifecycle hook that runs when the component is mounted to the DOM
    *
@@ -45,8 +48,9 @@
    * from the mediaStore. This fetches data for all media categories and sets up
    * the billboard media.
    */
-  onMount(() => {
-    initializeMedia();
+  onMount(async () => {
+    await initializeMedia();
+    hasLoaded = true;
   });
 </script>
 
@@ -54,8 +58,20 @@
   <!-- Fixed navigation bar -->
   <Nav />
 
-  <!-- Featured content billboard -->
-  <Billboard />
+  {#if hasLoaded}
+    <!-- Featured content billboard -->
+    <Billboard />
+
+    <!-- Main content area with media rows -->
+    <main>
+      {#if $error}
+        <!-- Error message display if data fetching fails -->
+        <div class="error-message">
+          <p>Error: {$error}</p>
+          <button on:click={initializeMedia}>Try Again</button>
+        </div>
+      {:else}
+        <!-- Movie category rows -->
         <!-- Priority rows (fetch details on load) -->
         <Row mediaStore={continueWatching} priority showProgress />
         <Row mediaStore={topRated} isTopMedia priority />
@@ -71,8 +87,10 @@
       {/if}
     </main>
 
-  <!-- Global modal component -->
-  <GlobalModal />
+    <!-- Global UI components -->
+    <ModalGlobal />
+    <ModalPreview />
+  {/if}
 </div>
 
 <style>
