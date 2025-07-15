@@ -21,6 +21,7 @@
   // Components
   import Billboard from '@/components/ui/Billboard.svelte';
   import ModalGlobal from '@/components/ui/ModalGlobal.svelte';
+  import ModalPreview from '@components/ui/ModalPreview.svelte';
   import Nav from '@components/nav/Nav.svelte';
   import Row from '@components/slider/Row.svelte';
 
@@ -73,6 +74,7 @@
 
     <!-- Global UI components -->
     <ModalGlobal />
+    <ModalPreview />
 </div>
 
 <style>
