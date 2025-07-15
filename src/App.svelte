@@ -38,6 +38,8 @@
     trending,
   } from '@stores/mediaStore';
 
+  let hasLoaded: boolean = false;
+
   /**
    * Lifecycle hook that runs when the component is mounted to the DOM
    *
@@ -46,8 +48,9 @@
    * from the mediaStore. This fetches data for all media categories and sets up
    * the billboard media.
    */
-  onMount(() => {
-    initializeMedia();
+  onMount(async () => {
+    await initializeMedia();
+    hasLoaded = true;
   });
 </script>
 
@@ -55,8 +58,20 @@
   <!-- Fixed navigation bar -->
   <Nav />
 
-  <!-- Featured content billboard -->
-  <Billboard />
+  {#if hasLoaded}
+    <!-- Featured content billboard -->
+    <Billboard />
+
+    <!-- Main content area with media rows -->
+    <main>
+      {#if $error}
+        <!-- Error message display if data fetching fails -->
+        <div class="error-message">
+          <p>Error: {$error}</p>
+          <button on:click={initializeMedia}>Try Again</button>
+        </div>
+      {:else}
+        <!-- Movie category rows -->
         <!-- Priority rows (fetch details on load) -->
         <Row mediaStore={continueWatching} priority showProgress />
         <Row mediaStore={topRated} isTopMedia priority />
@@ -75,6 +90,7 @@
     <!-- Global UI components -->
     <ModalGlobal />
     <ModalPreview />
+  {/if}
 </div>
 
 <style>
