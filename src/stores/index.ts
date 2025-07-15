@@ -29,6 +29,7 @@ export * from './mediaStore';
 export * from './mediaStoreRegistry';
 export * from './modalBaseStore';
 export * from './modalGlobalStore';
+export * from './modalPreviewStore';
 export * from './navStore';
 export * from './responsiveStore';
 export * from './sliderStore';
