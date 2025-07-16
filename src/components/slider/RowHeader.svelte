@@ -148,7 +148,7 @@
   }
 
   /* Hover states */
-  :global(.row:hover) .row__title .row__explore-chevron {
+  :global(.media-row:hover) .row__title .row__explore-chevron {
     display: inline-block;
     font-size: 0.9vw;
   }
