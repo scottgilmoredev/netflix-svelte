@@ -20,7 +20,7 @@
  * @requires @types
  * @requires @services
  * @requires @constants
- * @requires @utils/timeout
+ * @requires @utils
  */
 
 // Base store
@@ -37,7 +37,7 @@ import { getMediaDetails, fetchMediaDetailsBatch } from '@services';
 import { PREVIEW_TIMING } from '@constants';
 
 // Utils
-import { createTimeoutManager } from '@utils/timeout';
+import { reateTimeoutManager, safeGetBoundingRect } from '@utils';
 
 /**
  * Interface for the preview modal state
@@ -190,7 +190,15 @@ export function openPreviewModal(
   timeoutManager.clearPendingTimeouts();
 
   // Calculate position based on the source element
-  const rect = sourceElement.getBoundingClientRect();
+  const rect = safeGetBoundingRect(sourceElement); // MODIFIED
+
+  if (!rect) {
+    console.warn(
+      'openPreviewModal: Could not get bounding rect for source element. Aborting modal open.'
+    );
+
+    return;
+  }
 
   // Calculate the center of the source element
   const centerX = rect.left + rect.width / 2;

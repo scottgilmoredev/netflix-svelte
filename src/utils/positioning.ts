@@ -151,7 +151,7 @@ function safeGetElementDimensions(element: HTMLElement): { width: number; height
  * @param {HTMLElement} element - Element to measure
  * @returns {DOMRect | null} Bounding rectangle or null if measurement fails
  */
-function safeGetBoundingRect(element: HTMLElement): DOMRect | null {
+export function safeGetBoundingRect(element: HTMLElement): DOMRect | null {
   try {
     return element.getBoundingClientRect();
   } catch (error) {

@@ -35,7 +35,7 @@ import type {
 } from '@types';
 
 // Positioning system
-import { createPositionManager, viewportConstraint } from './positioning';
+import { createPositionManager, safeGetBoundingRect, viewportConstraint } from './positioning';
 
 /**
  * Calculates viewport boundaries for content positioning
@@ -341,8 +341,13 @@ export function calculateExpandedPosition(
     return null;
   }
 
-  // Get source element dimensions and position
-  const sourceRect = sourceElement.getBoundingClientRect();
+  // Get source element dimensions and position using the safe utility
+  const sourceRect = safeGetBoundingRect(sourceElement); // MODIFIED
+
+  if (!sourceRect) {
+    console.warn('calculateExpandedPosition: Could not get bounding rect for source element.');
+    return null;
+  }
 
   // Calculate viewport boundaries
   const paddingRatio = options.padding || POSITION_CONSTANTS.DEFAULT_PADDING_RATIO;
