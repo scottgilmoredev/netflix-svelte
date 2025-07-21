@@ -25,7 +25,7 @@
 import type { PortalOptions } from '@types';
 
 // Utils
-import { createPositionManager, type PositionManager } from '@utils';
+import { createPositionManager, type PositionManager, viewportConstraint } from '@utils';
 
 /**
  * Svelte action for portaling elements to different DOM locations
@@ -123,10 +123,23 @@ export function portal(
   let positionManager: PositionManager | null = null;
 
   if (options.position) {
+    // Determine vertical padding for the portal's internal PositionManager
+    const topBottomPadding = options.verticalPadding === 'none' ? null : options.verticalPadding;
+
     positionManager = createPositionManager({
       strategy: 'custom',
       customPosition: () => options.position || {},
       zIndex: options.zIndex,
+      constraints: [
+        viewportConstraint({
+          padding: {
+            top: topBottomPadding,
+            bottom: topBottomPadding,
+            left: undefined,
+            right: undefined,
+          },
+        }),
+      ],
     });
   }
 
@@ -218,12 +231,27 @@ export function portal(
 
       // Update positioning
       if (newOptions.position) {
+        // Determine vertical padding for the portal's internal PositionManager on update
+        const newTopBottomPadding =
+          newOptions.verticalPadding === 'none' ? null : newOptions.verticalPadding;
+        const paddingConstraints = {
+          top: newTopBottomPadding,
+          bottom: newTopBottomPadding,
+          left: undefined,
+          right: undefined,
+        };
+
         if (!positionManager) {
           // Create position manager if it doesn't exist
           positionManager = createPositionManager({
             strategy: 'custom',
             customPosition: () => newOptions.position || {},
             zIndex: newOptions.zIndex,
+            constraints: [
+              viewportConstraint({
+                padding: paddingConstraints,
+              }),
+            ],
           });
           positionManager.attach(node);
         } else {
@@ -231,6 +259,11 @@ export function portal(
           positionManager.updateConfig({
             customPosition: () => newOptions.position || {},
             zIndex: newOptions.zIndex,
+            constraints: [
+              viewportConstraint({
+                padding: paddingConstraints,
+              }),
+            ],
           });
         }
       } else if (positionManager) {

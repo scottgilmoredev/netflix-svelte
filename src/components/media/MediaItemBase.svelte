@@ -33,13 +33,13 @@
   import Image from '@components/ui/Image.svelte';
 
   // Constants
-  import { IMAGE_BASE_URL, MEDIA_ITEM_DEFAULTS } from '@constants';
+  import { IMAGE_BASE_URL, MEDIA_ITEM_DEFAULTS, NAV_HEIGHT } from '@constants';
 
   // Stores
   import { openPreviewModal, previewModalStore } from '@stores';
 
   // Utils
-  import { createTimeoutManager } from '@utils';
+  import { createTimeoutManager, safeGetBoundingRect } from '@utils';
 
   /**
    * Props for the MediaItemBase component
@@ -99,6 +99,36 @@
   const timeoutManager = createTimeoutManager();
 
   /**
+   * Checks if the media item element is too close to the vertical edges of the viewport.
+   *
+   * @function isMediaItemTooCloseToVerticalEdge
+   * @description Determines if the given media item element's position in the viewport
+   * is within a predefined threshold of the top or bottom edges, accounting for the
+   * fixed navigation bar at the top.
+   *
+   * @param {HTMLElement} element - The media item DOM element to check.
+   * @returns {boolean} True if the element is too close to a vertical edge, false otherwise.
+   */
+  function isMediaItemTooCloseToVerticalEdge(element: HTMLElement): boolean {
+    const rect = safeGetBoundingRect(element);
+
+    if (!rect) {
+      console.warn('isMediaItemTooCloseToVerticalEdge: Could not get bounding rect for element.');
+      return false;
+    }
+
+    const viewportHeight = window.innerHeight;
+    const EDGE_THRESHOLD = 56;
+
+    // Check if the item's bottom edge is above the combined height of the NAV_HEIGHT and the EDGE_THRESHOLD
+    const isTooCloseToTop = rect.bottom < EDGE_THRESHOLD + NAV_HEIGHT;
+    // Check if the item's top edge is below the viewport height minus the threshold
+    const isTooCloseToBottom = rect.top > viewportHeight - EDGE_THRESHOLD;
+
+    return isTooCloseToTop || isTooCloseToBottom;
+  }
+
+  /**
    * Handles mouse enter events to trigger preview modal
    *
    * @function handleMouseEnter
@@ -107,6 +137,9 @@
    * via keyboard while hovering. Passes the media data and the DOM element reference to
    * the modal system for proper positioning and content display. Only triggers if valid
    * media data is available and the modal wasn't keyboard-closed during the current hover.
+   *
+   * Prevents opening if the item is too close to the vertical viewport edges, as determined
+   * by `isMediaItemTooCloseToVerticalEdge`.
    *
    * @returns {void}
    *
@@ -119,7 +152,12 @@
   function handleMouseEnter(): void {
     timeoutManager.setTimeout(() => {
       if (data && !preventReopenAfterKeyboardClose) {
-        openPreviewModal(data, mediaItemElement);
+        // If too close to an edge, do not open the modal
+        if (isMediaItemTooCloseToVerticalEdge(mediaItemElement)) {
+          return;
+        }
+
+        openPreviewModal(data, mediaItemElement, false, 'none');
       }
     }, 100);
   }

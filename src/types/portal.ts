@@ -53,13 +53,17 @@ export interface ModalDimensions {
  * @interface PortalOptions
  * @description Configuration options for portal creation and management
  *
- * @property {PortalPosition} position - Position configuration for the portal (optional)
- * @property {HTMLElement} target - Target element for portal attachment (optional)
- * @property {number} zIndex - Z-index value for portal stacking (optional)
+ * @property {PortalPosition} [position] - Optional: Position configuration for the portal
+ * @property {HTMLElement} [target] - Optional: Target element for portal attachment
+ * @property {number | 'none'} [verticalPadding] - Optional: Controls vertical clamping for the portaled element.
+ *   If a number, it sets the padding from top/bottom viewport edges. If 'none',
+ *   vertical clamping is disabled, allowing the element to exceed vertical boundaries.
+ * @property {number} [zIndex] - Optional: Z-index value for portal stacking
  */
 export interface PortalOptions {
   position?: PortalPosition;
   target?: HTMLElement;
+  verticalPadding?: number | 'none';
   zIndex?: number;
 }
 
@@ -69,13 +73,13 @@ export interface PortalOptions {
  * @interface PortalPosition
  * @description Position configuration object for portal positioning
  *
- * @property {number} bottom - Bottom position in pixels (optional)
- * @property {number | string} height - Height value in pixels or CSS string (optional)
- * @property {number} left - Left position in pixels (optional)
- * @property {number} right - Right position in pixels (optional)
- * @property {number} top - Top position in pixels (optional)
- * @property {string} transformOrigin - Transform origin string for animations (optional)
- * @property {number | string} width - Width value in pixels or CSS string (optional)
+ * @property {number} [bottom] - Optional: Bottom position in pixels
+ * @property {number | string} [height] - Optional: Height value in pixels or CSS string
+ * @property {number} [left] - Optional: Left position in pixels
+ * @property {number} [right] - Optional: Right position in pixels
+ * @property {number} [top] - Optional: Top position in pixels
+ * @property {string} [transformOrigin] - Optional: Transform origin string for animations
+ * @property {number | string} [width] - Optional: Width value in pixels or CSS string
  */
 export interface PortalPosition {
   bottom?: number;
@@ -91,14 +95,20 @@ export interface PortalPosition {
  * Position Calculation Options
  *
  * @interface PositionCalculationOptions
- * @description Options for position calculation within the portal system
+ * @description Options for position calculation within the portal system.
+ * Provides configurable parameters for offsets, padding, positioning strategy,
+ * and specific control over vertical viewport constraints.
  *
- * @property {number} offsetY - Vertical offset value in pixels (optional)
- * @property {number} padding - Padding value for position constraints (optional)
- * @property {PositioningStrategy} strategy - Positioning strategy to use (optional)
+ * @property {number} [offsetY] - Optional: Vertical offset value in pixels.
+ * @property {number} [padding] - Optional: Padding value for position constraints.
+ * @property {PositioningStrategy} [strategy] - Optional: Positioning strategy to use.
+ * @property {number | 'none'} [verticalPadding] - Optional: Controls vertical clamping.
+ *   If a number, it sets the padding from top/bottom viewport edges. If 'none',
+ *   vertical clamping is disabled, allowing the element to exceed vertical boundaries.
  */
 export interface PositionCalculationOptions {
   offsetY?: number;
   padding?: number;
   strategy?: PositioningStrategy;
+  verticalPadding?: number | 'none';
 }

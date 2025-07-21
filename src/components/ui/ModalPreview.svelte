@@ -62,7 +62,6 @@
   import type { AnimationPhase, AnyMedia, MediaDetails, PortalPosition } from '@types';
 
   // Utils
-  import { calculateExpandedPosition } from '@utils/modalPositioning';
   import {
     applyAnimationStyles,
     startAnimation,
@@ -74,7 +73,6 @@
    * Local state variables for modal management
    */
   let currentMediaId: number | null = null;
-  let expandedPosition: PortalPosition | null = null;
   let media: AnyMedia | null = null;
   let mediaDetails: MediaDetails | null = null;
   let modalElement: HTMLElement | null = null;
@@ -101,11 +99,6 @@
 
     // Track current media for change detection
     currentMediaId = media?.id || null;
-
-    // Calculate expanded position when state changes
-    if (position && sourceElement) {
-      expandedPosition = calculateExpandedPosition(position, sourceElement);
-    }
 
     // Handle animation state changes
     if (isOpen) {
@@ -288,7 +281,7 @@
   Modal preview container with portal positioning and accessibility attributes
   Only renders when modal is open and has valid media and position data
 -->
-{#if isOpen && media && expandedPosition}
+{#if isOpen && media && position}
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <dialog
     aria-labelledby="preview-title"
@@ -297,7 +290,7 @@
     on:mouseenter={handleMouseEnter}
     on:mouseleave={handleMouseLeave}
     on:keydown={handleKeydown}
-    use:portal={{ position: expandedPosition ?? undefined, zIndex: 1000 }}
+    use:portal={{ position: position ?? undefined, verticalPadding: 'none', zIndex: 1000 }}
     open={isOpen}
   >
     <div class="preview-modal__content">

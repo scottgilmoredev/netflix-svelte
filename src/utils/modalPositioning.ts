@@ -35,7 +35,7 @@ import type {
 } from '@types';
 
 // Positioning system
-import { createPositionManager, viewportConstraint } from './positioning';
+import { createPositionManager, safeGetBoundingRect, viewportConstraint } from './positioning';
 
 /**
  * Calculates viewport boundaries for content positioning
@@ -69,18 +69,38 @@ function calculateViewportBoundaries(paddingRatio: number): ViewportBoundaries {
  * @function createPositionManagerConfig
  * @description Builds a configuration object for the position manager with appropriate
  * constraints and positioning strategy. Configures viewport constraints, offsets,
- * and transform origin calculations for optimal modal positioning.
+ * and transform origin calculations for optimal modal positioning. It now also
+ * dynamically adjusts vertical padding based on the `verticalPadding` option,
+ * allowing for disabling vertical clamping.
  *
- * @param {HTMLElement} sourceElement - The element that triggered the modal
- * @param {PositionCalculationOptions} options - Positioning options and strategy
- * @param {ViewportBoundaries} boundaries - Viewport boundaries for constraint application
+ * @param {HTMLElement} sourceElement - The element that triggered the modal.
+ * @param {PositionCalculationOptions} options - Positioning options and strategy,
+ *   including `verticalPadding` to control vertical clamping.
+ * @param {ViewportBoundaries} boundaries - Viewport boundaries for constraint application.
  *
- * @returns {PositionManagerConfig} Configuration object for the position manager
+ * @returns {PositionManagerConfig} Configuration object for the position manager.
  *
  * @example
- * const config = createPositionManagerConfig(
+ * // Example with default vertical clamping
+ * const config1 = createPositionManagerConfig(
  *   triggerElement,
  *   { strategy: 'follow-trigger', offsetY: 10 },
+ *   boundaries
+ * );
+ *
+ * @example
+ * // Example with no vertical clamping
+ * const config2 = createPositionManagerConfig(
+ *   triggerElement,
+ *   { strategy: 'follow-trigger', offsetY: 10, verticalPadding: 'none' },
+ *   boundaries
+ * );
+ *
+ * @example
+ * // Example with custom vertical padding
+ * const config3 = createPositionManagerConfig(
+ *   triggerElement,
+ *   { strategy: 'follow-trigger', offsetY: 10, verticalPadding: 50 },
  *   boundaries
  * );
  */
@@ -89,14 +109,28 @@ function createPositionManagerConfig(
   options: PositionCalculationOptions,
   boundaries: ViewportBoundaries
 ): PositionManagerConfig {
+  // Determine vertical padding based on options
+  let topPadding: number | null = POSITION_CONSTANTS.VERTICAL_EDGE_PADDING;
+  let bottomPadding: number | null = POSITION_CONSTANTS.VERTICAL_EDGE_PADDING;
+
+  if (options.verticalPadding === 'none') {
+    topPadding = null;
+    bottomPadding = null;
+  }
+
+  if (typeof options.verticalPadding === 'number') {
+    topPadding = options.verticalPadding;
+    bottomPadding = options.verticalPadding;
+  }
+
   return {
     constraints: [
       viewportConstraint({
         padding: {
           left: boundaries.horizontalPadding,
           right: boundaries.horizontalPadding,
-          top: POSITION_CONSTANTS.VERTICAL_EDGE_PADDING,
-          bottom: POSITION_CONSTANTS.VERTICAL_EDGE_PADDING,
+          top: topPadding,
+          bottom: bottomPadding,
         },
       }),
     ],
@@ -341,8 +375,13 @@ export function calculateExpandedPosition(
     return null;
   }
 
-  // Get source element dimensions and position
-  const sourceRect = sourceElement.getBoundingClientRect();
+  // Get source element dimensions and position using the safe utility
+  const sourceRect = safeGetBoundingRect(sourceElement); // MODIFIED
+
+  if (!sourceRect) {
+    console.warn('calculateExpandedPosition: Could not get bounding rect for source element.');
+    return null;
+  }
 
   // Calculate viewport boundaries
   const paddingRatio = options.padding || POSITION_CONSTANTS.DEFAULT_PADDING_RATIO;

@@ -151,7 +151,7 @@ function safeGetElementDimensions(element: HTMLElement): { width: number; height
  * @param {HTMLElement} element - Element to measure
  * @returns {DOMRect | null} Bounding rectangle or null if measurement fails
  */
-function safeGetBoundingRect(element: HTMLElement): DOMRect | null {
+export function safeGetBoundingRect(element: HTMLElement): DOMRect | null {
   try {
     return element.getBoundingClientRect();
   } catch (error) {
@@ -198,10 +198,16 @@ function safeGetViewportDimensions(): {
  * Normalizes padding configuration
  *
  * @function normalizePadding
- * @description Converts padding input to a standardized padding object
+ * @description Converts padding input to a standardized padding object.
+ * This function now correctly propagates `null` values for individual padding
+ * properties, allowing specific edges to have their clamping disabled.
+ * If a padding value is `undefined`, it falls back to the `DEFAULT_PADDING`.
  *
- * @param {PositionPadding | number | undefined} padding - Padding configuration
- * @returns {PositionPadding} Normalized padding object
+ * @param {PositionPadding | number | undefined} padding - Padding configuration.
+ *   Can be a number (applies to all sides), an object with specific padding values,
+ *   or `undefined`. Individual properties in `PositionPadding` can be `null`
+ *   to disable clamping for that side.
+ * @returns {PositionPadding} Normalized padding object.
  */
 function normalizePadding(padding?: PositionPadding | number): PositionPadding {
   if (padding === undefined) {
@@ -218,11 +224,51 @@ function normalizePadding(padding?: PositionPadding | number): PositionPadding {
   }
 
   return {
-    top: padding.top ?? DEFAULT_PADDING.top,
-    right: padding.right ?? DEFAULT_PADDING.right,
-    bottom: padding.bottom ?? DEFAULT_PADDING.bottom,
-    left: padding.left ?? DEFAULT_PADDING.left,
+    top: getOrDefault(padding.top, DEFAULT_PADDING.top),
+    right: getOrDefault(padding.right, DEFAULT_PADDING.right),
+    bottom: getOrDefault(padding.bottom, DEFAULT_PADDING.bottom),
+    left: getOrDefault(padding.left, DEFAULT_PADDING.left),
   };
+}
+
+/**
+ * Retrieves a value or its default if the value is undefined.
+ *
+ * @function getOrDefault
+ * @description A utility function that returns the provided `value` if it is not `undefined`.
+ * If `value` is strictly `undefined`, it returns the `defaultValue` instead.
+ * This is particularly useful for handling optional parameters or object properties
+ * where `null` is a valid and intentional input that should be preserved,
+ * while `undefined` indicates a missing value that should fall back to a default.
+ *
+ * @template T - The type of the value and default value.
+ * @param {T | undefined} value - The value to check. Can be of type T, or `undefined`.
+ * @param {T} defaultValue - The default value to return if `value` is `undefined`.
+ *
+ * @returns {T} The `value` if it's not `undefined`, otherwise the `defaultValue`.
+ *
+ * @example
+ * // Example 1: Value is a number
+ * const result1 = getOrDefault(10, 0); // result1 will be 10
+ *
+ * @example
+ * // Example 2: Value is undefined
+ * const result2 = getOrDefault(undefined, 0); // result2 will be 0
+ *
+ * @example
+ * // Example 3: Value is null (should be preserved)
+ * const result3 = getOrDefault(null, 0); // result3 will be null
+ *
+ * @example
+ * // Example 4: With a string type
+ * const result4 = getOrDefault("hello", "world"); // result4 will be "hello"
+ *
+ * @example
+ * // Example 5: With an undefined string
+ * const result5 = getOrDefault(undefined, "world"); // result5 will be "world"
+ */
+function getOrDefault<T>(value: T | undefined, defaultValue: T): T {
+  return value !== undefined ? value : defaultValue;
 }
 
 /**
@@ -427,14 +473,20 @@ function getMeasurements(element: HTMLElement, reference?: HTMLElement): Measure
  * Calculates viewport constraint boundaries
  *
  * @function calculateConstraintBoundaries
- * @description Determines the min/max positions for element placement within viewport
+ * @description Determines the min/max positions for element placement within the viewport.
+ * This function now supports `null` values for individual padding properties,
+ * which effectively disables clamping for that specific edge by setting the
+ * corresponding boundary to `Infinity` or `-Infinity`.
  *
- * @param {number} viewportWidth - Viewport width in pixels
- * @param {number} viewportHeight - Viewport height in pixels
- * @param {number} elementWidth - Element width in pixels
- * @param {number} elementHeight - Element height in pixels
- * @param {PositionPadding} padding - Normalized padding configuration
- * @returns {Object} Constraint boundaries
+ * @param {number} viewportWidth - Viewport width in pixels.
+ * @param {number} viewportHeight - Viewport height in pixels.
+ * @param {number} elementWidth - Element width in pixels.
+ * @param {number} elementHeight - Element height in pixels.
+ * @param {PositionPadding} padding - Normalized padding configuration. Can include `null`
+ *   for `top`, `right`, `bottom`, or `left` to disable clamping on that side.
+ *
+ * @returns {Object} Constraint boundaries with `minLeft`, `maxLeft`, `minTop`, and `maxTop`.
+ *   These values can be `Infinity` or `-Infinity` if clamping is disabled for an edge.
  */
 function calculateConstraintBoundaries(
   viewportWidth: number,
@@ -448,11 +500,27 @@ function calculateConstraintBoundaries(
   minTop: number;
   maxTop: number;
 } {
+  // If padding.left is null, set minLeft to -Infinity. Otherwise, use padding.left or default.
+  const minLeft = padding.left === null ? -Infinity : padding.left ?? DEFAULT_PADDING.left;
+  // If padding.right is null, set maxLeft to Infinity. Otherwise, use calculated value.
+  const maxLeft =
+    padding.right === null
+      ? Infinity
+      : viewportWidth - elementWidth - (padding.right ?? DEFAULT_PADDING.right);
+
+  // If padding.top is null, set minTop to -Infinity. Otherwise, use padding.top or default.
+  const minTop = padding.top === null ? -Infinity : padding.top ?? DEFAULT_PADDING.top;
+  // If padding.bottom is null, set maxTop to Infinity. Otherwise, use calculated value.
+  const maxTop =
+    padding.bottom === null
+      ? Infinity
+      : viewportHeight - elementHeight - (padding.bottom ?? DEFAULT_PADDING.bottom);
+
   return {
-    minLeft: padding.left ?? DEFAULT_PADDING.left,
-    maxLeft: viewportWidth - elementWidth - (padding.right ?? DEFAULT_PADDING.right),
-    minTop: padding.top ?? DEFAULT_PADDING.top,
-    maxTop: viewportHeight - elementHeight - (padding.bottom ?? DEFAULT_PADDING.bottom),
+    minLeft,
+    maxLeft,
+    minTop,
+    maxTop,
   };
 }
 
