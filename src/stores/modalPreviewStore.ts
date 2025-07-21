@@ -37,7 +37,7 @@ import { getMediaDetails, fetchMediaDetailsBatch } from '@services';
 import { PREVIEW_TIMING } from '@constants';
 
 // Utils
-import { reateTimeoutManager, safeGetBoundingRect } from '@utils';
+import { calculateExpandedPosition, createTimeoutManager, safeGetBoundingRect } from '@utils';
 
 /**
  * Interface for the preview modal state
@@ -142,32 +142,44 @@ export const previewModalStore = createBaseModalStore<PreviewModalState>(initial
 const timeoutManager = createTimeoutManager();
 
 /**
- * Opens the preview modal with the specified media and position
+ * Opens the preview modal with the specified media and position.
  *
  * @function openPreviewModal
- * @description Schedules the preview modal to open after a configurable delay with intelligent
- * position calculation and media details fetching. Calculates the optimal position based on
- * the source element's geometry, sets up transform origin for smooth animations, and initiates
- * background fetching of media details. Includes race condition prevention through timeout
- * management and error handling for failed API requests.
+ * @description Schedules the preview modal to open after a configurable delay,
+ * intelligently calculating its final position and fetching media details.
+ * It determines the optimal expanded position based on the source element's
+ * geometry and viewport constraints, including an option to disable vertical
+ * clamping. It also sets up transform origin for smooth animations and
+ * initiates background fetching of media details. Includes race condition
+ * prevention through timeout management and robust error handling for API requests.
  *
- * @param {AnyMedia} media - The media item to display in the preview modal
- * @param {HTMLElement} sourceElement - The element that triggered the preview modal
- * @param {number} [delay=PREVIEW_TIMING.OPEN_DELAY] - Delay in milliseconds before opening the modal
+ * @param {AnyMedia} media - The media item to display in the preview modal.
+ * @param {HTMLElement} sourceElement - The DOM element that triggered the preview modal.
+ * @param {boolean} openedViaKeyboard - Indicates if the modal was triggered by a keyboard interaction.
+ * @param {number | 'none'} verticalPaddingOption - Optional: Controls vertical clamping.
+ *   If a number, it sets the padding from top/bottom viewport edges. If 'none',
+ *   vertical clamping is disabled, allowing the modal to exceed vertical boundaries.
+ * @param {number} [delay=PREVIEW_TIMING.OPEN_DELAY] - Delay in milliseconds before opening the modal.
  *
  * @returns {void}
  *
  * @example
- * // Open preview modal on hover
+ * // Open preview modal on hover with default settings
  * function handleMediaHover(event: MouseEvent, media: AnyMedia) {
  *   const element = event.currentTarget as HTMLElement;
  *   openPreviewModal(media, element);
  * }
  *
  * @example
- * // Open preview modal with custom delay
+ * // Open preview modal with custom delay and no vertical clamping
  * function handleQuickPreview(media: AnyMedia, element: HTMLElement) {
- *   openPreviewModal(media, element, 100); // Faster opening
+ *   openPreviewModal(media, element, false, 'none', 100); // Faster opening, no vertical clamping
+ * }
+ *
+ * @example
+ * // Open preview modal via keyboard, allowing default vertical clamping
+ * function handleKeyboardActivation(media: AnyMedia, element: HTMLElement) {
+ *   openPreviewModal(media, element, true);
  * }
  *
  * @example
@@ -183,7 +195,8 @@ const timeoutManager = createTimeoutManager();
 export function openPreviewModal(
   media: AnyMedia,
   sourceElement: HTMLElement,
-  openedViaKeyboard = false,
+  openedViaKeyboard: boolean = false,
+  verticalPaddingOption?: number | 'none',
   delay: number = PREVIEW_TIMING.OPEN_DELAY
 ): void {
   // Clear any pending timeouts to prevent race conditions
@@ -205,7 +218,7 @@ export function openPreviewModal(
   const centerY = rect.top + rect.height / 2;
 
   // Position the modal to expand from the source element
-  const position: PortalPosition = {
+  const initialPosition: PortalPosition = {
     top: rect.top + window.scrollY,
     left: rect.left + window.scrollX,
     width: rect.width,
@@ -215,13 +228,17 @@ export function openPreviewModal(
 
   // Schedule opening after delay
   timeoutManager.setTimeout(async () => {
+    const calculatedExpandedPosition = calculateExpandedPosition(initialPosition, sourceElement, {
+      verticalPadding: verticalPaddingOption,
+    });
+
     // First open the modal with loading state
     previewModalStore.open({
       closedViaKeyboard: false,
       media,
       mediaDetails: null,
       openedViaKeyboard,
-      position,
+      position: calculatedExpandedPosition,
       sourceElement,
     });
 
