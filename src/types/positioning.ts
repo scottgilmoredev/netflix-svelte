@@ -253,16 +253,16 @@ export interface PositionOffset {
  * @interface PositionPadding
  * @description Padding configuration for constraints
  *
- * @property {number} top - Top padding value
- * @property {number} right - Right padding value
- * @property {number} bottom - Bottom padding value
- * @property {number} left - Left padding value
+ * @property {number | null} top - Top padding value
+ * @property {number | null} right - Right padding value
+ * @property {number | null} bottom - Bottom padding value
+ * @property {number | null} left - Left padding value
  */
 export interface PositionPadding {
-  top?: number;
-  right?: number;
-  bottom?: number;
-  left?: number;
+  top?: number | null;
+  right?: number | null;
+  bottom?: number | null;
+  left?: number | null;
 }
 
 /**
